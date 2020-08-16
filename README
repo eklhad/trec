@@ -321,6 +321,15 @@ This makefile works on Raspbian.
 You may have to tweak the makefile to build letterart and drawit.
 Again, patches are welcome to properly build these programs on various systems.
 
+Wait a minute - why isn't the code indented‽
+
+I am totally blind, and indenting doesn't help me at all;
+in fact it is rather an inconvenience.
+But when I am part of a group, as I have been throughout my professional career,
+we can all agree to run code through indent before commit, and that works fine.
+So let me know if you want me to start doing that.
+So far, I have been the only programmer on this project.
+
 A solution file at top level holds tilings in matrix format
 for most of the nontrivial polyominoes and pairs of polyominoes.
 This will be updated as new patterns are discovered.
