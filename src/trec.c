@@ -572,7 +572,7 @@ a lot of code will have to change!
 #define ANADIAMETER 9 // analyze pieces this large
 #define NSQ 80 // number of squares in largest polyomino
 #define SETSIZE 10 // number of pieces in the set
-#define NUMTHREADS 8 // max number of worker threads
+#define NUMTHREADS 64 // max number of worker threads
 #define BOARDWIDTH 256
 
 typedef unsigned char uchar;
@@ -732,7 +732,7 @@ bool ambig; // ambiguous indicator
 uchar pno; // piece number in the set
 // orientation number as per a convention that will be described later
 uchar ono;
-bool rotsym;
+uchar rotsym;
 short x, y; // offset of bottom left square
 };
 
@@ -846,7 +846,7 @@ Upside down is 4, and reflect that for 0x40.
 We can specify forbidden orientations for each piece in the set.
 *********************************************************************/
 static uchar bo_ok[SETSIZE], lo_ok[SETSIZE], ro_ok[SETSIZE];
-static bool rotsym[SETSIZE]; // rotational symmetry
+static uchar rotsym[SETSIZE]; // rotational symmetry
 static bool wallRestrict; // there are restrictions by a wall
 
 /*********************************************************************
@@ -963,7 +963,7 @@ if(c == 'r') bo &= ~0x28, lo &= ~0x14, ro &= ~0x41;
 wallRestrict = true;
 c = *++s;
 }
-if(c && c != '/') bailout("n u l or r expected in ~ directive, %c unexpected", c);
+if(c && c != '_') bailout("n u l or r expected in ~ directive, %c unexpected", c);
 }
 bo_ok[setSize] = bo;
 lo_ok[setSize] = lo;
@@ -1030,7 +1030,14 @@ if(by < setMinDimension) setMinDimension = by;
 for(k=0; k<npat; ++k)
 if(!memcmp(patterns[k], new, REPDIAMETER*2)) {
 if(i == 1 && j == 0) bailout("four fold symmetry on piece %d", setSize);
-if(i == 2 && j == 0) rotsym[setSize] = true;
+if(k == 0) {
+// 180 degree rotation
+if(i == 2 && j == 0) rotsym[setSize] |= 1;
+// vertical reflection
+if(i == 0 && j == 1) rotsym[setSize] |= 2;
+// horizontal reflection
+if(i == 2 && j == 1) rotsym[setSize] |= 4;
+}
 break;
 }
 if(k == npat) {
@@ -1095,19 +1102,26 @@ o->breakLine = (o->h-1)/2;
 if(!(o->h&1)) { /* even, requires further refinement */
 // See which half is "heavier".
 // This is a center of mass calculation.
+// But simple moment makes e0b0 ambiguous, so give extra weight
+// to the squares near the outside of the piece.
 int bottom = 0, top = 0;
-int shift;
+int shift, subtotal, side;
 for(j=0; j<by; ++j) {
 shapebits v = new[j];
 for(mask=HIGHBIT, shift=0; shift<bx; ++shift, mask>>=1) {
 if(!(v&mask)) continue;
 k = shift - o->breakLine;
 if(k <= 0) --k;
-if(k < 0) bottom += k*k; else top += k*k;
+subtotal = (k*k << 8);
+side = by/2 - j;
+if(side <= 0 && !(by&1)) --side;
+if(side < 0) side = -side;
+subtotal += side;
+if(k < 0) bottom += subtotal; else top += subtotal;
 }
 }
 // set ORIENTCHECK to see which pieces are ambiguous
-if(bottom == top) { o->ambig = true; printf("piece %d is ambiguous\n", setSize); }
+if(bottom == top) o->ambig = true;
 if(bottom < top) ++o->breakLine;
 } /* even straddle */
 
@@ -1290,6 +1304,18 @@ b = o_r3list + j;
 }
 o_sizes[7] = o_sizes[8] = j;
 
+// print out ambiguous pieces
+for(i=0; i<o_max; ++i) {
+a = o_leftlist + i;
+if(!a->ambig) continue;
+// if the piece is symmetric, ambiguity is unavoidable. I only want to call
+// attention to ambiguity that shouldn't be there.
+if(a->rotsym&1) continue; // 180 degree symmetry
+if(a->rotsym&2 && (a->ono == 1 || a->ono == 4)) continue;
+if(a->rotsym&4 && (a->ono == 0x20 || a->ono == 0x80)) continue;
+printf("piece %d is unexpectedly ambiguous orient %x sym %d\n", a->pno, a->ono, a->rotsym);
+}
+
 if(checkBits&ORIENTCHECK) {
 printf("sorted %d %d %d %d %d %d\n",
 o_sizes[0], o_sizes[2], o_sizes[9], o_sizes[3], o_sizes[5], o_sizes[7]);
@@ -1431,9 +1457,6 @@ fclose(f);
 
 if(!lineno) bailout("file is empty", 0);
 if(lineno < 7) bailout("file does not contain enough lines of configuration data, 7 lines expected", 0);
-
-fflush(stdout);
-setbuf(stdout, 0);
 } /* readConfig */
 
 /* find the lowest empty bit in a short */
@@ -1596,6 +1619,9 @@ config_set:
 sprintf(filename, "dotile/%s", piecename);
 mkdir(filename, 0777);
 sprintf(filename, "dotile/%s/data-x", piecename);
+
+fflush(stdout);
+setbuf(stdout, 0);
 
 if(!bestOrder) oenTest();
 

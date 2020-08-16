@@ -334,8 +334,9 @@ Do this before you run letterart to create your image.
 So how do you build all this software?
 Go into src and type make. That's it.
 Each program is a stand alone c file.
-I don't have an install target, but probably should,
-at least for trec, chiral, and letterart.
+
+Type make install (as root) to install. This installs
+trec, chiral, and letterart; the other programs are not commonly used.
 
 letterart can be challenging to build.
 ImageMagick headers and libraries are all over the place,

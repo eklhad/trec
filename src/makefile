@@ -37,3 +37,6 @@ drawit : drawit.c
 clean:
 	@rm -f hexsol hp1 hp2 hp3 hp4 hept chiral trec letterart drawit
 
+install : trec chiral letterart
+	install -m 0755 $< /usr/local/bin
+
