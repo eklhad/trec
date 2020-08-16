@@ -205,6 +205,9 @@ If you have a quad core CPU, 4 threads will use all 4 processors.
 But if you want your computer to respond to your interactive commands
 in a timely manner, you might want to set 3 worker threads,
 and leave a processor for yourself.
+You can see if threads are working by checking the load average.
+If you asked for 3 threads, and the load average is 3.07, and not much else
+is happening on your computer, then all is well.
 
 The sixth line tells the program how many rows to look ahead.
 Normally the program tiles up to the breakline, and then calls it a node,
@@ -254,6 +257,27 @@ trec ^f0e020
 Small default values are used: 2 million nodes in cache,
 no worker threads, no lookahead, etc.
 For larger rectangles, you will need a config file to manage things.
+
+You can pause this program by hitting ^C.
+Don't be afraid; it won't kill the program.
+It will say pause, and wait for you to enter a command.
+Other threads will continue to process their nodes, but as soon as those
+nodes are finished, those threads will suspend as well.
+The entire program stops until you hit return.
+From another console, you'll see the load average drop to zero.
+If you type q, the program will shut down in a graceful manner,
+whereupon it can be restarted again.
+r prints the restart parameters.
+n prints the nodes pending and in cache.
+l gives the lookahead value, and l followed by a digit will change it.
+a toggles the lookback feature, to check for solutions of lesser witdh.
+d toggles printing of progress dots.
+p is performance, printing something every thousand nodes.
+b prints or changes the best order.
+You can only decrease the best order, you may have already gone through rectangles
+of lesser widths without looking for solutions of a larger order.
+h is a help message.
+Anything else and it just says what, then resumes.
 
 The directory dotile must exist for this program to run.
 It will create dotile/f840,

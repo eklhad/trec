@@ -1158,39 +1158,176 @@ eedhagggfffb
 ehhhhhgggfff
 ------------
 
-`f820_c060c0: order 96[24x24]
+f820_c060c0: order 96[24x24]
+------------------------
+ltttttquuuuurvvvvvswwwww
+lmmtqqqqqurrrrrvjssspwpk
+llmmhnnnnniooooojsfspppk
+lmmhhhdndiiieoecjjfggpkk
+laahzhdddibieeecjxffggyk
+aazzzzzdbbbbbeccjxfgguyk
+naarvvvvvswwwwwcxxfttuyy
+nrrrrrvssssswqqclxttuuym
+nnfoooookpppppqqlxittuym
+nbfggockkkhphqqellijjumm
+nbffggckrkhhhddelpiijjom
+bbfggvccrqqhddeelpijjsom
+zbfwwvcyrrqquddeppittsoo
+zbwwvvcyrqquuuxexpttssoa
+zzhwwvyyrdducuxxxpbttsoa
+zlhggvkyddcccccxbbbbbsaa
+zlhhggkypddjfffffieeeeea
+llhggskkpjjjjjfiiiiienna
+xlhttskwpproooooqmmmmmnn
+xlttsskwprrrvovqqqumunny
+xxcttswwprbrvvvqaquuuzzy
+xcccfsfwbbbbbvaaaaauzzyy
+xcjcfffwieeeeehdddddgzzy
+jjjjjfiiiiiehhhhhdgggggy
+------------------------
 
 f820_c0e040: order 164[24x41]
+------------------------
+dddddaaeeeeebfffffcggggg
+vvdwwaaaxebbbbbfcccccgzz
+vvvwwwaxxxssttyyyyyuuzzz
+ivoowppxxssstttmyquuurzn
+iooojpppkkslltgmqqqurrrn
+iiojjjpkkkflllgmmqqhrrnn
+ixccjjddkffflggmeehhhabn
+ixcccdddyyffzzgmeeehhabn
+xxpcttduyyyzzzgvvewwaabb
+kxptttuuuyqqzrvvvswwwabo
+kxpptluumqqqrrrvssswnabo
+kkpdlllmmmqirrgjjssnnnoo
+kzpdllemmiiiiigjjjhhnnco
+kzddeeeeefffffggjhhhbbco
+zzrdwwaaaaafxxguyyhbbbcc
+mzrdwwwsattxxxguyyyvbpcq
+mzrrnwssstttxoouuyvvvpcq
+mmrnnnssjjtkoooullvvppqq
+mbrfnngjjjkkkohullliipeq
+mbfffgggjckkhhhhhliiipeq
+bbffrggcccccdddddppiooee
+zbyrrruqqqqqttdspppoooev
+zbyrruuudqxtttssspwwoaev
+zzyyeeuudxxxtcssbbwwwavv
+zlyeeehddxxgcccbbbfwaaiv
+zlykehhhdpgggccjbfffmaiv
+llkkkqhhdpggojjjjjffmaii
+xlkkqqqsppooooonnnnnmmit
+xlwwqqsssprrrrrvvnuumyit
+xxwwwbbsspaarzvvvuuumytt
+xkjwfbbbeaaazzzvdducyygt
+xkjfffbeeeaizzhdddcccygt
+kkjjffneepiiihhhdmcclygg
+wkjqqnnnvpiioohhmmmlllgr
+wkjqqqnnvppuoootmmssllgr
+wwaaqzzvvpuuuotttysssxrr
+waaadzzzvpcuubttyyysxxxr
+wiadddzhvcccbbbggyyfxxer
+iiiddhhhhhccbbgggjfffeee
+iiplllllokkkkkngjjjffmee
+ppppploooooknnnnnjjmmmmm
+------------------------
 
 f820_80f040: order 96[24x24]
+------------------------
+ltttttquuuuurvvvvvswwwww
+lmmtqqqqqurrrrrvjsssswpk
+llmmhnnnnniooooojsfppppk
+lzmhhhhniiiiioecjjfggpkk
+lzmhadddddbeeeecjxffggyk
+zzaaaaadbbbbbeccjxftguyk
+nzzrvvvvvswwwwwcxxftguyy
+nrrrrrvssssswqqclxttuuym
+nnfoooookpppppqqlxitjuym
+nbfggockkkkphdqellitjumm
+nbffggckrhhhhdqelpiijjom
+bbfwgvccrqqhddeelpitjsom
+zbfwgvcyrrqquddeppitjsoo
+zbwwvvcyrdquuuuexpttssoa
+zzhwgvyyrdqucxxxxpbttsoa
+zlhwgvkyddcccccxbbbbbsaa
+zlhhggkypddjfffffieeeeea
+llhtgskkpjjjjjfiiiiiemma
+xlhtgskwpproooooqnnnnnmm
+xlttsskwprrrroqqqqqnuzmy
+xxcttswwprbvvvvvauuuuzmy
+xccccsfwbbbbbvaaaaauzzyy
+xcjffffwieeeeehdddddgzzy
+jjjjjfiiiiiehhhhhdgggggy
+------------------------
 
-e0b0_f04040: order 104[24x26]
+f04040_e0b0: order 104[24x26]
+------------------------
+wxxxxyyyzzzsssstaaauuuuv
+wwwxyyqyzpzzstttalaauvvv
+wjnxnnqqqpoosoktllrrurmv
+wjnnneqppppoooktliirrrmv
+jjjjbeqgggghkkkkllicmmmm
+aaaabeeeghhhzzfffiicdddd
+qabbbesygyyhzffxfiwcccdu
+qarrbssyyythzzpxxxwcvvdu
+qqqrnsooootttzpxwwwwvuuu
+qfrrnsskogthpppxmmmmvvju
+ffrnnnnkogthhcplllmeivjj
+fbbbbkkkkggghclldlmeiiij
+ffbvrqqqqgphhcccdeeeiojj
+wwbvrrrqpppuuctddddeioss
+wvvvrzyqyyputttxxxxoooos
+wwivrzyyycpuugtbxaaaaess
+hwiizzzzkcccugtbxffaeesd
+hhhijjjjkcmgggbbbbfaeddd
+hqiipjkkkcmmuglllffoeend
+hqpppjvskssmulltlfrooond
+qqqqpvvsssmmuuutrrronnnn
+zzzzpvyyxxxxuttttdrowwww
+izeeevvygxbbbccccdraaawj
+izeheeyygxbfbbcdddaakawj
+iiihnnyngggfmmcmldllkjjj
+ihhhhnnngffffmmmlllkkkkj
+------------------------
 
-e0b0_80e030: order 120[20x36]
+`e0b0_80e030: order 120[20x36]
+--------------------
+--------------------
 
 e0b0_70c040: order 80[20x24]
+--------------------
+--------------------
 
 e0b0_80f020: order 130[26x30]
 
 e0b0_80f040: order 64[16x24]
 
 e0b0_c07020: order 100[20x30]
+--------------------
+--------------------
 
 e0b0_e070: order 258[43x36]
 
 f04040_f090: order 136[24x34]
+------------------------
+------------------------
 
 f04040_c0e040: order 80[16x30]
 
 f04040_80f020: order 96[24x24]
+------------------------
+------------------------
 
 f090_e070: order 150[20x45]
+--------------------
+--------------------
 
 f090_80c070: order 66[18x22]
 
 f090_80e030: order 76[19x24]
 
 f090_c07040: order 70[20x21]
+--------------------
+--------------------
 
 Open pairs of hexominoes.
 e038_f04040: order <= 400[20x120]
