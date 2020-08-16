@@ -250,6 +250,12 @@ f840  # Y hexomino
 -
 Any comments here about the piece.
 
+You can run trek without a config file like this.
+trec ^f0e020
+Small default values are used: 2 million nodes in cache,
+no worker threads, no lookahead, etc.
+For larger rectangles, you will need a config file to manage things.
+
 The directory dotile must exist for this program to run.
 It will create dotile/f840,
 and store data files and solutions in this subdirectory.
@@ -314,4 +320,13 @@ depending on your distribution.
 This makefile works on Raspbian.
 You may have to tweak the makefile to build letterart and drawit.
 Again, patches are welcome to properly build these programs on various systems.
+
+A solution file at top level holds tilings in matrix format
+for most of the nontrivial polyominoes and pairs of polyominoes.
+This will be updated as new patterns are discovered.
+Any matrix can be turned into an image via letterart,
+but I have created some of the pictures for you.
+Again, the file name is the same as the piece, thus f0e040,
+an octomino with order 246[41x48], has its matrix in the solution file,
+and its picture in pictures/f0e040.png.
 
