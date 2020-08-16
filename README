@@ -1,0 +1,317 @@
+This project is devoted to the science of tiling a rectangle
+with one or more polyominoes.
+
+What is a polyomino?
+
+A polyomino is a shape that consists of unit squares pasted together.
+This is an extension of the word domino, two squares placed side by side.
+But the word poly means meny, hence we may have many squares arranged
+to form a particular shape.
+Can this piece be used, over and over again, to tile a rectangle?
+If so, the order of the polyomino is the smallest number of pieces
+that will tile a rectangle.
+It is notoriously difficult to determine the order of even modest polyominoes.
+
+Of course the polyomino might already be a rectangle,
+as illustrated by the domino.
+Thus it's order is 1 (not very interesting).
+A triomino, three squares pasted together, can assume only two distinct shapes.
+The straight line has order 1 and the L shape has order 2.
+Thus two L's join together to make a 2×3 rectangle.
+The five tetrominoes are the line, the L, the triangle
+(three squares in a row with one above the middle), the square, and the stairs.
+These have orders 1, 2, 4, 1, and 0, respectively.
+The troublesome tetromino, that looks like a set of stairs,
+has order 0 because it cannot tile a rectangle.
+As you march along the floor of the rectangle,
+you must always slide another piece under the notch of the previous piece,
+and the stairs go on forever.
+You can tile the first quadrant, but not a rectangle.
+
+If you are familiar with the Hex™ puzzle,
+which has been on the market since the 1960's,
+you already know the 12 pentominoes well.
+They are, in my nomenclature: the line, the L, the Y
+(you have to tilt it a little to look like a Y), the C, the stairs, the faucet,
+the Utah, the lightning bolt, the zigzag, the T, the cross, and the chair.
+The Hex puzzle asks you to tile a 6×10 rectangle with these 12 pieces.
+I encountered this puzzle at age 8, and have been fascinated by tiling problems
+ever since. I wrote a C program, hexsol.c, to find all solutions,
+not just for the 6×10 board, but also the
+5×12, 4×15, and 3×20 rectangles.
+The latter has only two solutions.
+The original puzzle, on a 6 by 10 board, has 2339 solutions.
+
+hexsol -c
+2339 solutions
+
+This program, and all others in this project, generate solutions as an ascii
+matrix. Thus a solution to the Hex puzzle might look like this.
+
+	EEEIIIDDDJ
+	EAELIIFDJJ
+	AAALLFFDKJ
+	CALLFFGGKJ
+	CBBBBBHGKK
+	CCCHHHHGGK
+
+This is not very satisfying, so I wrote a program to convert the matrix
+into an image, using ImageMagick.
+The program is letterart.c, included in this project.
+If the above matrix is in a file calld hex610.mat, invoke the program this way.
+
+letterart hex610.mat png48:hex610.png
+
+The prefix png48: on the output file is important!
+On some machines, ImageMagick generates a space saving 8 bit black&white image
+format, which most image programs do not recognize.
+png48: forces 16 bit RGB, which can be read by every program, and by every
+browser, if you wish to put images up on a web site.
+The picture that goes with the above matrix is in pictures.hex610.png.
+Take a moment and look at it, and compare with the above matrix.
+
+So which pentominoes, on their own, tile a rectangle?
+The line, the L, the Utah, and the Y, with orders 1, 2, 2, and 10.
+
+When I was in junior high I built the 35 distinct hexominoes out of lego
+and tried to fit them into a 14×15 frame.
+I even thought about marketing the puzzle,
+since the Hex puzzle (based on the 12 pentominoes) attained commercial success.
+But try as I might, I could not fit the 35 pieces into the frame.
+The puzzle wouldn't sell well if there was no solution!
+Finally I had an epiphany and applied the checkerboard argument.
+Most pieces cover 3 white squares and 3 black,
+but an odd number of hexominoes cover 4 white squares and 2 black,
+or 2 white squares and 4 black.
+These pieces introduce an excess or deficiency of two white squares.
+Clearly white and blacks squares must come out eequal.
+This is a contradiction, hence there is no solution.
+(Wikipedia hexomino also gives this checkerboard proof.)
+Of course I could always toss out one of these offending pieces and try
+to tile a 12×17 rectangle with the remaining 34 pieces,
+but that is not aesthetically pleasing.
+I mean, which one do you toss out?
+The 35 hexominoes can however be packed into a right triangle,
+as determined by the program hp1.c in the src directory.
+This is a stroke of good fortune; 210 is a triangular number,
+and the triangle covers 110 white squares and 100 black squares.
+An example solution is shown in pictures/hextri.png.
+This is original with me.
+
+Other packings include the 15×15 square with a 3×5 rectangle removed,
+and a rhombus 15 units high and 29 units wide with its center square removed.
+The rhombus is my creation.
+These tilings are discovered by src/hp2.c and src/hp3.c,
+with the punctured rhombus shown in pictures/hexrho.png.
+
+You can pack all ominoes, from the single square up to the 35 hexominoes,
+56 pieces, into a rectangle that is 13 by 23.
+See src/hp4.c and pictures/hexbelow.png.
+
+There are 108 heptominoes, but one has a hole in it, like a snake wrapping
+around to kiss its tail, and cannot participate in a solid packing.
+If you want a rectangle with a hole in the middle, allowing for all 108 pieces,
+that's 108*7 + 1 = 757, which is prime, so no dice there.
+All this is in wikipedia heptomino.
+However, I found that the 107 simply connected pieces
+can make a rather long rectangle 107 by 7.
+My program took days and got nowhere, but then I change the order in which
+it considered the pieces, saving the nice corner pieces for last, and it found
+a solution in 21 seconds. A small change can make a big difference!
+See src/hept.c, and pictures/ heptrect.png.
+
+Recall that 4 of the 12 pentominoes tile a rectangle.
+Most of the hexominoes are easily solved as well, i.e. they tile a rectangle
+with just a few pieces or they don't - except for the Y hexomino,
+5 squares in a row and another above the second. Here we have a simple shape
+consisting of 6 squares pasted together, yet we must write a computer program
+to determine whether it tiles a rectangle. I wrote such a program in 1987,
+and was the first to discover that this shape does indeed tile a rectangle,
+and its order is 92. (Science News, November 14, 1987.)
+Using variations of this program, I have discovered many other tilings.
+These patterns illustrate the incredible complexity and beauty of mathematics.
+
+The latest incarnation of my tiling program is in src/trec.c.
+It is called trec for tiling a rectangle.
+Naturally, it is a work in progress, and I welcome patches,
+pull requests, or other forms of collaboration.
+
+The program is typically run with one argument, a config file.
+Each of the first eight lines must be present, and syntactically correct.
+
+The first line gives the polyomino in hex format.
+A byte indicates the squares that are present on the first row of the shape,
+then the next byte describes the second row, and so on.
+Our Y hexomino, the only hexomino with a nontrivial order, is f840,
+five squares on the bottom row and one square on the second row.
+I find it convenient to use a file of the same name,
+thus the first row of the file f840 is f840.
+You don't have to do that of course, but it's hard to keep track otherwise.
+
+I also allow a + to set the ninth bit.
+Thus ff+fcfc is a long version of Oklahoma,
+with a row of 9 squares and two rows of 6 squares.
+Use braces for a longer row, as in ffff{e0} for a row of 11,
+although shapes with a diameter greaterer than 9 cannot currrently be analyzed.
+
+You can specify a set of polyominoes on the first line, using / as delimiter.
+Thus f820/e070 describes a pair of hexominoes
+that have order 94[12x47], as a set,
+even though neither tiles a rectangle on its own.
+At present, all the shapes in a set must have the same number of squares.
+I change / to _ in my filenames, so that f820_e070 describes f820/e070.
+
+The second line sets the initial width.
+I search for a rectangle with this width, then increase the width,
+until I find a solution.
+This line can also be used to resume the program after a controlled shutdown.
+If you were analyzing rectangles of width 40,
+and the last thing you saw was @27, indicating a depth of 27,
+put  40@27  in the second line of the config file.
+This resumes the program at width 40, depth 27,
+using the files that were present when the program stopped earlier.
+This should work if the program stopped because of SIGTERM, SIGQUIT,
+or q at the interactive menu. Proper resumption is not guaranteed after a power
+failure or system crash, or resource exhaustion
+(e.g. lack of disk space) that could result in a partial write.
+So keep an eye on your disk and your ram.
+
+The letter a means allcheck, so 54a will look for solutions
+even if the rectangle is wider than it is tall.
+Perhaps you ruled out rectangles up to width 48.
+You are dealing with hexominoes, so a width divisible by 6 is better.
+Jump ahead to 54, but you still want to check for 54x49.
+I don't normally check for that, assuming we are incrementing the width
+as we go, but you can override this with the letter a here,
+or with -20 on the command line.
+
+The third line is a bound on the order.
+Don't look for larger solutions than this.
+
+The fourth line determines the number of nodes,
+in millions of nodes, that will be maintained in cache.
+You can specify up to 400 million nodes,
+but that chews up 2 gig of ram in a linear array.
+Basically, multiply the number by 5 meg for ram consumed.
+If the cache overflows, trec increases the cache by 12 million and tries again.
+You only want to rely on this racaching as a last resort however.
+If your first guess is obviously low, stop the program and start it again
+with a significantly higher cache, rather than letting the program
+racache again and again.
+
+The fifth line sets the number of worker threads.
+Use 0 to do all calculations in the foreground.
+1 worker thread won't bring any benefit, but could be used for testing.
+If you have a quad core CPU, 4 threads will use all 4 processors.
+But if you want your computer to respond to your interactive commands
+in a timely manner, you might want to set 3 worker threads,
+and leave a processor for yourself.
+
+The sixth line tells the program how many rows to look ahead.
+Normally the program tiles up to the breakline, and then calls it a node,
+but there's no sense wasting cache and disk space on a dead-end node.
+So sometimes we want to tile beyond the breakline,
+to make sure the node is valid.
+Then again, it takes extra time to tile more rows on top of each node.
+You'll have to trade space against time.
+Set lookahead high to conserve nodes on disk and in cache.
+Set lookahead = 0 for fast performance on small rectangles.
+I find that lookahead = 2 works well,
+and that's what I usually use,
+unless I'm trying to conserve nodes for very large rectangles.
+Multiple threads must queue up and wait for disk and cache access,
+so creating fewer nodes is better, i.e. lookahead = 3 or 4.
+Lookahead values range from 0 to 9.
+
+The seventh line is a factor on the order.
+Set this to 2 to force an even order.
+We often know the order is divisible by something. More on this below.
+
+The eighth line is a factor on the dimension.
+Boundary conditions often force both diminsions to be divisible by something.
+
+A line with a single hyphen on it marks the end of data
+and the beginning of comments about this shape.
+Perhaps a proof as to why the order or the dimension are divisible
+by certain numbers, or the best solution so far,
+or the dimensions we have already explored.
+
+Now let's return to our Y hexomino, the shape that started everything in 1987.
+Here is its config file.
+
+f840  # Y hexomino
+6  # start from width 6 and grow from there
+100  # cap on order
+2  # 2 million nodes in cache
+0 # no worker threads
+0  # no lookahead
+2 # checkerboard argument implies an even order
+1  # no constraints on dimension
+-
+Any comments here about the piece.
+
+The directory dotile must exist for this program to run.
+It will create dotile/f840,
+and store data files and solutions in this subdirectory.
+Each solution is a matrix, as described earlier,
+and is stored in dotile/f840/sol*.
+run letterart to turn this into a png image.
+There may be several solution files, as trec finds ever smaller tilings.
+
+I don't include a dotile directory in this project, because you may want to
+clone it, and then create a symbolic link through dotile to another
+file system with more disk space available.
+With your dotile in place, trec f840 produces the following output.
+
+;f840
+?6 @0 @1 :1
+?7 @0 @1 @2 @3 @4 @5 @6 @7 @8 @9 @10 @11 :1
+?8 :0
+?9 :0
+?10 @0 @1 @2 @3 @4 @5 @6 @7 @8 :3
+?11 @0 @1 @2 @3 @4 :5
+?12 @0 @1 :5
+?13 @0 @1 @2 @3 @4 @5 :5
+?14 @0 @1 @2 @3 @4 @5 @6 @7 @8 @9 @10 @11 :3
+?15 @0 @1 :0
+?16 @0 @1 @2 @3 @4 @5 @6 @7 @8 @9 @10 @11 @12 @13 @14 @15 @16 @17 :757
+?17 @0 @1 @2 @3 @4 @5 @6 @7 @8 @9 @10 @11 :657
+?18 @0 @1 @2 @3 @4 @5 @6 @7 @8 @9 @10 @11 @12 @13 @14 :45
+?19 @0 @1 @2 @3 @4 @5 @6 @7 @8 @9 @10 :26
+?20 @0 @1 @2 @3 @4 @5 @6 :53
+?21 @0 @1 @2 @3 @4 @5 @6 @7 @8 @9 @10 @11 :4
+?22 @0 @1 @2 @3 @4 @5 @6 @7 @8 @9 @10 @11 :2778
+?23 @0 @1 @2 @3 @4 @5 @6 @7 @8 @9 *92[23x24] :32901
+
+You can see it stepping through rectangles of widths 6 through 23,
+finding a solution at 23 by 24.
+trec still searches for a smaller solution,
+but it would have to have 90 pieces or fewer.
+That's 540 squares,
+and the width would have to be 23 or less, since 24 times 24 is 576,
+and we just finished width 23, so trec stops. The order is 92. More often
+trec continues to search after a solution is found, looking for a smaller one.
+
+the chiral program, src/chiral.c, is used to analyze a solution.
+It tells you how many pieces are in each orientation.
+It also tells you if a piece has too many squares in it.
+This happens sometimes, because trec is not meticulously careful
+about making sure adjacent pieces use different letters.
+They usually do, but on rare occasions you might need to hand edit the matrix,
+changing the letters in one of the two conjoined pieces,
+to produce a proper tiling.
+Do this before you run letterart to create your image.
+
+So how do you build all this software?
+Go into src and type make. That's it.
+Each program is a stand alone c file.
+I don't have an install target, but probably should,
+at least for trec, chiral, and letterart.
+
+letterart can be challenging to build.
+ImageMagick headers and libraries are all over the place,
+depending on your distribution.
+This makefile works on Raspbian.
+You may have to tweak the makefile to build letterart and drawit.
+Again, patches are welcome to properly build these programs on various systems.
+
