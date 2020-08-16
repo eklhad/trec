@@ -154,12 +154,11 @@ with a row of 9 squares and two rows of 6 squares.
 Use braces for a longer row, as in ffff{e0} for a row of 11,
 although shapes with a diameter greaterer than 9 cannot currrently be analyzed.
 
-You can specify a set of polyominoes on the first line, using / as delimiter.
-Thus f820/e070 describes a pair of hexominoes
+You can specify a set of polyominoes on the first line, using _ as delimiter.
+Thus f820_e070 describes a pair of hexominoes
 that have order 94[12x47], as a set,
 even though neither tiles a rectangle on its own.
 At present, all the shapes in a set must have the same number of squares.
-I change / to _ in my filenames, so that f820_e070 describes f820/e070.
 
 The second line sets the initial width.
 I search for a rectangle with this width, then increase the width,

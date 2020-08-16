@@ -250,8 +250,8 @@ with a row of 9 squares and two rows of 6 squares.
 Use braces for a longer row, as in ffff{e0} for a row of 11,
 although shapes longer than 9 cannot currrently be analyzed.
 
-You can specify a set of polyominoes on the first line, using / as delimiter.
-Thus 70d0/e070 describes a pair of hexominoes
+You can specify a set of polyominoes on the first line, using _ as delimiter.
+Thus 70d0_e070 describes a pair of hexominoes
 that have order 130, as a set,
 even though neither tiles a rectangle on its own.
 At present, all the shapes in a set must have the same number of squares.
@@ -265,7 +265,7 @@ against the left and right walls.
 ~l prohibits the left orientation, counterclocwise turn.
 ~r prohibits the right orientation, clocwise turn.
 Thus you might write the earlier set as
-70d0~u/80f020~nu
+70d0~u_80f020~nu
 Then again, you might not, because the extra code needed
 to make these checks sometimes makes the program run slower.
 Sometimes, but not always.
@@ -273,7 +273,7 @@ This feature isn't too helpful when an orientation would be ruled out anyways
 by the next piece.
 However, there are times when the orientation seems fine,
 even after several more pieces have been placed.
-In the set f08080~u/c06030~nulr
+In the set f08080~u_c06030~nulr
 You'd think stairs could be placed on the floor.
 But you always have to slide more stairs beneath those stairs,
 and that continues forever,
@@ -655,7 +655,7 @@ and if they don't, we call bailout().
 *********************************************************************/
 
 static const char *config;
-static char *piecename;
+static const char *piecename;
 
 static void bailout(const char *msg, int arg)
 {
@@ -898,7 +898,7 @@ nsq = 0;
 i = 0;
 mask = 0;
 
-while((c = *s) != 0 && !strchr("/~", c)) {
+while((c = *s) != 0 && !strchr("_~", c)) {
 if(!isxdigit(c)) bailout("character %c unrecognized, hex digit expected", c);
 if(!isxdigit(s[1])) bailout("character %c unrecognized, hex digit expected", s[1]);
 if(i >= REPDIAMETER) bailout("polyomino is too high, limit %d rows", REPDIAMETER);
@@ -1550,7 +1550,7 @@ static void expandFirstNode(void) ;
 static void expandNodes(void) ;
 static void markOldNodes(void) ;
 
-int main(int argc, char **argv)
+int main(int argc, const char **argv)
 {
 int j;
 
@@ -1571,7 +1571,6 @@ quadTest();
 
 if(argc == 2 && argv[1][0] == '^') {
 /* polyomino on the command line, other values default. */
-char *s;
 stringPiece(argv[1]+1);
 if(setMaxDimension > ANADIAMETER) bailout("polyomino is too large, limit %d rows or columns", ANADIAMETER);
 sortOrientations();
@@ -1583,8 +1582,6 @@ ordFactor = (cbflag ? 2 : 1);
 dimFactor = 1;
 curWidth1 = curWidth + 1;
 piecename = argv[1] + 1;
-for(s=piecename; *s; ++s)
-if(*s == '/') *s = '_';
 goto config_set;
 }
 
