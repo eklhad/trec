@@ -32,17 +32,18 @@ Sadly, we must deal with some ambiguity.
 Consider the pair of hexominoes f08080 and c06030.
 The second piece is stairs, and it can be oriented with 3 squares above
 the break line and 3 squares below, with perfect rotational symmetry.
-Any rule we might apply includes the piece on both sides,
+Any rule we might apply puts the piece on both sides,
 or excludes the piece altogether.
-Yet I want to process pairs of hexominoes that contain the stairs. What to do?
+The C hexomino c08080c0 has the same problem through vertical reflection.
+Yet I want to process pairs of hexominoes that contain these pieces. What to do?
 Generate two nodes instead of one:
 the node with the ambiguous pieces included, when the variable
 ambinclude is true, and a node without these pieces, when ambinclude is false.
 When the bottom node with these pieces, and the top node without,
 are both in our database, they will match, and a tiling is produced.
 For wide boards, a break often includes at least one ambiguous piece,
-So we are generating twice as manyh nodes as we need, but oh well.
-I'll write more about this later.
+So we are generating twice as manyh nodes as we need, but oh well. I print
+a warning if a piece is ambiguous, but not through reflection or rotation.
 
 The break pattern is stored in a node.
 The depth of the node is the number of complete rows before the break
@@ -1975,6 +1976,7 @@ struct PLACE {
 short x, y; // location of this piece
 uchar oidx; // orientation index
 uchar otop;
+short myc;
 const struct ORIENT *o;
 const struct ORIENT *olist;
 uchar breakLine; // before we placed this piece
@@ -2002,7 +2004,7 @@ shapebits mask;
 shapebits onleft, onright;
 shapebits thisval;
 int ly; /* location y coordinate */
-int min_y;
+int min_y, min_y_count;
 shapebits min_y_bit;
 int dy; /* delta y, shift the piece up this much */
 int x0; /* b_start - b0 */
@@ -2035,9 +2037,12 @@ struct PLACE placeTry[BOARDWIDTH];
 
 min_y = 0;
 min_y_bit = 1;
+min_y_count = 0;
 // copy the board to the board on-stack for manipulation
-for(j=0; j<curWidth; ++j)
+for(j=0; j<curWidth; ++j) {
+if(!(base[j]&1)) ++min_y_count;
 b0[j+1] = base[j];
+}
 memset(b0pad, 0xff, (REPDIAMETER+1)*sizeof(shapebits));
 b0[curWidth1] = 0xffff;
 
@@ -2222,6 +2227,7 @@ p->olist = best_olist;
 p->otop = best_otop;
 p->breakLine = breakLine;
 p->min_y = min_y;
+p->myc = min_y_count;
 p->oidx = -1;
 if(checkBits&NODECHECK)
 printf("choice %d.%d=%x\n",
@@ -2237,7 +2243,11 @@ pat = o->pattern;
 b = b0 + p->x - o->x;
 b_end = b + o->w;
 dy = p->y - o->y;
-do *b |= (*pat<<dy); while(++pat, ++b != b_end);
+do {
+shapebits t = (*pat<<dy);
+if(t&min_y_bit) --min_y_count;
+*b |= t;
+} while(++pat, ++b != b_end);
 
 if(checkBits&NODECHECK) {
 printf("place %d.%d=%d\n", p->x-1, p->y, p->oidx);
@@ -2260,14 +2270,16 @@ goto next;
 j = o->breakLine + p->y;
 if(j < breakLine) breakLine = j;
 
-/* find lowest level */
+if(min_y_count) goto advance;
+// find lowest level
 mask = 0xffff;
-for(i=curWidth; i; --i) {
-if(!(b0[i]&min_y_bit)) goto advance;
+for(i=curWidth; i; --i)
 mask &= b0[i];
-}
 min_y = lowEmpty[mask];
 min_y_bit = (1 << min_y);
+min_y_count = 0;
+for(i=curWidth; i; --i)
+if(!(b0[i]&min_y_bit)) ++min_y_count;
 goto advance;
 
 backup:
@@ -2303,10 +2315,9 @@ reset = -1;
 }
 
 breakLine = p->breakLine;
-if(p->min_y != min_y) {
 min_y = p->min_y;
 min_y_bit = (1 << min_y);
-}
+min_y_count = p->myc;
 goto next;
 
 complete:
