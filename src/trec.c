@@ -724,9 +724,7 @@ and writing down a bitmap for each one.
 *********************************************************************/
 
 struct ORIENT { // describe an orientation
-shapebits pattern[REPDIAMETER];
-shapebits under[REPDIAMETER];
-uchar maxUnder;
+short x, y; // offset of bottom left square
 uchar h, w; // height and width
 schar breakLine; // the row with more than half the piece below it
 bool ambig; // ambiguous indicator
@@ -734,7 +732,9 @@ uchar pno; // piece number in the set
 // orientation number as per a convention that will be described later
 uchar ono;
 uchar rotsym;
-short x, y; // offset of bottom left square
+uchar maxUnder;
+shapebits pattern[REPDIAMETER];
+shapebits under[REPDIAMETER];
 };
 
 #ifdef MANYORIENTS
@@ -1517,6 +1517,8 @@ static int workStep;
 static bool noincrease;
 
 pthread_mutex_t nodeAccess = PTHREAD_MUTEX_INITIALIZER;
+#define ThreadLock if(numThreads)    pthread_mutex_lock( &nodeAccess )
+#define ThreadUnlock if(numThreads)    pthread_mutex_unlock( &nodeAccess )
 
 /*********************************************************************
 We expande node A at depth 25, and generate node Z at depth 27.
@@ -1846,7 +1848,7 @@ int n;
 
 if(inTerm) return 0;
 
-   pthread_mutex_lock( &nodeAccess );
+ThreadLock;
 
 /*********************************************************************
 Check for ^c interactive access here.
@@ -1886,11 +1888,11 @@ if(nodesCache < 0)
 bailout("nodesCache negative %d", nodesCache);
 if(!nodesCache && curDepth)
 bailout("nothing in cache, %d pending", nodesPending);
-   pthread_mutex_unlock( &nodeAccess );
+ThreadUnlock;
 return n;
 }
 
-   pthread_mutex_unlock( &nodeAccess );
+ThreadUnlock;
 return 0;
 }
 
@@ -2271,7 +2273,7 @@ goto advance;
 backup:
 --lev, --p;
 if(lev < 0) {
-   pthread_mutex_lock( &nodeAccess );
+ThreadLock;
 // If this node has no descendants, there's no strong reason to keep it
 // around in cache. This hardly ever happens.
 if(!children && this_idx) {
@@ -2281,7 +2283,7 @@ writeNode(this_idx, &compnode);
 markOldNode(this_idx, compnode.hash);
 }
 --nodesPending;
-   pthread_mutex_unlock( &nodeAccess );
+ThreadUnlock;
 if(showdots) printf(".");
 return;
 }
@@ -2373,9 +2375,9 @@ printf("\n");
 
 if(!stopstore(newnode)) {
 bool rc;
-   pthread_mutex_lock( &nodeAccess );
+ThreadLock;
 rc = findNode(&newnode, true, &looknode);
-   pthread_mutex_unlock( &nodeAccess );
+ThreadUnlock;
 if(rc) goto ambtest;
 } else noincrease = true;
 
@@ -2391,10 +2393,10 @@ printf("complement:");
 showSmallPattern(compnode.pattern);
 printf("\n");
 }
-   pthread_mutex_lock( &nodeAccess );
+ThreadLock;
 if(findNode(&compnode, false, &looknode))
 matchFound(&newnode, &looknode);
-   pthread_mutex_unlock( &nodeAccess );
+ThreadUnlock;
 } else noincrease = true;
 
 ambtest:
