@@ -191,7 +191,7 @@ The fourth line determines the number of nodes,
 in millions of nodes, that will be maintained in cache.
 You can specify up to 400 million nodes,
 but that chews up 2 gig of ram in a linear array.
-Basically, multiply the number by 5 meg for ram consumed.
+Basically, multiply the number by 4.5 meg for ram consumed.
 If the cache overflows, trec increases the cache by 12 million and tries again.
 You only want to rely on this racaching as a last resort however.
 If your first guess is obviously low, stop the program and start it again
@@ -207,7 +207,37 @@ in a timely manner, you might want to set 3 worker threads,
 and leave a processor for yourself.
 You can see if threads are working by checking the load average.
 If you asked for 3 threads, and the load average is 3.07, and not much else
-is happening on your computer, then all is well.
+is happening on your computer, then the threads are running.
+
+Don't get excited about threads though.
+Here is a test on my pi, with four CPUs and a gig of ram.
+
+fcf030
+39
+130
+60
+?
+3
+2
+1
+-
+0: 6m15
+2: 5m16
+3: 4m39
+4: 4m42
+
+Jumping to 2 threads only improved performance by about 20%, 5 minutes
+instead of 6. In a perfect world it would run twice as fast, but there is
+so much access to the disk and the cache that the threads
+often have to wait for each other.
+The third thread brings only a modest improvement, and the fourth thread
+actually slows things down, even though I have 4 CPUs. 🤔
+Also, after 2 threads my pi gets noticeably hot.
+(It has no fans or active cooling.)
+So I can't go past 2 threads, and at that point I may as well stay with 1.
+I was thinking about scrapping it altogether, but there is
+probably another machine where thread support really makes a difference.
+Besides, it was fun to write.
 
 The sixth line tells the program how many rows to look ahead.
 Normally the program tiles up to the breakline, and then calls it a node,

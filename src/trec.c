@@ -321,7 +321,7 @@ The fourth line determines the number of nodes,
 in millions of nodes, that will be maintained in cache.
 You can specify up to 400 million nodes,
 but that chews up 2 gig of ram in a linear array.
-Basically, multiply the number by 5 meg for ram consumed.
+Basically, multiply the number by 4.5 meg for ram consumed.
 If the cache overflows, this program increases the cache by 12 million and tries again.
 You only want to rely on this racaching as a last resort.
 Perhaps you have invested several days of cycles,
@@ -341,6 +341,7 @@ If you have a quad core CPU, 4 threads will use all 4 processors.
 But if you want your computer to respond to your interactive commands
 in a timely manner, you might want to set 3 worker threads,
 and leave a processor for yourself.
+Threads do not help very much; we should probably look for improvements elsewhere.
 
 The sixth line tells the program how many rows to look ahead.
 Normally the program tiles up to the breakline, and then calls it a node,
@@ -2481,8 +2482,6 @@ If we allow 40 meganodes, we might have an array of 45 million hash indexes.
 *********************************************************************/
 
 static long *hashIdx; // array of hashed indexes
-typedef uchar hashconfirm;
-static hashconfirm *hashVal; // array of partial hash values
 static bool reversibleHash = true;
 
 static long computeHash(uchar *p)
@@ -2592,13 +2591,10 @@ return;
 
 if(hashIdx && megaNodes > startMega) {
 free(hashIdx);
-free(hashVal);
 hashIdx = 0;
-hashVal = 0;
 }
 
 if(!hashIdx) hashIdx = emalloc(slopNodes * sizeof(long));
-if(!hashVal) hashVal = emalloc(slopNodes *sizeof(hashconfirm));
 memset(hashIdx, 0, slopNodes*sizeof(long));
 nodesCache = 0;
 hwm = 0;
@@ -2650,10 +2646,8 @@ int cutoff = curDepth + forgetgap;
 int j;
 long n, hash, idx;
 long *hb;
-hashconfirm huc;
 
 hashIdx = emalloc(slopNodes * sizeof(long));
-hashVal = emalloc(slopNodes *sizeof(hashconfirm));
 memset(hashIdx, 0, slopNodes*sizeof(long));
 nodesCache = 0;
 hwm = 0;
@@ -2666,13 +2660,11 @@ if(rebuf.depth <= cutoff) continue;
 
 hash = rebuf.hash;
 n = hash % slopNodes;
-huc = hash%251;
 
 hb = hashIdx + n;
 while(true) {
 idx = *hb;
 if(!idx) break;
-if(hashVal[n] != huc) goto nextnode;
 if((idx^hash)&0x70000000) goto nextnode;
 idx &= 0x0fffffff;
 readNode(idx, &redest);
@@ -2686,7 +2678,6 @@ if(n == slopNodes) n = 0, hb = hashIdx;
 }
 
 *hb = j | (hash&0x70000000);
-hashVal[n] = huc;
 
 if(++nodesCache >= maxNodes)
 bailout("cannot recache at level %d", megaNodes);
@@ -2703,10 +2694,8 @@ long *hb;
 long n, hash, idx;
 long empty = -1;
 int j;
-hashconfirm huc;
 
 hash = computeHash(look->pattern);
-huc = hash%251;
 n = hash % slopNodes;
 
 hb = hashIdx + n;
@@ -2719,7 +2708,6 @@ if(!insert) goto nextnode;
 idx &= 0x7fffffff;
 }
 
-if(hashVal[n] != huc) goto nextnode;
 if((idx^hash)&0x70000000) goto nextnode;
 idx &= 0x0fffffff;
 readNode(idx, dest);
@@ -2753,14 +2741,12 @@ writeNode(nodesDisk, look);
 if(empty >= 0) n = empty;
 hb = hashIdx + n;
 *hb = nodesDisk | (hash&0x70000000);
-hashVal[n] = huc;
 ++nodesDisk;
 ++nodesPending;
 if(++nodesCache >= maxNodes) {
 /* Cache overflow -- increase the cache */
 printf(" ^");
 free(hashIdx);
-free(hashVal);
 megaNodes += 12;
 maxNodes = megaNodes * 0x100000;
 slopNodes = maxNodes / 8 * 9;
