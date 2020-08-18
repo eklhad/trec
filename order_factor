@@ -1,0 +1,165 @@
+	Techniques for Establishing Factors of the Order of a Polyomino
+
+	Notation
+
+Across this project, a concise hexidecimal notation is used to represent
+a polyomino. The hex digits are grouped into pairs as usual,
+each pair describing the bits of a byte. Each byte describes one row
+of the polyomino, starting at the bottom and going up.
+Each bit in this byte indicates an occupied square,
+where the high order bit denotes a square in the leftmost position.
+Thus ff, f0f0, and c0c0c0c0 are all rectangles consisting of 8 squares.
+The shape f8e0e0 consists of a row of 5 squares,
+with two rows of three squares above it.
+c06030 is the hexomino stairs.
+
+A plus sign indicates a ninth bit, so that ff+fcfc
+is a row of 9 and 2 rows of 6. Use braces for a second byte,
+so that ff{e0} is a row of 11.
+You can use this notation in the config file, however,
+my software can't analyze a shape whose diameter exceeds 9.
+See README for more information on the config file and running the trec program.
+
+	Checkerboard Argument
+
+Evidence suggests every nontrivial polyomino has an even order.
+Although this remains an open conjecture, we can prove it for several
+specific shapes, and several classes of shapes.
+
+Several polyominoes, such as f840, f0e040, e0f080, and fe70,
+yield to the checkerboard argument. Given a tiled rectangle,
+overlay a traditional black-and-white checkerboard. Because the base polyomino
+consists of an even number of squares, the rectangle has at least one
+even dimension, and the number of black squares in the rectangle equals
+the number of whites. Yet each piece, no matter how oriented,
+introduces either an excess or a deficiency of 2 white squares.
+Since excesses and deficiencies must cancel, the number of pieces
+in the rectangle is even. The order is even.
+trec checks for this, and asserts an even order,
+if you haven't already done so in your config file.
+
+	Alternating Stripes
+
+The shape fcf030 evades the checkerboard argument,
+since it tiles as many white squares as black.
+Suppose its order is odd while both dimensions of its rectangle are even.
+This is possible because the shape contains 12 = 2×2×3 squares.
+Overlay vertical black and white stripes upon the rectangle.
+Shapes that are oriented horizontally consume 6 white squares and 6 black
+squares, but each vertical piece introduces an excess or deficiency of 4.
+These must sum to 0, hence there are an even number of vertical pieces.
+By overlaying horizontal stripes, there are an even number of horizontal pieces
+as well. That implies an even order.
+Therefore, if the order is odd, one of the dimensions is odd, and the other
+is 4 mod 8. The same argument holds for other shapes such as fffc3c30.
+
+	Sparse Checkerboard
+
+Continuing our analysis of fcf030, assume the width of its rectangle is a
+multiple of 4, while the height is odd.
+Overlay a checkerboard upon this rectangle,
+but this time the white squares are replaced with alternating red and blue
+squares, and the black squares play no role. Thus each row is colored
+red black blue black red black blue black ... in sequence.
+With red in the lower left corner, phase shift the rows so that the red squares
+slant up and to the left, as do the blue squares.
+Because each row is divisible by 4, red and blue are represented equally.
+Now each piece, no matter its orientation,
+introduces an excess or deficiency of two red squares,
+hence there are an even number of pieces. The same proof works for fffc3c30.
+As of this writing, the order of the latter piece has not been established,
+but we know that the order is even.
+
+The sparse checkerboard still works if both dimensions are 2 mod 4.
+This because each 2 by 2 square contains two blacks, one blue, and one red.
+
+	Larger Checkerboard Squares
+
+Because f0e020 has 8 squares, we can immediately posit a rectangle whose width
+is a multiple of 4. Overlay a black and white checkerboard,
+but this time the squares are two units on a side.
+Such a checkerboard can be placed in one of 4 positions,
+as determined by the coordinates of the lower left corner of the lower left
+2×2 square (black or white) that is wholly contained within the rectangle.
+No matter the phase of the checkerboard, black and white areas are distributed
+evenly across the rectangle. First align the checkerboard at 0,0.
+Each embeded piece introduces an excess or deficiency of 2 iff it is centered
+on a point whose x and y coordinates have opposite parity.
+Hence there are an even number of these pieces.
+Shift the checkerboard up one square, to force an even number of pieces
+centered on points whose x and y coordinates have the same parity.
+We have partitioned the pieces of the rectangle into two even subsets,
+hence the order is even.
+
+	Three-Colored Stripes
+
+Since the shape fefe80 contains 15 squares,
+we may assume the width of its housing rectangle is a multiple of three,
+and overlay a repeating pattern of red, blue, and yellow vertical stripes.
+Each horizontal piece introduces an excess of 3 red, blue, or yellow squares.
+Let hr, hb, and hy denote the quantity of pieces in these three categories.
+Meantime, each vertical piece introduces a deficiency of 6 squares.
+Let vr, vb, and vy denote the quantity of these pieces.
+The excess of red must equal the excess of blue, or 3hr - 6vr = 3hb - 6vb.
+Divide by 3 and reduce mod 3 to obtain hr + vr = hb + vb.
+By symmetry, each side of this equation is also equal to hy + vy.
+The pieces of the rectangle have been partitioned into three subsets,
+each having the same value mod 3. Thus the order is a multiple of 3.
+
+This argument can be applied to a pair of hexominoes f08080_c06030,
+an L piece and a staircase.
+Assume the width of the tiled rectangle is divisible by 3,
+and overlay a repeating pattern of red, blue, and yellow vertical stripes.
+Staircases consume equal amounts of each,
+whereas every L consumes an excess of one of the three colors.
+Thus the number of L pieces is a multiple of 3.
+Next, overlay a red blue yellow checkerboard,
+where monocrome lines slant up and to the right.
+This is neutral with respect to the L pieces, and half the staircases.
+The stairs that slant with the checkerboard consume 2 out of 3 colors,
+leaving a deficit of one color. The number of right slanting stairs is a multiple of 3.
+Run the checkerboard the other way and make the same claim about the left
+slanting stairs. Thus the set has order divisible by 3.
+You can't often make these claims about sets of polyominoes,
+but if you don't seek, you'll never find.
+
+	Travel Along The Edge
+
+Consider the shape fcf0f0, which resembles Oklahoma.
+Drop down to the floor of the rectangle and note that Oklahoma cannot stand on
+its pan handle. Nor can it lie on its face.
+It must either rest on its back or stand up on its blunt end.
+These orientations consume 6 and 3 squares respectively.
+Thus both dimensions are divisible by 3,
+and the order of this polyomino is a multiple of 9.
+One can prove that pairs of pieces on the floor face or point towards
+each other, (left as an exercise for the reader),
+thus consuming 6 and 12 squares respectively,
+hence each dimension is divisible by 6.
+Indeed, its minimal rectangle is 66 by 84.
+
+The polyomino f8f880 provides another example.
+If a piece stands on the floor, with its tab at the lower right,
+this tab is necessarily adjacent to the tab of another vertical piece,
+or the narrow end of a horizontal piece.
+A horizontal piece, lying face-up on the floor, has, at its narrow end,
+a copy of itself reflected, or the tab of a vertical piece.
+Thus the pieces along the floor can be grouped together in pairs,
+each pair consuming 6, 8, or 10 squares.
+Each dimension is even, and the shape has order divisible by 4.
+
+With e0f080, pieces group together in pairs on the floor, consuming 4 or 6 squares.
+Once again each dimension is even.
+
+	An Odd Tiling
+
+There are certainly rectangles that are tiled with an odd number of pieces,
+they just don't seem to be minimal. The suboptimal tiling of e0e080,
+which you can see in pictures/e0e080sub.png,
+presents a rectangle with 45 pieces.
+This is not an artificially contrived rectangle;
+it is the smallest rectangle having a width of 15.
+This casts some doubt on the "even order" conjecture,
+for it seems a mere matter of chance that a smaller, 14×14 tiling exists,
+giving the even order of 28.
+

@@ -2492,6 +2492,20 @@ the hash value is the same for a pattern and its reflection.
 Thus computeHash() may reverse your pattern - and we want that!
 As always, the hash has about 10% slop.
 If we allow 40 meganodes, we might have an array of 45 million hash indexes.
+The hash value leads to a long.
+The bottom 28 bits determine the corresponding node on disk.
+Thus we can store 2^28 nodes on disk. That is a hard limit on nodes.
+The next 3 bits are a confirmation of the hash value for this pattern.
+If that doesn't match, then don't bother reading the node from disk,
+because the hash isn't right.
+The high bit, or sign bit, is an old indicator, as in markOldNode().
+The node is at a lower depth, and will not participate in a solution at curDepth.
+If a new node comes in at the same hash value, we can displace the old node.
+This will not prevent us from finding a solution, but it is forgetting a node.
+If that same node comes along again we'll store it and expand it,
+and maybe get in an infinite loop if not bounded by bestOrder.
+nodesCache counts the active nodes in cache, not the old nodes.
+So when we mark a node as old we decrement nodesCache.
 *********************************************************************/
 
 static long *hashIdx; // array of hashed indexes
@@ -2745,7 +2759,7 @@ if(j > reachup) reachup = j;
 
 if(checkBits&NODECHECK) printf("insert %ld\n", n);
 
-if(nodesDisk >= (1<<30)) bailout("too many nodes, limit one billion", 0);
+if(nodesDisk >= (1<<28)) bailout("too many nodes, limit 268 million", 0);
 if(nodesDisk/60 >= nodesInFile)
 bailout("too many nodes for 60 data files on disk", 0);
 look->hash = hash;

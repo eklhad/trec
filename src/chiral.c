@@ -61,7 +61,7 @@ if(c) eval(i, j, c);
 }
 
 /* print out the stats */
-printf("Order %d\n", order);
+printf("Order %d, orientations %d\n", order, np);
 for(i=0; i<np; ++i) {
 printf("%d:", pcnt[i]);
 for(j=1; j<nsq; ++j) {
