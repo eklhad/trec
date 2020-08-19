@@ -123,6 +123,10 @@ slanting stairs. Thus the set has order divisible by 3.
 You can't often make these claims about sets of polyominoes,
 but if you don't seek, you'll never find.
 
+If the checkerboard argument applies to every piece in the set then it applies
+to the set. An example is 80f080_e070.
+trec checks for this.
+
 	Travel Along The Edge
 
 Consider the shape fcf0f0, which resembles Oklahoma.

@@ -166,11 +166,11 @@ There may be hundreds of millions of nodes, and it's a shame
 to store and expand and crosscheck a node that doesn't go anywhere.
 The lookahead parameter asks the algorithm to tile beyond the breakline,
 just to make sure it is possible.
-This is 0 through 9.
-If we lookahead 0 rows then we store and check every node that is found.
-High lookahead spends a lot of time verifying each node, but stores fewer nodes,
+This is 1 through 4.
+Yes, I always tile at least one rwo beyond the breakline;
+that seems to be more efficient in every case.
+High lookahead spends more time verifying each node, but stores fewer nodes,
 since many of them don't go anywhere.
-A value of 2 or 3 works pretty well.
 This is set by the config file, but can be changed at run time.
 The interactive interface will be described later.
 
@@ -352,13 +352,13 @@ to make sure the node is valid.
 Then again, it takes extra time to tile more rows on top of each node.
 You'll have to trade space against time.
 Set lookahead high to conserve nodes on disk and in cache.
-Set lookahead = 0 for fast performance on small rectangles.
+Set lookahead = 1 for faster performance on small rectangles.
 I find that lookahead = 2 works well,
 and that's what I usually use,
 unless I'm trying to conserve nodes for very large rectangles.
 Multiple threads must queue up and wait for disk and cache access,
 so creating fewer nodes is better, i.e. lookahead = 3 or 4.
-Lookahead values range from 0 to 9.
+Lookahead values range from 1 to 4.
 
 The seventh line is a factor on the order.
 Set this to 2 to force an even order.
@@ -1409,8 +1409,8 @@ break;
 
 case 6:
 lookahead = strtol(line, &s, 10);
-if(*s || lookahead < 0 || lookahead > 9)
-bailout("line %d, expected a lookahead value between 0 and 9", lineno);
+if(*s || lookahead < 1 || lookahead > 4)
+bailout("line %d, expected a lookahead value between 1 and 4", lineno);
 break;
 
 case 7:
@@ -1604,7 +1604,7 @@ sortOrientations();
 curWidth = setMinDimension;
 bestOrder = 4000;
 startMega = 2;
-lookahead = 2;
+lookahead = 1;
 ordFactor = (cbflag ? 2 : 1);
 dimFactor = 1;
 curWidth1 = curWidth + 1;
@@ -1916,8 +1916,11 @@ break;
 
 case 'l':
 if(getbuf[1] == '\n') printf("%d", lookahead);
-if(isdigit(getbuf[1]))
+if(isdigit(getbuf[1])) {
 lookahead = getbuf[1] - '0';
+if(lookahead > 4) lookahead = 4;
+if(lookahead < 1) lookahead = 1;
+}
 break;
 
 case 'r':
@@ -2058,8 +2061,13 @@ if(++lev >= BOARDWIDTH)
 bailout("placement stack overflow", 0);
 ++p;
 j = breakLine;
-if(lookahead > j) j = lookahead;
-if(min_y > j) goto complete;
+// If we tiled rows 0 through j-1, the first j rows, we're done.
+// But allow for some lookahead.
+// I tested a little bit at lookahead = 0, and things seem to work,
+// but everything seems better with lookahead at least 1,
+// so we always go one more row than we have to.
+j += lookahead;
+if(min_y >= j) goto complete;
 
 /* find location to place the piece */
 best_x = 0;

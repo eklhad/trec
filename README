@@ -217,7 +217,7 @@ fcf030
 130
 60
 ?
-3
+1
 2
 1
 -
@@ -240,20 +240,17 @@ probably another machine where thread support really makes a difference.
 Besides, it was fun to write.
 
 The sixth line tells the program how many rows to look ahead.
-Normally the program tiles up to the breakline, and then calls it a node,
+Normally the program tiles up to the breakline and then calls it a node,
 but there's no sense wasting cache and disk space on a dead-end node.
 So sometimes we want to tile beyond the breakline,
 to make sure the node is valid.
 Then again, it takes extra time to tile more rows on top of each node.
 You'll have to trade space against time.
+Lookahead values range from 1 to 4.
 Set lookahead high to conserve nodes on disk and in cache.
-Set lookahead = 0 for fast performance on small rectangles.
-I find that lookahead = 2 works well,
-and that's what I usually use,
-unless I'm trying to conserve nodes for very large rectangles.
-Multiple threads must queue up and wait for disk and cache access,
-so creating fewer nodes is better, i.e. lookahead = 3 or 4.
-Lookahead values range from 0 to 9.
+Set lookahead = 1 for faster performance on small rectangles.
+1 is usually best, and in fact it always seems better than 0,
+which is why I don't allow 0.
 
 The seventh line is a factor on the order.
 Set this to 2 to force an even order.
@@ -276,7 +273,7 @@ f840  # Y hexomino
 100  # cap on order
 2  # 2 million nodes in cache
 0 # no worker threads
-0  # no lookahead
+1  # standard lookahead
 2 # checkerboard argument implies an even order
 1  # no constraints on dimension
 -
@@ -285,7 +282,7 @@ Any comments here about the piece.
 You can run trek without a config file like this.
 trec ^f0e020
 Small default values are used: 2 million nodes in cache,
-no worker threads, no lookahead, etc.
+no worker threads, minimal lookahead, etc.
 For larger rectangles, you will need a config file to manage things.
 
 You can pause this program by hitting ^C.
