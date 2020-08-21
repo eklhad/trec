@@ -936,3 +936,10 @@ As far as I know, this shape is unresolved.
 I have tested rectangles up to width 90 with no success,
 nor have I come up with a proof of untilability.
 
+	27. Sets.
+
+This theorem does not address sets of guns.
+Consider the pair of hexominoes e0b0 and e070.
+these are both ruled out by section 1, right off the bat;
+yet together they tile a 36×43 rectangle.
+
