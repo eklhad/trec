@@ -237,7 +237,8 @@ Also, after 2 threads my pi gets noticeably hot.
 So I can't go past 2 threads, and at that point I may as well stay with 1.
 I was thinking about scrapping it altogether, but there is
 probably another machine where thread support really makes a difference.
-Besides, it was fun to write.
+Maybe a core with 64 CPUs, and 8 gig of ram, and a high performance disk - could really go to town.
+In any case - it was fun to write.
 
 The sixth line tells the program how many rows to look ahead.
 Normally the program tiles up to the breakline and then calls it a node,

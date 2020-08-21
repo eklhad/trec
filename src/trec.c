@@ -121,15 +121,10 @@ Start with breakLine 1 more than curDepth + pieceLength/2. Call this b.
 Assume n1 is the current node and n2 is the node we want to discover,
 at the same or higher depth.
 Fill in the pieces of n2 that ride on top of curDepth first.
-This is all or part of n2.
-This may not be a proper node.
-When the rest of n2 is filled in, suppose the breakline is b+1.
-Break the puzzle at b instead.
-If some pieces fall on the other side, n2 contains an intermediate node n3
-with depth at least curDepth+1;
-we will expand n3 later to produce n2.
-Thus every piece remains on this side.
-But that means we could have set the breakline at b.
+With breakline b, all these pieces are brought in.
+More perhaps but at least these.
+So we find n2, or an intermediate node n3 at a higher depth
+which will be evaluated later, to produce n2.
 It's enough to tile up to b and no farther, and see what nodes we find.
 
 We can only evaluate the breakline based on the new pieces added.
@@ -1924,8 +1919,8 @@ if(lookahead < 1) lookahead = 1;
 break;
 
 case 'r':
-printf("%s ?%d@%d ^%d",
-piecename, curWidth, curDepth, megaNodes);
+printf("%s ?%d@%d ^%d t%d",
+piecename, curWidth, curDepth, megaNodes, numThreads);
 break;
 
 case 'a':

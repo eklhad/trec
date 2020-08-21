@@ -143,13 +143,25 @@ hence each dimension is divisible by 6.
 Indeed, its minimal rectangle is 66 by 84.
 
 The polyomino f8f880 provides another example.
-If a piece stands on the floor, with its tab at the lower right,
-this tab is necessarily adjacent to the tab of another vertical piece,
-or the narrow end of a horizontal piece.
-A horizontal piece, lying face-up on the floor, has, at its narrow end,
-a copy of itself reflected, or the tab of a vertical piece.
-Thus the pieces along the floor can be grouped together in pairs,
-each pair consuming 6, 8, or 10 squares.
+This boot-shaped piece is "standing up" or "pointing up"
+when it is oriented vertically with its toe on the floor.
+Verify that a piece cannot point down or lie face down.
+It either stands up or lies on its back.
+If a, on the floor, faces or points right, then b, just to the right of a,
+must face or point towards a. This is obvious when a stands up,
+and not too hard to prove when a lies down.
+Put b to the right of a in a forbidden position, pointing right or facing right.
+The gap above a must be filled by c and d, and c, on the left,
+cannot protrude horizontally to the left of a,
+hence c points down and faces left.
+Now e fills the gap to the left of c by extending horizontally,
+and the space below e, just to the left of a, cannot be filled.
+Thus, as we move along the floor, or any wall,
+the border pieces can be grouped into pairs -
+pairs that face or point towards each other. Such a pair is called a complex.
+Two vertical pieces form a small complex of width 6,
+a vertical and a horizontal piece form a medium complex of width 8,
+and two horizontal pieces form a large complex of width 10.
 Each dimension is even, and the shape has order divisible by 4.
 
 With e0f080, pieces group together in pairs on the floor, consuming 4 or 6 squares.

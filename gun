@@ -1,0 +1,938 @@
+		The Gun Theorem
+
+The gun theorem, a complete characterization of the polyominoes of width 2,
+is so named because the most interesting examples, having nontrivial order,
+often resemble guns (e.g. f840 and f860).
+We will focus on polyominoes whose order exceeds 4.
+
+If someone wants to go through all this, and check my work,
+and clean it up, and improve notation and make it clearer,
+and add some pictures, that would be great!
+
+	1. Checking the corners of the piece.
+
+If only opposite corners are present, as in f03c,
+the shape propagates along the floor forever.
+
+If all 4 corners are present, place the first piece, call it piece a,
+in the corner of the rectaangle, whence one edge is continuous, without gaps.
+The other edge is not continuous, else it is a 2 by x rectangle.
+
+Assume just the top two corners are present.
+Place this in the corner, and the top edge is against the floor or the wall.
+It is continuous, without gaps.
+
+Assume 3 out of 4 corners are present.
+Leave the lower right corner open, and suppose some squares are missing from the top row.
+Piece a, in the lower left corner of the rectangle, assumes this orientation.
+Piece b might slide its barrel under the barrel of a, as its 180 degree rotation, but this leaves holes against the floor.
+If the snub-nosed barrel has length one,
+and the gun is missing the second square of its top row,
+b can fill in the gap with its shoulder rest,
+standing with its barrel pointing straight up.
+The gun that tiles the square at 0,2, piece c, must also be vertical,
+else it creates holes between itself and piece a.
+If its barrel points up, then a reflected copy, shifted down and to the right,
+must fill the gap at 1,1. Yet both copies occupy the space 1,n,
+(the gun having length n).
+Thus the barrel points down and fills the gap at 1,1.
+c is the 180 degree rotation of b.
+This leaves an empty square at either 2,1 or 2,2, that cannot be filled
+by a horizontal piece, which would crash into b,
+or by a vertical piece, which creates holes with c.
+Hence we conclude the top row is continuous, as in fca0.
+
+In summery, the top row of the gun is continuous, and there are notches below,
+for the barrel, the trigger, etc.
+
+	2. Terminology
+
+If neither lower corner is spanned, we say the gun has a tab.
+By definition, the barrel is at least as long as the tab.
+A blunt gun has no tab; 3 out of 4 corners are filled.
+Some squares are always missing from the bottom row of a blunt gun,
+else it has order two. A degenerate gun is blunt at both ends,
+having no barrel at all. The thickness of a blunt en is the number of
+contiguous squares in its bottom row, before the first gap.
+A thin blunt end has thickness 1, as in fcb0.
+
+	3. Two adjacent guns, standing up on the floor, must be back-to-back.
+
+Assume the gun has a tab.
+Face to face or face to bak,
+the guns create a hole just above the floor that cannot be filled.
+
+Assume the left gun rests on its blunt end.
+Remember that it has notches up the right side, else it has order 2.
+Face to back still doesn't work.
+Nor face to face in a reflection.
+The right gun must place its barrel on the floor,
+immediately next to the left gun, and the guns must face each other,
+their teeth and gaps interlocking perfectly, as in fcd0.
+Such a gun has order 2.
+
+If the left gun points its barrel down on the floor,
+the right gun must interlock, as above, and has order 2.
+
+That leaves only back to back.
+
+	4. Three guns in a row.
+
+If the gun has a tab, we cannot fill 3 consecutive squares on the floor with vertical guns.
+The first two stand back-to-back, and the third cannot fit in.
+
+If the gun has a blunt end, we might fill 3 holes, or even 4,
+with back-to-back copies, but never 5.
+
+	5. Inaccessible gap of width k and height 2.
+
+Given a horizontal gap of width k, where k < n,
+and k >= 3 (or 5 if the gun is blunt),
+we cannot position a gun horizontally on its back along the k squares,
+nor can we fill the squares with vertical guns.
+We must back up and try another configuration.
+
+Actually we must be a bit careful here, as shown by f870and k=3.
+We must make sure the face of the gun is not a contiguous span of k squares.
+This is not a factor if either bracketing wall extends up through 2 or more rows.
+Despite the plethora of given conditions, this is a useful dead-end criterion.
+
+	6. Degenerate guns cannot have two thick ends.
+
+Having placed the first two pieces (call them a and b)
+against the x and y axies respectively, suppose 2,1 is covered.
+We must now tile 2,2. Yet the third copy (c)
+lines up with either a or b and creates holes.
+Thus a fails to tile 2,1.
+
+Since c and b must not run parallel, c lies face-to-face with a.
+The right end of c extends 2 squares beyond a,
+leaving a thin gap just above the x axis that cannot be filled.
+Thus our degenerate gun cannot have two thick ends.
+
+	7. No degenerate thick ends at the origin.
+
+A degenerate gun has at least one thin end, by the above.
+Assume it has one thick end, and let a lie face up with its thick end at the origin.
+If a covers 2,1 then we argue as above.
+So a does not cover 2,1, c interlocks with a,
+and c extends two squares to the right of a.
+This extension cannot be the thick end of c,
+else it leaves a gap of width 2 along the floor that can't be filled.
+So both a and c have their thick ends pointed left.
+In other words, c is a shifted reflection of a.
+Whenever this happens, an inductive argument forces a periodic pattern of
+alternating teeth and gaps of a uniform width,
+in this case the teeth have size 2. This persists until the thin end of c hangs
+over the thin end of a.
+Piece d must hook its thin end under the overhang
+created by c, so that d and a are horizontal reflections.
+Yet the first gap in d has length 2,
+and c only consumes one of these 2 squares.
+The other is consumed by e, which is a horizontal reflection of c.
+The thick end of e at the right forms an inaccessible gap of width 2 with the x axis.
+Therefore, a degenerate gun points its thin end at the origin.
+
+	8. A degenerate gun can only have thin ends.
+
+Assume our degenerate gun has a thick end.
+By the above, piece a has its thin end pointed at the origin.
+Piece b tiles 0,2, and piece c fills in the empty square at 1,1.
+Clearly the thin end of c points down.
+If the same is true of b, then b and c are reflections, and their blunt ends collide.
+So the thick end of b points down, and b and c are interlocked in reverse.
+We say they are reverse aligned. Slicing off the thin end,
+the gaps at either end of our truncated gun correspond perfectly with the teeth
+at the other end. The simplest polyomino that can do this is f8c8, with n = 5.
+Note that n must be odd, else we have a gap, or collision, halfway up the two interlocked guns.
+
+Place d at 2,n+1, where b and c meet.
+If d is vertical it traps another piece against the y axis, creating holes.
+So d runs horizontally, and we need to populate column 3 between d and a,
+running up the right side of c. When n = 5, f8c8, we could place two horizontal pieces to
+the right of c, filling the gap of height 4,
+but we always wind up with holes below d.
+For larger values of n, we can't have adjacent horizontal guns climbing up the back of c. Somebody has to be vertical.
+
+Assume piece e stands back-to-back against c,
+thus the height of the gap is exactly n.
+To ensure this, either the first gap in the face of a is wider than 2,
+or d is oriented face down with its thin end to the left, but not both.
+
+Suppose the first gap in a, where c rests, has length k, for k > 4.
+Let piece q fill 5,1, lying horizontally, as it must.
+Because b and c interlock in reverse,
+the thick end of q is exactly k squares wide.
+It cannot fit into the first gap of a along with c and e.
+Thus the thin end of q restss in this gap, which has width 5.
+That leaves the thick end of q, having width 5, dangling off to the right,
+one row above the x axis. Clearly this cannot be filled, hence k <= 4.
+
+Suppose k = 4, with c and e filling the gap of a perfectly, and piece f fills the corresponding gap of e by reverse alignment,
+thus e and f are reflections of c and b.
+Now the thin end of f pokes into the underside of d.
+This gives d a thick end of size 2, yet it should have a thick end of size 4.
+So f and g protrude horizontally from the gap in e, lying back-to-back.
+If the thin end of e sits in the gap of a, next to the thin end of c,
+then f is face-to-face with a, but not interlocked.
+This creates holes under f, so f and g are at the top of e.
+This only postpones the inevitable, for the square at 5,2 must still be tiled,
+and piece h cannot run vertically without colliding with f and g.
+Thus h rests on top of a and creates holes with a.
+Actually h might not trap any holes in a if n = 9.
+But it must still lie face down, so i can lie on top of it, back-to-back.
+This puts j in the gap of h, and traps a thin segment of length 9 against the x axis.
+
+If k = 3, there is a gap of 1 between a and c, filled by the thin end of q.
+a and q are aligned, with interlocking teeth and gaps of 3.
+The thick end of q hangs off the end of a and creates a thin gap above the floor that can't be filled.
+
+Finally we conclude k = 2.
+This pushes e up one row into the first gap of d.
+Note that this gap corresponds to the first gap in a; both have width 2.
+The thin end of d fills the square between b, c, and e.
+
+If f is interlocked with e, its thin end descends into a,
+so that one square separates the first 2 gaps of a.
+Conversely, if a single square terminates the first gap in a,
+an interlocked piece (f) must fill the second gap at 4,1.
+The corresponding second gap of d begins just northeast of f.
+If the gap in a continues beyond f, column 6 is vacant for n+1 squares.
+This cannot be tiled, so the second gap has length 2 as well.
+Now column 6 is vacant for n squares.
+Horizontal guns can't stack up next to f,
+so g stands back to back against f.
+Piece h is interlocked with g iff the second gap in a is terminated by a single square.
+Continue this pattern through all the vertical interlocked pairs.
+This process must stop before the midpoint of a,
+because gaps of length 2 on the left correspond to teeth of length 2 on the right.
+At some point there is more than a single square after the gap of 2 in a.
+For simplicity, assume the process stops below e.
+
+Both squares below e are filled by a,
+and d presents at least 2 squares to the right of the top of e.
+If a continues on and does not present another gap immediately to the right of e,
+we must fill 5,2 with a horizontal piece h.
+This is certain to trap holes in a, so let another gap begin at 5,1.
+Suppose h fills this gap running horizontally, extending beyond the end of a.
+If h and a are reversed, then just off the end of a is a section
+that corresponds to the 2 by 2 tooth below e.
+Thus n,0 begins a 2×1 gap that cannot be filled.
+So assume h and a are aligned.
+The thin end of h is next to e, filling a gap of width 3.
+The interlock of b and c tells us that the thick end of h, dangling off the
+end of a, meshes perfectly with the gaps and teeth at the left of a.
+It's a series of teeth of width 2 with gaps of width 1, then a tooth of width 3 where the repeating pattern stops.
+The tooth of width 3 starts at n,1, thus n,0 is inaccessible.
+
+Remember that h can't stand up next to e, so it seems we are done.
+However, there is another case to consider; a could drop off altogether.
+This can only happen at e, giving the shape f8c8.
+Let's pursue this particular shape.
+
+We have placed a b c d and e, though the thin end of e could be up or cown.
+Let piece f tile 5,0. If f is horizontal then let piece g tile 5,2.
+Because of d, g is horizontal, but then it creates holes with f.
+Therefore f is vertical,
+the thin end of e is embedded in d, and g snakes around the top of f.
+Let h protrude horizontally from the gap in f.
+If this gap is near the bottom, the back of h creates a thin gap with either g or the x axis.
+So h floats two rows above the x axis, and i tiles 7,0.
+Now h and i conspire to create holes, thus f8c8 doesn't tile anything.
+This was our last chance at a degenerate gun with a thick end.
+Hereinafter, a degenerate gun has to thin ends.
+
+	9. Degenerate guns don't tile anything.
+
+As above, we may assume the degenerate gun has 2 thin ends.
+Put a and b in the corner as before.
+Since piece c must tile 1,1, b and c interlock.
+The first gap in a has length at least 2 to accommodate c.
+Remember that b does not have a thick end.
+If c has a gap of length >= 2 at the bottom, it leaves a hole at 1,3.
+The end of c that corresponds to the right end of a has a gap of 1, and points down into a, and surrounds the thin end of b.
+If b and c are aligned, all gaps have size 1, contradicting the first gap in a.
+Thus b and c are reverse aligned,
+the first gap of b points down, and c covers 1,3 and 1,4.
+The shape feb2 is the smallest example.
+
+As we saw earlier, piece d, starting at 2,n+1, must be horizontal.
+If d is face down with its smaller gap of width 1 pointed left,
+then e fills the gap at 3,n+1, and is interlocked with d, rather like b and c.
+This restricts the column to the right of c to n-1, or perhaps n-2.
+n is at least 7, whence n-2 is at least 5, so we can't stack horizontal guns
+next to c, nor is there room for a gun to stand next to c.
+
+If the larger gap is pointed left, e, having no thick end to interlock, stands vertically and nestles in this gap,
+just as c rests in the first gap of a.
+In this case the gap has width 2.
+If d lies face up, e still stands back-to-back against c,
+but this time it extends down into the first (now larger) gap of a.
+In either case, e has a gap of size one next to one of its thin blunt ends,
+that must be filled by f, interlocked.
+Thus d is not face up, else the end of f crashes into the back of d or into a.
+Instead, d lies face down, e nestles in the first gap of d,
+and f nestles in the second gap of a.
+A single square at 3,1 separates the first two gaps of a.
+The counterpart to this square in d is at 5,n+1 and fills in the corner of e and f.
+Then a gap of width 2 along d, that can't be filled by a horizontal gun, so a vertical gun g stands back to back with f.
+g has a gap of 1 by one of its thin ends, so h interlocks, and descends into the next gap of a.
+A single square below g separates these two gaps, and the counterpart in d sits in the corner of g and h.
+Interlocked pairs march all the way down the length of a,
+yet this canot continue past the midpoint of a,
+since the teeth on the right side of a have width 2.
+
+That's the last degenerate gun. Hereinafter,
+we may assume each gun has a barrel.
+
+	10. Two guns aimed at the origin cover 1,1.
+
+If a third piece is required to tile 1,1, it must do so using its blunt end.
+Hence it interlocks with either a or b.
+Reflecting the picture as necessary, we will assume c faces b.
+
+Suppose a places its barrel at the origin.
+Now b and c are perfectly antiparallel.
+They either enclose holes, or the piece has order 2.
+
+Suppose a places its blunt end (necessarily thin) at the origin.
+Now b must point up, else we have a hole at 1,2.
+This means b and c are aligned, giving a uniform gap length of 1.
+Yet the first gap in a has length 2.
+
+Suppose b places its blunt end at the origin.
+The two pieces are aligned, and the shape has repeating single gaps, as in ffa8.
+Since the piece doesn't have order 2 (not interesting), the barrel has length > 1.
+Thus a vertical piece fills in the slot between b and c,
+and creates an unfillable hole at 0,n.
+
+Finally let the barrel of b touch the origin.
+This barrel has length 2 iff the blunt end is thin.
+Let d, a reflected copy of b, tiles 0,n,
+whence another piece e tiles 1,n+1. If e runs vertically,
+then d and e are aligned, giving a shape like fea8.
+As above, the slot between d and e is filled with a piece that creates
+inaccessible regions with the y axis.
+So e points into d, stretching just as far right as a.
+With a barrel of length 2, a has a square to the right of c.
+The right edge of c is a span of height n-1 or n-2.
+The gun at 3,2 is horizontal, and traps a hole at n,1.
+
+Let d point down to b.
+e fills the gap at 1,n and snakes around the top of c.
+This is again a span of n-2 to the right of c.
+Therefore, the barrel has length > 2, and the blunt end is thick.
+
+Suppose the barrel has length k, where k >= 5,
+and attempt to place a piece at 3,1.
+The blunt end has length k-1, and will not fit horizontally in the gap of
+length k-2 between the flat edge of c and the first tooth of a.
+Including c, 3 guns stand in this gap, and that isn't possible.
+
+Next assume k = 4 and slide d in position back-to-back with c.
+The blunt end has length 3, and e, a vertical reflection of b,
+fills the square at 0,n and runs up the y axis.
+If piece f at 2,n+1 is vertical, it creates holes with e,
+so it runs horizontally across the barrels of c and d.
+Now the barrel of d defines a gap of length 4,
+which must sprout two more horizontal copies parallel to e.
+e cannot face down and interlock,
+because the barrel of e will not accommodate the thick end of f + c + d.
+Nor can e lie face up without creating holes in f.
+Let e lie face down and pointing right.
+There's a hole at 5,n+1, between f and e, that can't be filled.
+That takes care of k = 4.
+Remember that k = 2 was handled earlier.
+
+Finally set k = 3, which places the barrel of d at 3,1.
+Place piece e next to d, at 4,2. e cannot place its back against a, or lie face down pointing right, without creating holes.
+If e points left and interlocks, we have teeth and gaps of width 3 all the way down, yet the blunt end has length 2.
+Thus e and d interlock, just as b and c interlock one row down.
+Because the barrel of e covers 5,n+1,
+piece f, at 0,n, cannot be horizontal.
+Instead, it runs up the y axis, a vertical reflection of b.
+Now f, c, d, and e define a 1×3 gap starting at 2,n+1.
+If g is vertical it creates holes with f.
+If g is horizontal it creates a hole at 4,n+1.
+
+That completes all the cases.
+One of the first two pieces at the origin tiles 1,1.
+
+	11. No long tabs.
+
+If the gun has a tab of length > 1, neither of the first two pieces can tile
+1,1, which contradicts the previous section. Thus the gun is blunt,
+or has a single square as leading tab.
+
+	12. Blunt guns with long barrels have thick ends.
+
+Consider a gun with a thin blunt end and a long barrel (at least two in length).
+Recall that one of the two guns at the origin tiles 1,1.
+There is only one way to do that.
+Let a point its barrel at the origin, so that the blunt end of b covers 1,1.
+If c at 1,2 is vertical, it is aligned with b, giving a uniform gap size of 1.
+The barrel has length 2, else we have a hole at 2,1.
+The slot at 1,n is filled by the downward pointing barrel of piece d,
+turning 0,n+1 into a hole.
+
+If c extends horizontally from 1,2, it creates holes with a,
+unless a and c are aligned. This produces the same shape as above,
+gaps and teeth of size 1 and a barrel length of 2. Place piece d at 2,3.
+It cannot interlock with b pointing down, since its barrel would crash into c.
+Any other orientation leaves a gap at 1,4.
+e could try to fill this gap standing up and pointing left, but it traps a hole at 1,n.
+In general this gap cannot be filled, unless b is f8a0.
+In that case there is no gap at 1,4.
+We will assume this shape and proceed.
+
+After ruling out the vertical orientations, assume d points its barrel at b.
+We cannot place a piece at 1,4 without creating holes or slots by the y axis,
+So d points right, and e is aligned with d as it fills the hole at 1,4.
+Meantime f lies on its back at 5,0, its barrel sliding under c.
+Let g fill the gap at 6,1. Since d hangs over c,
+g points right and interlocks with f. This forces h to point right at 10,0.
+Let i fill the slot at 5,4 between d and e.
+If i is horizontal it creates an inaccessible region between itself and g.
+Thus i is vertical, and g spans a continuous gap of length 4 along row 3.
+Let j fill the gap in h at 11,1. If j stands up and closes the gap across g,
+j facing left or right, the gap cannot be filled.
+Thus j points right and interlocks with h.
+As k fills the slot between h and j, it creates a hole or slot with the x axis.
+That completes the proof.
+Henceforth all blunt guns have either thick ends or short barrels.
+
+	13. Blunt guns, when the barrel touches the blunt end.
+
+Let a place its thick blunt end at the origin, so that it covers 1,1,
+and let the barrel of b touch a at 0,2.
+Now c, based at 1,2, makes a perfect rectangle with b, or creates holes with a,
+or interlocks with a in reverse. Only the latter is reasonable,
+with a barrel of length k and a thick end of length k+1.
+The barrel of d slides its last square under the thick end of c at n,0,
+leaving a gap of length k-1. Assume k > 1.
+This gap cannot be filled horizontally by a blunt end of length k+1,
+so e stands up in the barrel of d. Using a similar argument, piece f, at 1,3,
+cannot interlock with b; it must lie back-to-back across c,
+bracketed by b and e.
+
+If f points left, k must equal 2,
+and we have a gap to fill at 2,4. This means g and b are aligned,
+all gaps and teeth have length 2, and the thick end of b has length 2, rather than 3.
+Therefore the blunt end of f embeds in b, and k >= 3.
+
+Now the barrel of f presents a gap of width k,
+or possibly k-1 if k = 3 and e faces left.
+If g interlocks with e, then we have teeth and gaps of width 2, all the way to the last blunt end of width 3, which is impossible.
+Thus e faces right and the gap is indeed k.
+Remember that k is at least 3.
+It is not possible for two guns to stand up in this gap.
+All this forces k = 1, giving the thick end a length of 2.
+
+Recall that d still has its snub barrel under the thick end of c.
+Let piece e tile n+1,2, where c and d meet.
+If e and d are aligned, the blunt ends of d and e would collide.
+If e lies face up, or face down pointing right, or face down pointing left with its barrel above c, it traps holes in d.
+b covers 1,3, so it looks like the span of c will be n-1, or maybe n-2 if e points down and faces left.
+A gun cannot stand up in the corner of b and c without creating holes, or interlocking with b, wherein the blunt ends collide.
+The piece can't lie atop c because there isn't room.
+The only choice left is to let e stick its barrel into d at n+2,1 and face left,
+whence f can lie back-to-back atop c, its end embedded in e.
+This gap in e has a corresponding gap in b, one row higher.
+If f points right, 1,4 becomes inaccessible,
+hence f points left and embeds its thick blunt end into e.
+If this end does not completely fill the gap in e, we must fill it with g.
+g cannot run horizontally across f or interlock with f (order 2),
+so g interlocks with e. This means the gap in e filled by f and g has length 4.
+The corresponding gap in b cannot be filled.
+
+f sates the gap in e, which has width 2.
+The same holds for c, hence the second tooth of a, next to its blunt end, has width 2.
+This is not the last gap in e,
+since it has two teeth at its top, like a.
+Let g fill the corner where f and e meet.
+If g places its back to e it creates holes with the subsequent gaps in e.
+If g faces e they are aligned, with g shifted up by 4.
+The top two teeth of g have size 2, with a gap of 1 in between,
+hence the second tooth of g crashes into the blunt end of e.
+So g and f interlock, and the blunt end of g fills the gap in b,
+just as the blunt end of f fills the gap in e.
+
+We have the same situation we had 3 rows below.
+A square of b is above the left edge of g.
+h cant stand next to b, or interlock with b, else its second tooth collides with the blunt end of b.
+h lies across the top of g and puts its end into e.
+That's one square of e between f and h, and one square of b above g.
+h cannot point right without creating a hole against b, so the blunt end of h embeds in e.
+If i interlocks with e it gives a gap of 4, thus a gap of 4 in b, which cannot be filled.
+The gap in e has width 2,  with a corresponding gap in b, which is filled by i, which interlocks with h.
+Since c has a second gap of width 2, a has a third tooth of width 2.
+b has at least one square over i, j can stand up in the corner, or interlock with b else its third tooth collides with the blunt end of b,
+and so on, with horizontal interlocked pairs bliming up between b and e.
+This cannot continue past the midpoint of e,
+where gaps of length 2 give way to teeth of length 2.
+No longer can a gun, lying on its back, embed its blunt end in e,
+and we arrive at a contradiction.
+
+	14. Blunt guns, when blunt ends touch.
+
+Let the blunt end of b touch the blunt end of a at the origin.
+Since either a or b has to cover 1,1, these blunt ends are thick.
+Suppose the blunt end has length k > 2.
+The piece c based at 2,2 creates holes with either a or b,
+or interlocks with b to make a perfect rectangle, or interlocks with a,
+and has a barrel of k-2. If k = 3, n,0 becomes inaccessible, so k >= 4.
+Piece d, based at 2,3, cannot run vertically, so it lies atop c.
+If d points right, piece e cannot fill 2,5 without creating holes somewhere,
+or making a perfect rectangle with d.
+So d points its barrel at b, and e tiles 2,4.
+This means e and b interlock, just like a and c.
+
+Let f stand back-to-back against e, tiling 3,4. Suppose f has its barrel down.
+If k > 4, then g must tile 4,4. Yet g and f cannot create a perfect rectangle,
+nor can g interlock with d, its blunt end being longer than the barrel of d, so k = 4.
+To fill the gap of height 1 at 4,5,
+g and d are aligned, forcing a blunt end of length 2, not 4.
+Therefore f has its blunt end down, and k >= 5.
+
+If k = 5 then g cannot sit in the corner of f and d without creating holes
+somewhere, nor can it align with d, which gives d a thick end of 3.
+If k > 5, g cannot fill the gap between f and d, along the barrel of d.
+This completes the case k > 2.
+
+The blunt end has length 2, c begins at 2,1,
+c cannot run vertically alongside b, c interlocks with a, c and a are aligned,
+and all gaps and teeth have length 2.
+If the barrel has length 2 the piece has order 2.
+If the barrel is longer than 2, c and a create a horizontal slot, which,
+when filled, creates inaccessible regions against the x axis.
+So the barrel has length 1. Shortest example is fecc.
+
+d slides its barrel into n,0. Let e tile n+2,2.
+If e and d are aligned, 2n,0 becomes inaccessible, hence e is vertical.
+If e extends over the rightmost square of c, the span of c is n-1.
+This doesn't allow a horizontal gun, or a parade of vertical guns.
+So e points its barrel at d and faces right (if based at n+2,2)
+or left (if based at n+3,1). In either case, f lies atop c,
+and points its barrel at b. The blunt end of f must not create a hole to its
+right, so e stands facing right. Let g fill the 2×2 gap at 1,4.
+If g and f interlock, let h fill n+1,5, the single gap between g, f, and e.
+The back of e forces h to stand upright on its barrel and face left,
+whereupon the top of g spans n-1 or n-2, which doesn't work. So g interlocks with b.
+Now h stands to the right of g, back-to-back, and i stands next to h,
+filling the first gap in f. However, h and i create holes,
+completing the proof.
+
+	15. Blunt guns, when the blunt end touches the barrel.
+
+Let the barrel of a touch the origin,
+while the blunt end of b rests on this barrel and covers 1,1.
+Let k be the length of the blunt end.
+Having a longer barrel, {12} tells us k >= 2.
+Let d fill the square 1,k+1, the first gap in b.
+Now d traps a vertical gap, extending up to 2,k,
+which must be filled with a series of horizontal guns.
+Let c be the gun that lies atop a. Now c cannot lie face up without creating
+holes, so c and a interlock. If they are aligned, the piece has order 2.
+Hence we assume they are reverse aligned, and the barrel has length k+2.
+
+Assume d protrudes horizontally from b.
+If d is face down, nothing can fill the gap at 2,k,
+so d lies back-to-back with c, and k = 2.
+If d embeds its barrel in b, this barrel spans a horizontal gap of 3 or 4,
+depending on the size of the gap in b. Let e nestle in the corner of b and d.
+If the gap in b has size > 1, e must form a rectangle with d, or align with b.
+The latter is possible, but only if all gaps and internal teeth have length 3.
+In this case the barrels of b and e create a vertical slot that, when filled,
+leaves inaccessible regions by the y axis.
+If the gap in b has size 1, e must interlock with b or d, or stand next to b.
+Only the first is plausible, yet e traps an L-shaped hole on the y axis that
+cannot be filled. Thus the blunt end of d embeds in b.
+A reflection of a, call it e, runs along the x axis starting at n,0,
+its blunt end under the protruding barrel of c.
+Let piece f fill the first gap of e at n+2,1.
+If f runs horizontally then the barrels of e and f form a slot which,
+when filled, creates holes along the x axis.
+If f, running vertically, faces left, it makes a gap at n+1,3, just above d.
+So f faces right, and the barrel of d defines a gap of length 4 that cannot be filled.
+From this we conclude that d runs vertically along b.
+
+Now d and b are aligned and all gaps and teeth have length k.
+However, their barrels create a vertical slot that, when filled,
+creates inaccessible regions by the y axis.
+
+Combined with {13} and {14}, the blunt end of a gun is never used to tile 1,1.
+
+	16. Blunt guns have snub (length = 1) barrels.
+
+We have determined that a gun cannot use its blunt end to tile 1,1, yet by {10},
+one of the two guns pointed at the origin must tile this square.
+This can only be done by a gun lying on its back,
+such that its first tooth tiles 1,1. Thus every gun has a short tab or barrel.
+If there is no tab, as with a blunt gun, the barrel has length 1.
+
+	17. The last of the blunt guns.
+
+Let piece a, a blunt gun, point its short barrel at the origin,
+as it must by {16}. Suppose piece a also covers 2,1, and let c cover 2,2.
+Since c must not create holes with either b or a, it must interlock with a.
+Now c and a are aligned, all gaps have length 2,
+the blunt end of c extends 2 squares to the right of a,
+and n,0 is inaccessible. Thus a does not cover 2,1, and c must.
+
+c runs horizontally, interlocked with a in reverse.
+Avoiding the shape of order 2, n is at least 6.
+The combination of c and a forms a parallelogram that might repeat forever down the x axis.
+Similarly, d could interlock with b,
+creating a parallelogram that might propagate up the y axis.
+Clearly this shape tiles the quadrant.
+We can't just tile and tile until we reach a dead end; we need a new approach.
+
+Consider a corner of size n-1 square, like the origin.
+Point the barrels of a and b into the corner.
+Now c forms a parallelagram with a as above.
+If d forms a parallelagram with b, we have another corner.
+Otherwise d lies back-to-back atop c, with one end in the first gap of b.
+If this gap exceeds the end of d, we won't be able to fill it without trapping
+holes in d, so we have a perfect fit.
+
+Suppose d points right, hence its blunt end, in b, is a 2×2 square.
+Let e fill the corner of b and d. If e interlocks with d,
+this is a reverse alignment 3 squares over from the alignment demonstrated by a and c.
+Using an inductive argument, all teeth have size 2,
+yet this cannot continue past the midpoint of d.
+If e points down and faces right, f is aligned with d.
+This alignment makes all teeth size 2, even the last tooth,
+which is actually size 1. Thus e faces left and interlocks with b,
+and f stands back-to-back with e. By comparing e and b,
+we find that the first gap in d is size 1, the second tooth is size 1,
+and the second gap is size 2. Thus f points down, and g, in the second gap,
+can only point right and align with d.
+Even if this alignment works, h makes a new corner with g,
+or it places its blunt end into f, and creates the same pattern we saw with b and d.
+
+Next we assume d points into b, whence the first gap of b,
+like the first tooth, has size 1. This means we have a thin blunt end.
+Place the barrel of e into the first gap of d.
+If e faces right we have the same pattern we saw with b and d.
+So e faces left, but this traps holes against b.
+That leaves only a d e interlock, like the parallelagram formed by a and c.
+Place f in the gap between b and e, and even if the interlock works,
+e and f create a new corner.
+
+Next place the blunt end of a at the corner.
+If c fills the first gap of a, and a and c are aligned,
+all teeth have the same size, which must be 1, and the shape has order 2.
+The pieces may be reverse aligned, hence the blunt end is thick.
+But remember, the piece also reverse aligns with itself at a different offset,
+as illustrated by the parallelagram at the (real) origin.
+Again, our inductive argument shows all teeth have a uniform size > 1,
+which is impossible.
+
+With c standing up, the blunt end is thick,
+b slides in between c and the y axis, c and b interlock and align,
+and the teeth have size 1, even though the blunt end of a has size 2.
+
+We have shown that corners propagate up and to the right forever.
+This finishes off the blunt guns. Hereinafter, all guns have tabs, and by {11},
+those tabs have length 1.
+It's looking more and more like a gun.
+
+	18. Solid guns.
+
+Consider a gun formed by removing the lower corners from an n×2 solid rectangle.
+Thus the barrel and tab have lengths 1, and there are no gaps (e.g. ff7e).
+For n = 3 or 4, the order is 4, so assume n >= 5.
+Copies a and b meet at the origin as usual, making an artificial corner at 2,2.
+One wall of this corner is n-2 squares long, the other n-3.
+Piece c fits into this new corner, and faces the main diagonal.
+Piece d fills the gap between c and a or b.
+If c runs along the longer wall, and n = 5,
+d has the opportunity to face away from the main diagonal.
+But whether d faces toward or away from the diagonal,
+c and d create a new corner whose walls are at least 2 squares long.
+These corners propagate up and to the right forever.
+
+	19. A piece cannot have a short barrel and thick teeth.
+
+Suppose the barrel and tab have length 1,
+and the teeth adjacent to these ends have lengths at least 2.
+Thanks to {18}, we can assume there is at least one gap in the face of the gun.
+The smallest example is fe6c. Once again a and b create an artificial corner at
+2,2, that must be filled by c. Now c cannot place its back against either wall
+without creating holes, so let c interlock with a,
+and let d tile the square at 2,3. Now d cannot place its back to b without
+creating holes, and if d interlocks with b, d and c make a new corner,
+and the process begins again. Let d lie on its back immediately above c.
+Let e fill the gap between d and b. If e turns its back on b, it creates holes,
+so e and b interlock. Now we know the tooth next to the tab has length 3,
+and the tooth by the barrel has length 2.
+There are 2 or 3 squares above d, just to the right of e, that must be filled.
+Piece f cannot lie atop d, nor can it interlock with d,
+so it stands upright and fills the first square.
+Piece g must fill the next hole by interlocking with d.
+The result is the diagonal reflection of the configuration of e and d.
+These patterns repeat as corners proceed up to infinity.
+
+	20. A piece cannot have a short barrel and thin teeth.
+
+Suppose the gun has a tab and short barrel,
+and the first and last teeth have length 1.
+With a at the origin and b standing upright at 0,1, piece c must fill 2,1.
+This places c and b front-to-back, and creates holes.
+
+	21. A piece cannot have a short barrel.
+
+Let the barrel and tab have length 1,
+and let the tooth next to the tab have length k > 1.
+If a points its barrel at the origin, piece c must stand upright at 2,1,
+just as it did before. Therefore a points right,
+and b slides its barrel or tab into the tab of a.
+
+Let c tile 2,2. To avoid holes, c must interlock with either a or b.
+Suppose the tab of b touches the tab of a, so that c and a interlock, setting k = 2.
+If d interlocks with b then c and d create a corner, just like the origin,
+and the process begins again. Yet d cannot place its back against either b or c
+without creating an inaccessible hole at 1,4.
+
+Next let b point its barrel down into the tab of a.
+If b and c interlock, the square at 0,n+1 cannot be filled without creating a hole at 1,n+1.
+As above, c interlocks with a and k = 2.
+Now d lies atop c, filling the size 1 gap in b at 1,3.
+If another gap begins at 1,5, e fills this gap by placing its back against d,
+which creates holes. So b continues through 1,5, and e tiles 2,5.
+Suppose e is horizontal, whence it must interlock with d.
+If d and e are aligned, the thick teeth adjacent to their tabs mus collide.
+If they are reversed, they look like a and c.
+That shifts e one square to the right, where it cannot tile 2,5.
+Thus e is vertical. If e faces right,
+it can only avoid trapping holes in b if b has no more gaps.
+This gives a shape of fc68, which minimally meets our criteria.
+However, the piece that fills the gap above b faces left and creates a hole
+with the y axis. Thus e faces left and interlocks with b.
+If the barrel of d points left, e and d adopt the same configuration as c and
+b, and the process begins again. With the tab of d embedded in b,
+let f tile 3,5. If f is horizontal it creates holes with d,
+or interlocks with d, whereupon f and e make a perfect corner.
+If f stands back-to-back with e, 4,4 becomes inaccessible.
+That completes the proof. We need no longer consider guns with tabs and
+single-length barrels.
+
+	22. The face is contiguous.
+
+Let our gun have a long barrel, as required by {21},
+and assume there are gaps in its face.
+Because of {10}, piece a must place its tab against the origin.
+Suppose the first gap in a occurs at 2,1,
+and suppose piece c fills this gap by standing vertically.
+To avoid creating holes, c and b are interlocked in reverse.
+Note that the barrel has length 2. This leaves a gap at 1,n that cannot be
+filled by a vertical gun. Let d, a vertical reflection of a, fill this gap.
+If a tiles 3,1, then the column next to c invokes {5}.
+Thus the first gap in a (and d) has size 2, and e stands back-to-back with c.
+If another gap opens at 5,1 and 5,n, piece f interlocks with e,
+just like b and c. But this cannot continue past the midpoint of a,
+where gaps of length 2 give way to teeth of length 2, so assume a tiles 5,1, as in ff4c.
+Verify that ff4c doesn't work; a is actually longer.
+
+Let f tile 4,2 if the barrel of e points down, 4,n-1 otherwise.
+This can only be done by interlock with a or d.
+Let g lie back-to-back with f, and let h lie face-to-face with g.
+Verify that h sticks its tab into e, whence g and h are aligned.
+All teeth have width 1, and that doesn't look like a.
+This contradicts the assumption that c is vertical.
+
+At this point a and c interlock, and b points its long barrel into a.
+If a and c are aligned, they form a slot at the right that, when filled,
+creates inaccessible regions with the x axis.
+So they are interlocked in reverse, and that drives the long barrel of c into b.
+Therefore the first gap in a occurs farther to the right.
+
+Assume the first gap begins at 3,1, and let the tab of b touch the tab of a.
+If c tiles 2,2, and runs vertically, it must interlock with b in reverse.
+However, c protrudes one square at 2,n+1, and 0,n+1 becomes inaccessible.
+If a and c are aligned, all gaps and teeth have length 2.
+If the barrels have length 2, n,0 is inaccessible.
+If the barrels are longer, they define a slot that, when filled,
+creates inaccessible regions along the x axis.
+A reverse alignment would drive the barrel of c into b.
+
+Now the barrel of b points down, and c tiles 1,2 by running horizontally.
+Now c interlocks with a, and n,0 becomes inaccessible.
+Thus the first gap occurs at 4,1, or farther to the right.
+The smallest example is ff74.
+
+Verify that a and c must reverse align to form a parallelagram.
+If b and d do the same, you will notice the parallelagrams marching along the x and y axies.
+From here the proof is similar to that employed in {17}.
+
+Start with a corner and place the tab of a at the origin.
+We know that a and c can reverse align, but that won't cover 1,2,
+so the tab of b fits into the tab of a.
+Now c and a are revers aligned, just as they were at the (real) origin.
+If d makes a parallelagram with b, we have a new corner,
+so let d lie flat atop c. Let e fill the corner of b and d.
+Verify that e and d cannot interlock. So e interlocks with b.
+This must be an alignment, hence all teeth and gaps have size 3,
+and the barrel has length 2. Place f at the corner of d and e.
+If d points left, f points up, g fills the corner of d and f by interlocking
+with d, and the pattern looks exactly like b and c.
+If f points down then g must lie on its back atop d, and that creates holes.
+
+Hereinafter, we need not consider any guns with gaps in their faces.
+Henceforth a gun is completely characterized by two numeric parameters,
+its length n and the length of its barrel k, where k > 1 and k+1 < n.
+
+	23. A face with one square.
+
+Let a gun have a single square as its face and a barrel of length k >= 4.
+(Note that k = 1, 2, and 3 have orders 4, 10, and 92 respectively.)
+We shall show that 3 corner configurations inevitably lead to eachother,
+thereby propagating corners up and to the right forever.
+
+α A wall and floor of 4 squares each, like the origin.
+β Same as α, but 0,0 is already populated,
+and the wall and floor are 5 and 6 squares long respectively.
+γ Same as β, but 1,0 is also populated.
+
+Given α, let a place its barrel at the origin.
+If a is face up, the span above the barrel of a trips {5}, so a lies face down.
+Place b at 0,1. If b is vertical, with its barrel down, it must face left,
+recreating α. If b has its tab down then let c tile 1,1.
+If c points its barrel at b, the span above the barrel of c has length k-1,
+at least 3, and trips {5}. So c points right and creates γ.
+
+If b lies atop a, it must point right, and c stands upright at 0,2.
+Now c and b produce either β or γ.
+
+Suppose a has its tab at the origin.
+If b, standing at 0,1, faces left, it creates β.
+So b faces right and embeds its tab in a (to avoid {5}), which creates γ.
+
+Given β, let a tile 1,0. If a faces left its back joins the floor to produce α.
+If a faces right its tab is down, and b fills the gap at 2,0.
+This creates β or γ. If a lies face up it must point right,
+with b and c filling the gap of width 2. Together a and c create γ.
+If a is face down, and the back of a extends along row 0, it creates α.
+Finally we assume the back of a runs along row 1. Place piece b at 0,2.
+If b is vertical, it joins a to produce α, or it forces c to tile 1,2,
+thereby producing γ. If b is horizontal then c tiles 0,3 vertically,
+and c and b produce β or γ.
+
+Given γ, let a tile 2,0. If a faces left, let b tile 3,0.
+If b is horizontal, it creates α with the back of a,
+or it forces c to stand with its back to a, whence b and c create γ.
+If b stands back-to-back with a, there is still enough floor to force c,
+tiling 4,0, to run horizontally. Thus c and b produce β or γ.
+If a faces right then 0,1 begins a 2×1 inaccessible gap.
+If a faces up it must point left, to avoid {5}.
+This forces b to lie face up on a, its barrel pointing right.
+Now c stands in the tab of b, and creates β or γ. Finally a is face down.
+If its back extends row 0, it creates α.
+If its tab is at 1,1, b tiles 0,1 by standing upright,
+and b and a create α or β.
+
+This completes the guns with a single square on the second row.
+
+	24. Guns with barrel = 2.
+
+Let a gun have a barrel of length 2 and a face of length > 2.
+(Note that f860 is known to have order 76.)
+Assume a 2×3 corner and let piece a tile the origin.
+If the barrel of a points left, and a lies face down,
+the back of a joins the wall to create another 2×3 corner.
+If a is face up, b and c fill the gap above the barrel of a.
+If c points up we have another corner.
+If c points down the resulting gap is filled by d.
+If d points right we have another corner.
+If d points left we have another gap that is filled by e.
+Now e can point up or down, like c, creating a corner or continuing the pattern.
+Eventually we find another corner.
+
+If the tab of a touches the origin, let b stand at 0,1.
+If b faces right we have a situation that we dealt with in the previous paragraph.
+If b faces left we have another corner.
+
+Next suppose a stands upright at 0,0, whence it is forced to face right.
+If a has its barrel down, b and c protrude horizontally from the gap in column
+1, which is the same situation we dealt with earlier.
+If a has its tab down, b fills 1,0, and creates a corner with a,
+or produces a single gap that will eventually lead to a corner.
+
+These 2×3 corners propagate up and to the right forever.
+That finishes the guns with barrel length 2.
+
+	25. Ruling out longer barrels.
+
+Let the gun have a barrel of length at least j, where j >= 3.
+Thanks to {23}, we know the face is at least 2 in length.
+We will postpone fe70, barrel = face = 3.
+Consider the following configurations.
+
+α A j×j corner.
+β An n-1×n corner with the face of a gun on the floor.
+γ Same as β, but another face climbs the wall, starting at 0,1.
+δ An n×(j-1) corner.
+ε A wall of height n and a floor of width n-2,
+with a shortened (by 1) face on the floor.
+ζ A wall of height n and a floor of width n-3,
+with a shortened (by 2) face on the floor.
+The face must be at least 3 for this case to be meaningful.
+
+Starting with α, let the barel of a touch the origin.
+{5} forces a to lie face down. This creates δ,
+which we will pursue at this time.
+
+Let b stand at 0,1. If b faces left then a and b create another corner α.
+If b faces right then a and the imaginary wall at b's back form α.
+So b lies on its back. If b points left it trips {5}.
+This is because its barrel has length at least 3,
+and even if the face and barrel are the same length,
+the face of c cannot perfectly fill this gap, unless barrel = face = 3,
+which we are not dealing with here. So b points right,
+and c fills the gap at 0,2. If c faces left we have β, and if c faces right ,
+a joins with an imaginary wall behind c to form α.
+That finishes off δ, but we're still expanding α.
+
+Let a lie on its back and point right, with b standing at 0,1.
+If b faces left we have β, and if b faces right we have γ,
+unless b points its barrel into a and j = 3.
+Now c interlocks with a at 1,2, and d lies back-to-back with c.
+Yet this interlock is impossible, since barrel and face have different lengths when j = 3.
+
+Starting with β, let a tile the square on the floor to the right of the
+preexisting face. If a faces left, its back joins the floor to produce δ.
+If a faces right, an imaginary wall behind a joins the floor to produce α.
+If a points left, its barrel sliding atop the preexisting face,
+let k be the number of squares between the barrel of a and the wall.
+If k = 0 we have α. If k = 1, b stands at 0,1 and creates β with a.
+If k > 1 the gap cannot be tiled. Finally,
+the back of a might extend the preexisting face.
+If a lies face down we have α, and if a lies face up the region along row 1 trips {5}.
+
+Next consider γ, and base a just above the preexisting vertical face.
+If a lies face down it joins the wall to produce δ.
+If a lies face up, an imaginary floor under a joins the wall to produce α.
+Suppose the back of a stands in column 0. If a faces right, column 1 trips {5}.
+If a faces left, we have ε. Finally let the barrel or tab of a slide down the
+face on the left wall, giving a gap of height k.
+Note that the face of b cannot fill this gap, so k > 2 trips {5}.
+If k = 2, b and c protrude horizontally, and c and a produce β.
+If k = 1, b fills the gap, and joins a to produce α or β.
+If k = 0 we have ζ.
+
+Finally consider ε and ζ, and place a just to the right of the abbreviated
+face on the floor. From here the reasoning is similar to β.
+If a faces right we have α, and if a faces left we have δ.
+If a lies face up it trips {5}. If a lies face down with its back along row 0 we have α.
+If a lies across the shortened face on the floor, with a gap of size k,
+we have α, β, or an inaccessible gap.
+
+In summary, there are no tiling guns with barrel length > 2,
+except perhaps fe70.
+
+	26. Specific piece, fe70.
+
+As far as I know, this shape is unresolved.
+I have tested rectangles up to width 90 with no success,
+nor have I come up with a proof of untilability.
+
