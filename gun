@@ -239,6 +239,7 @@ Let h protrude horizontally from the gap in f.
 If this gap is near the bottom, the back of h creates a thin gap with either g or the x axis.
 So h floats two rows above the x axis, and i tiles 7,0.
 Now h and i conspire to create holes, thus f8c8 doesn't tile anything.
+If you didn't want to prove f8c8 by hand, you could run trec @f8c8.
 This was our last chance at a degenerate gun with a thick end.
 Hereinafter, a degenerate gun has to thin ends.
 
@@ -398,6 +399,7 @@ Let j fill the gap in h at 11,1. If j stands up and closes the gap across g,
 j facing left or right, the gap cannot be filled.
 Thus j points right and interlocks with h.
 As k fills the slot between h and j, it creates a hole or slot with the x axis.
+If you didn't want to prove f8a0 by hand, you could run trec @f8a0.
 That completes the proof.
 Henceforth all blunt guns have either thick ends or short barrels.
 

@@ -391,6 +391,40 @@ Again, the file name is the same as the piece, thus f0e040,
 an octomino with order 246[41x48], has its matrix in the solution file,
 and its picture in pictures/f0e040.png.
 
+At this point it seems my software can only prove a positive -
+this piece tiles a rectangle - but in some cases it can prove a negative.
+If a piece tiles a rectangle it tiles the first quadrant, so try to tile
+the first quadrant, and if you can't, then neither can you tile a rectangle.
+Of course there are plenty of pieces, like c06030, that tile the first quadrant
+but not a rectangle. Those pieces require a formal proof.
+And some pieces, like the cross, 40e040, are obvious,
+because they can't even get started. The quadrant test is for a class of pieces
+that look promising, but get stuck after a few rows.
+Use the at sign for the quadrant test.
+
+trec @f8a0
+
+Failed at diagonal 17.
+
+We start at the lower left and place pieces along diagonals,
+moving out into the first quadrant, until we can't,
+or we reach a predefined limit.
+This piece can't tile the first quadrant out to x+y = 17.
+That's a line drawn from 17,0 to 0,17.
+Thus it can't tile a rectangle.
+Some shapes that yield to this test are:
+
+f8a0
+f8c8
+f0f0f080
+fff8f8
+f8e0e0e0
+f8f8f0
+fffcfcfc
+fef8f8
+ff+ff+e0
+fcfcf0f0f0  (this one goes all the way out to diagonal 55)
+
 You may be wondering about higher dimensions.
 Three dimensional polyominoes are built by pasting unit cubes together.
 Some can be used to tile rectangular boxes; others cannot.
