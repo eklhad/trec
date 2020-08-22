@@ -1,0 +1,116 @@
+	Specific Shape, ff+fcfc
+
+Consider the shape formed by a 9×3 rectangle with a 3×2 rectangle removed.
+It is one of those Oklahoma shapes.
+It is "standing up" or "pointing up" when it is oriented vertically,
+with its pole pointing up.
+
+Verify that this shape cannot lie face down on the floor.
+
+Suppose a points down onto the floor,
+Whence b points right and fills the notch of a.
+Place c in the corner of a and b and note that c must be vertical.
+If c points down then d fills the gap, and extends out over b, and creates another gap that can't be filled.
+Thus c points up, so place d in the corner of b and c.
+Now the notch of b, or the double notch of b and d (if d points down) is unfillable.
+That takes care of a pointing down.
+
+Suppose a points right and b stands in the notch of a and faces left.
+Place c in the notch of b. If c is horizontal there is no way to fill the gap
+of height 4 between a and c. If c stands up we could fill this gap with d and e,
+but then we can't fill the gap between e and c.
+If c points down and faces left,
+it makes a gap of 3, which is filled by d pointing left.
+This creates a gap of 4 to the left of b, which can't be filled.
+Thus c points down into the notch of b and extends beyond b,
+making a gap of height 10 with the floor.
+We could reflect a and b under c,
+but as shown above, we would need a reflection of c as well,
+and that would crash into c. Thus d, to the right of a,
+is not the reflection of a. If d points up,
+and the tab of e fills the gap between d and c,
+we have no way to fill the notch of e.
+If d points down, e wraps around d, f fills
+the notch of d on the floor, and the gap of 4 next to d cannot be filled.
+Thus d points right, leaving a gap of height 7.
+If e lies face up atop d, the notch of d cannot be filled.
+Face down requires f atop e pointing right, then g atop f pointing left.
+The notch of g cannot be filled.
+Clearly e cannot be vertical. That takes care of b facing left.
+
+Suppose a points right and b stands in the notch of a and faces right.
+Place c in the notch of b. If c points down and faces left,
+we have a gap of height 7 to fill. Three horizontal pieces might do the trick,
+but that leaves a gap of width 2 next to c that cannot be filled.
+The only other option is d pointing into b and e standing in the notch of d.
+This forces f to point down into the gap between e and c.
+Now d e f form the same pattern as a b c,
+and this pattern propagates up and to the left forever.
+Therefore c does not point down and face left.
+
+If c points down and faces right, d fills the notch of c and points right,
+extending well beyond b,
+or c could be horizontal,
+or c could stand up.
+This gives a gap of height 7 to fill.
+We can't reflect a and b without crashing into c or d,
+or pointing a piece into the reflection of b, which faces right
+and creates a configuration that we already ruled out on the left.
+The other option, 3 horizontal pieces, e f and g, only works if c stands up.
+This gives a gap of width 2 between c and g that cannot be filled.
+
+Finally let c point down around b, giving a gap of height 4 with the floor.
+Two horizontal pieces fill the gap, and create their own
+gap of height 2 that cannot be filled.
+That takes care of b facing right.
+
+If b points down and faces left, c fills the gap and faces up,
+d fills the gap and faces left, and it continues up and to the left forever.
+
+If b points down and faces right, there is a gap of height 3,
+and when this is filled with c, there is always a gap along the floor.
+
+If a points right, b lies face down in the notch of a, and c,
+the reflection of a, slides under b.
+
+Now move to the lower left corner and assume a points right.
+Let b point towards a on the floor and let c fill the double notch.
+Place d on top of a and assume d points up the left wall.
+We know that e points down onto d and f fills the double notch.
+If f points down, the gap below f cannot be filled,
+regardless of whether c points left or right. Thus f points up.
+If c points left we have a gap of height 5 that cannot be filled.
+Thus c points right, g stands face to face with d,
+and h points down into the notch of g, back to back with f.
+Now the back of g presents a gap of height 8.
+Since this cannot be filled, we conclude that d does not point up.
+
+Nor can d point down.
+Nor can d point left.
+d can only point right, face down, the vertical reflection of a,
+c points right, and e points left into the notch of d.
+
+We might try to stand three pieces on top of d, but the rightmost, call it f,
+faces right, and when we place g in the notch of f, we find a gap of height 5,
+or possibly height 2 if the tab of g slides down the face of f,
+that cannot be filled. Therefore f lies back to back on top of d.
+
+Place g on top of f. If g is horizontal it must lie face down and point right.
+When the double notch is filled by h and i,
+we find exactly the same pattern we saw 6 rows earlier.
+This might continue forever, so assume g puts a stop to it by pointing up the left wall.
+
+Now g h and i make a long complex up the left wall, as described earlier.
+Suppose i points up and j stands face to face with g.
+Let k point down into the notch of j, giving a gap of height 11.
+Put l in the notch of f, but not vertical,
+and not pointing right as the remaining gap of 8 could not be filled.
+l points left, m stands in the notch of l,
+the tab of n fills the gap between m j and k,
+and the notch of n cannot be filled.
+
+j is horizontal, but not face up as the gap between j and f cannot be filled.
+Nor is j face down pointing right.
+j is face down, pointing left, and wrapped around f.
+There is now a gap along g, between j and i, of height 5 or 2,
+that cannot be filled. That completes the proof.
