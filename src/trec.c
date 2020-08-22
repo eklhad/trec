@@ -3140,7 +3140,7 @@ that tile the entire quadrant, but not a rectangle.
 This is not efficient - just simple code.
 *********************************************************************/
 
-#define QBWIDTH 80
+#define QBWIDTH 90
 #define DIAGLIMIT QBWIDTH - REPDIAMETER
 
 static bool qboard[QBWIDTH*QBWIDTH]; /* the quadrant board */
@@ -3239,9 +3239,11 @@ op = o_leftlist;
 for(o=0; o<o_max; ++o, ++op) {
 if(x <= op->x || y <= op->y) continue;
 if(!testQori(loc, o)) continue;
+if(checkBits&SOLVECHECK) printf("%d,%d=%d\n", x, y, op->ono);
 placeQori(loc, o);
 quadAction(x, y);
 unplaceQori(loc, o);
+if(checkBits&SOLVECHECK) printf("%d,%d=x\n", x, y);
 } /* loop over orientations */
 } /* quadAction */
 

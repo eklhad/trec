@@ -1,0 +1,33 @@
+#!/usr/bin/perl
+#  perl script to explain the tiling of the first quadrant.
+#  trec -8 @piece | qexp >quad.out
+
+@location = ();
+@orient = ();
+$l = 0;
+
+while(<>) {
+next unless /^\d/;
+chomp;
+my $a = $_;
+my $b = $_;
+my $i;
+$a =~ s/=.*//;
+$b =~ s/.*=//;
+for($i=0; $i<$l; ++$i) {
+last if $a eq $location[$i];
+}
+if($i < $l) {
+$orient[$i] = $b;
+} else {
+$location[$l] = $a;
+$orient[$l++] = $b;
+}
+}
+
+#  Now print out
+for(my $i = 0; $i < $l; ++$i) {
+my $a = $location[$i];
+my $b = $orient[$i];
+print "$a=$b\n" unless $b eq "x";
+}

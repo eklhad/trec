@@ -1,0 +1,25 @@
+Specific Shape, ff+ff+fcfcfcfc
+
+Consider a 6 by 6 square with a 2 by 3 flagpole sticking up from the top, on one side.
+This shape is "standing up" or "pointing up"
+when it is oriented vertically, with its pole pointing up.
+
+Verify that this shape cannot point down or lie face down on the floor.
+
+Moving to the lower left corner, we may assume that a stands up and faces right.
+If b, to the right of a, is vertical, and faces right, it creates a gap
+of width 4, filled by two pieces pointing down,
+and one of those pieces crashes into the y axis.
+Thus b faces a, creating a gap of width 8.
+Fill this gap with c and d standing back to back, one up and one down.
+Now d points down and faces right, and extends two squares beyond the right edge of b.
+Place e on the floor next to b and note that e must stand up and face right, just like a.
+If f, next to e, faces e, we are merely repeating the pattern established by a and b.
+This could continue forever, so assume f is horizontal.
+In fact it must point right, and g, on the floor next to f, must point left.
+This creates a gap of width 6 that is filled by h.
+If h points left we have a gap of width 7 atop e and f that cannot be filled.
+So h stands up or points right, and we have a gap of width 10 atop e and f.
+This is also unfillable, hence we have reached a contradiction.
+
+The same contradiction appears if b lies down and points right.
