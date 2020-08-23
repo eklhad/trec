@@ -684,13 +684,32 @@ bailout("disk read error, errno %d", errno);
 
 static void ewrite(int fd, const void *buf, unsigned n)
 {
-if((unsigned)write(fd, buf, n) != n)
-bailout("disk write error, errno %d", errno);
+// n is never more than a couple hundred
+int n1 = (signed)n;
+int rc;
+char hold[24];
+top:
+rc = write(fd, buf, n);
+if(rc == n) return; // good write
+if(rc > 0) bailout("disk write error, partial write %d bytes", rc);
+// Disk failure, but we haven't done a partial write. Disk is probably full,
+// you could save the situation by clearing space.
+printf("\nCrap on ice! Disk failure, errno %d.\n\
+If I stop now, all your work at this depth could be lost.\n\
+See if you can fix the problem, then hit return, and I will try again.\n", errno);
+// Don't worry about other threads, all disk access is inside a mutex,
+// so the other threads will queue up behind this one, and not write,
+// and wait for you to hit return.
+fgets(hold, sizeof(hold), stdin);
+// Is the file offset still at the end of the file? Sure hope so.
+// lseek(fd, 0, SEEK_END);
+// This has not been tested yet. I think you can guess why I wrote it.
+goto top;
 } /* ewrite */
 
 static void elseek(int fd, long offset)
 {
-if(lseek(fd, offset, 0) < 0)
+if(lseek(fd, offset, SEEK_SET) < 0)
 bailout("disk seek error, errno %d", errno);
 } /* elseek */
 
@@ -2589,7 +2608,7 @@ flags = O_RDWR|O_BINARY;
 *xptr = 'A' + i;
 fd[i] = open(filename, flags, 0666);
 if(fd[i] < 0) bailout("cannot reopen data file, errno %d", errno);
-l = lseek(fd[i], 0, 2);
+l = lseek(fd[i], 0, SEEK_END);
 if(l%nodeSize) bailout("data file has bad length %ld", l);
 nodesDisk += l/nodeSize;
 } /* loop over files */
