@@ -684,23 +684,24 @@ bailout("disk read error, errno %d", errno);
 
 static void ewrite(int fd, const void *buf, unsigned n)
 {
-// n is never more than a couple hundred
-int n1 = (signed)n;
+const char *s = buf;
 int rc;
 char hold[24];
 top:
-rc = write(fd, buf, n);
-if(rc == n) return; // good write
-if(rc > 0) bailout("disk write error, partial write %d bytes", rc);
-// Disk failure, but we haven't done a partial write. Disk is probably full,
+rc = write(fd, s, n);
+if(rc == (signed)n) return; // good write
+// Disk failure, disk is probably full,
 // you could save the situation by clearing space.
+if(rc > 0) n -= rc, s += rc;
 printf("\nCrap on ice! Disk failure, errno %d.\n\
 If I stop now, all your work at this depth could be lost.\n\
-See if you can fix the problem, then hit return, and I will try again.\n", errno);
+See if you can fix the problem, then hit return, and I will try again.\n\
+Or type x and I will exit, and it's game over.\n", errno);
 // Don't worry about other threads, all disk access is inside a mutex,
 // so the other threads will queue up behind this one, and not write,
 // and wait for you to hit return.
-fgets(hold, sizeof(hold), stdin);
+if(!fgets(hold, sizeof(hold), stdin) ||
+hold[0] == 'x') exit(2);
 // Is the file offset still at the end of the file? Sure hope so.
 // lseek(fd, 0, SEEK_END);
 // This has not been tested yet. I think you can guess why I wrote it.
