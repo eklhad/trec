@@ -113,4 +113,6 @@ j is horizontal, but not face up as the gap between j and f cannot be filled.
 Nor is j face down pointing right.
 j is face down, pointing left, and wrapped around f.
 There is now a gap along g, between j and i, of height 5 or 2,
-that cannot be filled. That completes the proof.
+that cannot be filled.
+
+That completes the proof.

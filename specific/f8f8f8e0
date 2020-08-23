@@ -1,0 +1,121 @@
+	Specific Shape, f8f8f8e0
+
+Consider the shape formed by a 5×4 rectangle with a 2×1 rectangle removed.
+
+Verify that this shape cannot point down or lie face down on the floor.
+
+If a, on the floor, faces right, b, next to a, must point towards a, and c,
+in the resulting gap, interlocks with either a or b.
+However, if a points right, b faces or points left, with c in the resulting gap.
+Thus pieces on the floor are grouped into pairs that face or point towards each other.
+Call these pairs, and the pieces just above them, complexes.
+
+The small complex, of width 9, is said to face left or right,
+depending on the orientation of a. A large complex, of width 10,
+faces left or right according to the orientation of c in the a-b gap.
+
+Put two large complexes next to each other.
+This produces a troublesome gap of width 6 and height at least 2.
+This can only be filled with two pieces pointing down, back to back.
+Adjacent large complexes face each other, and are reflections of each other.
+
+Put a small complex to the right of a large complex, facing the large complex.
+If f, in the gap of the small complex, faces right,
+We have a gap of width 6, but this time it can't be filled.
+Let f and d interlock.
+This gives a gap of 4, and g stands up in this gap.
+g stands one level higher than c.
+g and c must stand back to back.
+Put h in the notch of c.
+However you do it, there is a gap above c between h and g that cannot be filled.
+A small complex cannot face a large complex.
+
+Let a start a large complex facing right.
+Put j in the corner of b and c.
+j cannot point right, nor face right, nor point left.
+j can only face left, point down, and interlock with c.
+We can automatically add this piece to a large complex.
+
+Put k in the corner of a and c.
+If k is horizontal, or stands up, this complex can't be next to the left wall,
+nor can it have a small complex facing it (as shown earlier),
+nor a small complex facing away,
+nor can it have a large compmlex on its left, as that produces a gap of width 1 or 2.
+If k points down we have a gap of height 6 down to the floor,
+and no way to fill that.
+So k points left and lies face down on a.
+We can automatically add this piece to a large complex.
+This implies a small complex to the left of a, facing left.
+If this complex is d e f, f points down and interlocks with d, thus meeting k.
+
+Let a start a small complex facing right.
+Suppose c points right, interlocking with b.
+Put d on the floor next to b.
+d cannot be vertical, nor can it point left, thus it points right.
+Put j in the corner of b and c.
+j cannot be horizontal, as that makes a gap of one square with d.
+If j points down and faces right it creates a gap of height 2.
+Therefore j stands up.
+If j faces right, d cannot initiate a large or small complex on the floor.
+There are always gaps next to j that can't be filled.
+Thus j faces left.
+We can automatically add this piece to a small complex,
+whenever the central piece lies face down.
+
+But there's more.
+d can't start a large complex, with the small complex facing it,
+so it starts a small complex facing left.
+This is a d e f complex where f points down and interlocks with e, and,
+j and f are back to back.
+The two complexes face each other.
+This happens whenever the central piece of a small complex lies face down.
+We can always fill in the other small complex.
+
+Conversely, if two small complexes face each other, the central pieces cannot
+both point down and face away from each other.
+If they do, there is a troublesome gap of width 6 that can't be filled.
+Instead, they look like a b c and d e f above, with j filling the gap.
+
+Let a start a small complex facing right.
+Suppose c faces left, interlocking with a.
+This complex cannot sit against the left wall, or the right wall.
+Put g in the corner of b and c.
+If g points down we have a gap of height 6.
+If g is face down then a new small complex begins under g,
+facing right, to the right of the first complex.
+If this is d e f, then f faces left and interlocks with d.
+This is a translate of a b c.
+This establishes a train of small complexes facing right.
+The train builds a flat line at level 8.
+Since the train cannot run into the right wall, it must stop eventually.
+If g is face up, or stands up, it implies either a large complex to the right,
+which is impossible, or a small complex facing left.
+By the above paragraph, the central piece points left.
+g is now the automatic piece that comes in; it stands up and faces right.
+This establishes a train of small complexes facing right, capped by a small complex facing left.
+Before this train we might have a large complex facing away from the train,
+and remember that a large complex implies such a train.
+We could also have another train going the same direction, a train of trains,
+or a train going the other way.
+
+Most complexes cannot sit next to the right wall.
+Only the large complex facing right,
+or the end of a train heading right.
+
+Put the large complex against the wall.
+If you turn your head, this is a train going down the wall, with small complexes facing down, and then this corner is a small complex facing up to end the train.
+The automatic piece j comes in above c.
+It lies face down atop c and juts 2 squares to the left.
+k lies in the corner of a and c, pointing left, and forces a train to the left.
+Bad news, there is a slot of height 1 between j and k that cannot be filled.
+A large complex does not touch the right wall.
+
+Put the end of a train heading right against the right wall.
+This implies a large complex against the right wall, facing down into the corner.
+This has already been ruled out.
+
+That completes the proof.
+
+I don't know why trec @f8f8f8e0 didn't take care of this, but it seems to run
+forever. Granted, it's not efficient, not optimized, but stil...
+Seems like by diagonal 20 or so it should discover this problem in the corner.

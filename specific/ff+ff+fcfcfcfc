@@ -23,3 +23,5 @@ So h stands up or points right, and we have a gap of width 10 atop e and f.
 This is also unfillable, hence we have reached a contradiction.
 
 The same contradiction appears if b lies down and points right.
+
+That completes the proof.
