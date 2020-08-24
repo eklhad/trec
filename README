@@ -307,6 +307,12 @@ of lesser widths without looking for solutions of a larger order.
 h is a help message.
 Anything else and it just says what, then resumes.
 
+You can run this program in the background, redirecting its output to a file,
+and that's fine; you just don't have the interactive features.
+It ignores SIGHUP, so you can close your connection and walk away and check in
+every now and then; and it responds properly to SIGTERM, shutting down in a
+graceful manner, so it can restart later.
+
 The directory dotile must exist for this program to run.
 It will create dotile/f840,
 and store data files and solutions in this subdirectory.
@@ -318,6 +324,7 @@ There may be several solution files, as trec finds ever smaller tilings.
 I don't include a dotile directory in this project, because you may want to
 clone it, and then create a symbolic link through dotile to another
 file system with more disk space available.
+Thus dotile is in .gitignore.
 With your dotile in place, trec f840 produces the following output.
 
 ;f840

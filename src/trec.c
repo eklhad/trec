@@ -2516,11 +2516,8 @@ Thus computeHash() may reverse your pattern - and we want that!
 As always, the hash has about 10% slop.
 If we allow 40 meganodes, we might have an array of 45 million hash indexes.
 The hash value leads to a long.
-The bottom 28 bits determine the corresponding node on disk.
-Thus we can store 2^28 nodes on disk. That is a hard limit on nodes.
-The next 3 bits are a confirmation of the hash value for this pattern.
-If that doesn't match, then don't bother reading the node from disk,
-because the hash isn't right.
+The bottom 31 bits determine the corresponding node on disk.
+Thus we can store 2^31 nodes on disk. That is a hard limit on nodes.
 The high bit, or sign bit, is an old indicator, as in markOldNode().
 The node is at a lower depth, and will not participate in a solution at curDepth.
 If a new node comes in at the same hash value, we can displace the old node.
@@ -2715,19 +2712,18 @@ hb = hashIdx + n;
 while(true) {
 idx = *hb;
 if(!idx) break;
-if((idx^hash)&0x70000000) goto nextnode;
-idx &= 0x0fffffff;
+idx &= 0x7fffffff;
 readNode(idx, &redest);
 if(redest.hash != hash) goto nextnode;
 if(memcmp(redest.pattern, rebuf.pattern, curWidth)) goto nextnode;
-if(rebuf.depth < redest.depth) *hb = j | (hash&0x70000000);
+if(rebuf.depth < redest.depth) *hb = j;
 goto nextDisk;
 nextnode:
 ++n, ++hb;
 if(n == slopNodes) n = 0, hb = hashIdx;
 }
 
-*hb = j | (hash&0x70000000);
+*hb = j;
 
 if(++nodesCache >= maxNodes)
 bailout("cannot recache at level %d", megaNodes);
@@ -2758,8 +2754,6 @@ if(!insert) goto nextnode;
 idx &= 0x7fffffff;
 }
 
-if((idx^hash)&0x70000000) goto nextnode;
-idx &= 0x0fffffff;
 readNode(idx, dest);
 if(dest->hash != hash) goto nextnode;
 if(memcmp(dest->pattern, look->pattern, curWidth)) goto nextnode;
@@ -2782,7 +2776,7 @@ if(j > reachup) reachup = j;
 
 if(checkBits&NODECHECK) printf("insert %ld\n", n);
 
-if(nodesDisk >= (1<<28)) bailout("too many nodes, limit 268 million", 0);
+if(nodesDisk >= 2000000000) bailout("too many nodes, limit 2 billion", 0);
 if(nodesDisk/60 >= nodesInFile)
 bailout("too many nodes for 60 data files on disk", 0);
 look->hash = hash;
@@ -2790,7 +2784,7 @@ writeNode(nodesDisk, look);
 
 if(empty >= 0) n = empty;
 hb = hashIdx + n;
-*hb = nodesDisk | (hash&0x70000000);
+*hb = nodesDisk;
 ++nodesDisk;
 ++nodesPending;
 if(++nodesCache >= maxNodes) {
@@ -2825,7 +2819,7 @@ hb = hashIdx + n;
 while(true) {
 idx = *hb;
 if(!idx) break;
-if((idx&0x0fffffff) == jdx) {
+if((idx&0x7fffffff) == jdx) {
 *hb |= 0x80000000;
 --nodesCache;
 return; /* found it */
