@@ -318,17 +318,10 @@ in millions of nodes, that will be maintained in cache.
 You can specify up to 400 million nodes,
 but that chews up 2 gig of ram in a linear array.
 Basically, multiply the number by 4.5 meg for ram consumed.
-If the cache overflows, this program increases the cache by 12 million and tries again.
-You only want to rely on this racaching as a last resort.
-Perhaps you have invested several days of cycles,
-and being almost done with that width, we can expand and finish it off.
-But it's not efficient, especialy if you use it at the outset.
-If you start small and grow, you'll be forgetting past nodes all along the way,
-because the cache will always be (almost) full.
-And you'll be rediscovering and reprocessing these nodes again and again.
-If you think you'll need a cache of 50 million,
-and you know your disk starts to thrash at 40 million, set this value to 40,
-and put up with the disk thrashing near the end.
+If the cache overflows, this program stops, gracefully.
+You want to restart it with a higher cache, as per your computer's resources.
+It's probably best to start with the highest cache you expect to need,
+because the resume process is not efficient.
 
 The fifth line sets the number of worker threads.
 Use 0 to do all calculations in the foreground.
@@ -704,7 +697,6 @@ if(!fgets(hold, sizeof(hold), stdin) ||
 hold[0] == 'x') exit(2);
 // Is the file offset still at the end of the file? Sure hope so.
 // lseek(fd, 0, SEEK_END);
-// This has not been tested yet. I think you can guess why I wrote it.
 goto top;
 } /* ewrite */
 
@@ -2683,9 +2675,7 @@ Look up nodes by hash.
 Insert new nodes if they're not already present.
 *********************************************************************/
 
-/* Recache all the active nodes - either because we are growing the cache,
- * or because we had to restart the program.
- * On blacky, recache 200 million nodes takes 16 hours. */
+// Recache all the active nodes - as part of resumption.
 static void recache(void)
 {
 static struct NODE rebuf, redest; /* for recaching */
@@ -2776,7 +2766,7 @@ if(j > reachup) reachup = j;
 
 if(checkBits&NODECHECK) printf("insert %ld\n", n);
 
-if(nodesDisk >= 2000000000) bailout("too many nodes, limit 2 billion", 0);
+if(nodesDisk >= 2140000000) bailout("too many nodes, limit 2 billion", 0);
 if(nodesDisk/60 >= nodesInFile)
 bailout("too many nodes for 60 data files on disk", 0);
 look->hash = hash;
@@ -2787,20 +2777,11 @@ hb = hashIdx + n;
 *hb = nodesDisk;
 ++nodesDisk;
 ++nodesPending;
-if(++nodesCache >= maxNodes) {
-/* Cache overflow -- increase the cache */
-printf(" ^");
-free(hashIdx);
-megaNodes += 12;
-maxNodes = megaNodes * 0x100000;
-slopNodes = maxNodes / 8 * 9;
-/* Thanks to virtual memory and swap partitions, the recaching
- * will probably work.  However, if hashIdx approaches the size of your Ram,
- * Your disk will really start to thrash,
- * and your performance goes down the toilet! */
-recache();
-printf("%d", megaNodes);
-} /* recaching */
+if(++nodesCache >= maxNodes && !inTerm) {
+printf("\ncache overflow; you will have to restart with a higher cache.\n%d@%d^%d\n",
+curWidth, curDepth, megaNodes);
+inTerm = 1;
+}
 
 j = nodesCache / (maxNodes/10);
 if(j == 10) j = 9;

@@ -935,7 +935,7 @@ except perhaps fe70.
 	26. Specific piece, fe70.
 
 As far as I know, this shape is unresolved.
-I have tested rectangles up to width 90 with no success,
+I have tested rectangles up to width 85 with no success,
 nor have I come up with a proof of untilability.
 
 	27. Sets.

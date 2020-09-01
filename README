@@ -169,11 +169,18 @@ and the last thing you saw was @27, indicating a depth of 27,
 put  40@27  in the second line of the config file.
 This resumes the program at width 40, depth 27,
 using the files that were present when the program stopped earlier.
-This should work if the program stopped because of SIGTERM, SIGQUIT,
+Don't panic if you specify the wrong depth; trec will tell you
+what the depth should be and then exit.
+But if you don't remember the board width it could really get confused.
+Resumption should work if the program stopped because of SIGTERM, SIGQUIT,
 or q at the interactive menu. Proper resumption is not guaranteed after a power
 failure or system crash, or resource exhaustion
 (e.g. lack of disk space) that could result in a partial write.
-So keep an eye on your disk and your ram.
+So keep an eye on your disk and your ram, and put a UPS
+behind your computer, so you can shut down gracefully upon power failure.
+I wrote some code to stop if you run out of disk space, and wait for you to hit
+return, assuming you can find a way to free up some space.
+This is the only way to continue and recover, if you run into that wall.
 
 The letter a means allcheck, so 54a will look for solutions
 even if the rectangle is wider than it is tall.
@@ -192,11 +199,10 @@ in millions of nodes, that will be maintained in cache.
 You can specify up to 400 million nodes,
 but that chews up 2 gig of ram in a linear array.
 Basically, multiply the number by 4.5 meg for ram consumed.
-If the cache overflows, trec increases the cache by 12 million and tries again.
-You only want to rely on this racaching as a last resort however.
-If your first guess is obviously low, stop the program and start it again
-with a significantly higher cache, rather than letting the program
-racache again and again.
+If the cache overflows, this program stops, gracefully.
+You want to restart it with a higher cache, as per your computer's resources.
+It's probably best to start with the highest cache you expect to need,
+because the resume process, building the cache from scratch, is not efficient.
 
 The fifth line sets the number of worker threads.
 Use 0 to do all calculations in the foreground.
@@ -430,8 +436,18 @@ f8f8f0
 fffcfcfc
 fef8f8
 ff+ff+e0
+ff+ff+ff+fcfc
+ff+ff+ff+fc
 f08080
+fefef0f0f0f0
+fcfcf0
 fcfcf0f0f0  (this one goes all the way out to diagonal 55)
+
+treck can't tile rectangles with polyominoes more than 9 squares across,
+however, the first quadrant diagonal test can handle pieces 16 squares across.
+At least I think it can, I should read through the code again and test it.
+trec @ff{c0}ff{c0}ff{c0}ff{c0}ff
+failed at diagonal 14
 
 You may be wondering about higher dimensions.
 Three dimensional polyominoes are built by pasting unit cubes together.
