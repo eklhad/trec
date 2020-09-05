@@ -1,0 +1,1302 @@
+		The L Theorem
+
+An L polyomino is a rectangle with a rectangular notch removed from one corner.
+When oriented properly, these resemble the capital letter L,
+a large rectangle with a smaller rectangle removed from the upper right.
+More often we orient the polyomino so that it lies on its back,
+with its foot sticking up. We refer to this polyomino as "lying on its back",
+or "face up".
+
+Let the L polyomino have width w and height h, where w >= h.
+Remove a y×z rectangle from the upper right corner.
+This shape is said to be "lying on its back",
+because it is oriented horizontally.
+Rotate it 90° counter clockwise and it is "standing up", or "pointing up".
+
+With 4 variables, we need 3 equations to establish the shape. As we place
+pieces on the board, we often establish three equations, and thus the shape.
+Sometimes an inequality will do the trick,
+depending on the section we are in.
+You need to keep track of the equations and inequalities that are in force.
+
+	1. L polyominoes of order 2.
+
+If z is half of h or y is half of w, the polyomino has order two.
+Henceforth we shall assume z is not half of h and y is not half of w.
+
+	2. Pieces never lie face down on the floor.
+
+If piece a lies face down on the floor, its tab pointing right,
+and piece b is immediately to the right of a,
+b cannot place its base or back against a,
+else the notch of a is permanently isolated.
+
+If b is the 180° rotation of a, it cannot slide its tab under the tab of a
+(z < h/2), or the two tabs leave a thin gap (z > h/2).
+So the face of b slides under the tab of a.
+
+If there are no gaps anywhere, y = z and z = w-y, hence w = 2y.
+This contradicts {1}, so there must be a gap between the tab of a and the notch of b.
+This means z = w - y and z > y. In other words, z + y = w, and z is the larger.
+z is more than half of w and certainly more than half of h.
+With h > z, h is more than half of w. Our shape is not long and skinny.
+
+Only the tab of a piece can fit into the resulting a-b gap of width z-y.
+h, w, and w-y are too large.
+
+Let the tab of c fill the corner of a and b.
+If c faces left over a, we have a gap of height y - (h-z), or y + z - h, or w - h.
+This is smaller than w, and with h more than half of w it is smaller than h.
+With h > z > y it is smaller than w-y.
+We might try to slide the tab of d between a and c,
+but d would lie face up on top of a, the two pieces back to back,
+and the tab of d would have to be at least z, to reach c,
+but the tab has length y, and z > y.
+Therefore a tab cannot slide in between a and c, and there is no gap.
+y = h-z, and w = h.
+We are dealing with a shape bounded by a square.
+
+If c completely fills the gap above b, z-y = h-z = w-z = y, and the shape is established,
+a 3×3 square minus a 1×2 rectangle. This has order 28.
+If c and d both point their tabs down into the notch of b,
+z-y = 2(h-z) = 2y,
+and the shape is established, a 4×4 square minus a 1times3 rectangle.
+This is ruled out by trec @f0f0f080.
+
+Finally let c face right. Since d cannot stand next to c facing left,
+c fills the gap entirely, giving z - y = h - z, or h + y = 2z.
+Now c hangs z-(h-z) squares beyond b. This is y squares beyond b.
+Put d on the floor beneath c, and assume d points right. This gives a gap of height w-h.
+We dealt with the square shape, w = h, in the last paragraph, giving e0c0c0,
+so this gap is real, and must be filled.
+Since h is more than half of w it is too large.
+w-y > w-z > w-h, so w-y won't fit.
+Only a tab can fit, and it must fit precisely, giving 2h-z = w, or 2h = 2z + y.
+Combine this with h + y = 2z and find the shape, a 5×4 rectangle minus a 2×3 rectangle.
+This is ruled out by trec @f8e0e0e0.
+
+If d faces b there is a gap between b d and c that can't be filled.
+If d points toward b, and e fits in the corner of b and d,
+e and d can't interlock, as that would give a piece of order 2, or create holes.
+e faces b, giving h-z + w-y = w.
+This reduces to h = w, which we dealt with.
+Therefore d stands back-to-back against b.
+
+Verify that d cannot point down; its notch could not be completely filled by e.
+h > z > y, so e can't point right.
+If e points left then h-z = y, or h = w, which is the square again.
+Thus d stands up, the reflection of b.
+
+If c is flush with the tab of d, then 2(h-z) = z, or 2h = 3z.
+Combine this with h + y = 2z and find e0c0c0 again.
+
+If c extends beyond the tab of d, we have a gap of height y to fill.
+w and h don't work, and w-y yields order 2.
+Thus h-z = y, and we have the square again.
+
+Thus c does not reach the edge of d.
+Place e in the corner of c and d,
+and note that e cannot point down and wrap around d, as z is more than half of h, and more than h-z.
+Neither can e point to c and wrap around d, as y is more than h-z.
+e must not extend past the right of d, else we have a gap of height y, as described in the last paragraph.
+The tab presents the smallest edge, of length h-z,
+and that is the same as the top of d, so would be pushed to the right by c.
+
+Henceforth we can assume that a piece never lies face down on the floor,
+or faces the left or right wall.
+
+	3. Square pieces never point down onto the floor.
+
+The only requirement in {2} is that w >= h,
+so redefine the roles of h and w, and the piece is lying face down on the floor,
+which we already analyzed.
+
+	4. Pieces cannot point down on the floor when y < h.
+
+Let a point down onto the floor,
+and clearly, b cannot put its blunt end under a.
+b cannot slide its face into the notch of a,
+else the shape has order 2.
+Thus b points into a.
+We may also assume w > h by {3}.
+
+b has to fill the notch of a, thus h-z = y.
+
+If there is no gap between a and b at level y,
+y = z, and h = 2z, giving a shape of order 2.
+So we have a gap of width y-z in the notch of b.
+This puts z < y < h.
+
+Place c in the corner of a and b.
+This must be the face or tab of c.
+Suppose c lies face down and points left, extending over the top of a.
+If z = w - y then we have a square (h=w).
+If z > w - y then z > h - y, yet z = h - y.
+Therefore c points right, and completely fills the a-b gap,
+giving w - y = y - z.
+This is a b c interlock,
+where c extends z squares beyond b.
+Put d on the floor below c.
+If d faces left it must fit exactly, giving w - y = h.
+Yet w - y = y - z, so h = y - z, which contradicts y < h.
+Instead, d must lie down and point right.
+We already know z + y = h, hence z < w - y. Thus c does not reach the notch of d.
+Place e in the corner of c and d.
+If e extends beyond the face of d we have a gap of height z, between d and e,
+that cannot be filled by f without crashing into e or creating holes with d or with the floor.
+e can't point down and wrap around d, since z < y.
+e can't lie face down and point left and interlock with d, because e would crash into c. We already saw that the tabs extend outward from such an interlock.
+Therefore, c cannot lie face down atop b.
+
+We now know that c points down onto b.
+If c faces right, its tab fills the entire gap, giving y - z = h - z, or y = h.
+So c faces left, d stands back-to-back against c, and 2(h-z) = y-z.
+this implies 2h = y  +  z, yet y + z is h.
+That takes care of c, and b, hence a cannot point down.
+
+	5. Small notch: y < h/2 and z < h/2.
+
+Suppose our shape has a small notch, y and z are both less than half of h.
+Let a tile the origin - the lower left corner of the tiled rectangle.
+By {4}, its back must be placed against the floor or the left wall.
+We can always reflect the tiled rectangle, so assume a lies on its back,
+its notch at the upper right. piece b,
+immediately to the right of a on the floor,
+cannot place its back or base against a, else the notch cannot be filled.
+
+Suppose b stands up and faces left.
+If the two notches do not coincide in height,
+one or the other will create a gap that cannot be filled. Thus h - z = w - y.
+It is possible that w = h and y = z,
+but this square in a square will be handled in the next paragraph.
+For now, assume w > h, hence y > z. This is illustrated by a 8×7 rectangle
+with a 3×2 notch removed. The a-b gap has width y + z,
+which is strictly less than h. It must be filled by a tab of width w-y or h-z (same thing).
+Assume c lies on top of a, and the two are 180° rotations of each other.
+We say that a and c are "interlocked".
+A rectangular space now exists between c and the left wall, just above a.
+Its width is w - 2y and its height is h - z.
+Rewrite w - 2y as h-z - y, a width considerably smaller than h,
+and even smaller than the tab h-z. Nothing can fill this space.
+Thus c stands up, with its tab pointing down into the a-b gap.
+If c faces left there is a gap between a and the overhang of c,
+having height y-z. This is clearly unfillable, unless y = z (no gap),
+but we're assuming y > z, so let's move on.
+Let c face right and interlock with b.
+The rectangular space between c and the left wall now has width w - y and height w - z.
+A tab of width w - y can indeed slide into this space,
+but in order to reach all the way down to a, w - z must be <= y or z.
+If y+z is at least w then y+z exceeds h, which contradicts (y and z) < h/2.
+Thus b does not stand up next to a.
+
+Since b does not stand up next to a, it must lie down on the flor,
+the horizontal reflection of a.
+This presents a 2y×z gap which will be filled by the face or tab of c.
+Suppose c is horizontal, hence 2y = w - y, or w = 3y.
+If c points left then the space between c and the left wall has width y,
+and cannot be filled. If c points right then this space has width 2y,
+just like the a-b gap. Since 2y < h,
+only a tab or face can slide into this space.
+Yet the space has height h - z, which is longer than y or z.
+
+Now c points down, its tab filling the double notch.
+This implies 2y = h - z. The vertical gap between c and (a or b)
+has height y - z, which implies y >= z.
+Nothing fits into a gap of height y, much less y-z, so y equals z.
+Combined with the last equation, y = z = h/3. That is, h = 3z.
+If w = h, a situation that was postponed before, we have established the shape,
+a 3×3 square minus a 1×1 square.
+This is ruled out by trec @e0e0c0, hence w > h.
+
+Place d on top of a, at the left wall, in the gap of width w - y - z and height w - y.
+Since y and z are both smaller than w - y, d cannot point down or face down
+without crashing into c or creating an unfillable gap.
+d stands up and faces right.
+Any other pieces between d and c must also stand up.
+If there is an adjacent piece e with its back to d,
+the d-e gap can only be filled with the tab of f,
+as w - y > h - z, (remembering w > h and y = z),
+and f creates holes against the left wall.
+e faces d,
+creating a double notch that is filled by f.
+d and e mean w is at least 2h + z, so w - y is at least 2h.
+The face of f won't fit in this gap.
+Nor two tabs, since h-z is more than half of h.
+Put the tab of f in this d-e gap.
+If f faces left the space between f and the left wall, h - 2z = z,
+is too small. If f faces right the gap is h-z,
+so the tab of g might slide in, but then y >= w - y, which contradicts 2y < h.
+Thus d is the lone vertical piece.
+
+If c faces left then w - y = h + z, or w = h + 2y.
+This establishes the shape, a 5×3 rectangle minus a 1×1 square,
+which is handled as a separate theorem f8f8f8e0.
+Thus c faces right, and w-y = h. This establishes the shape,
+a 4×3 rectangle minus a 1×1 square. This polyomino has order 50.
+That completes the analysis of the small notch, with (y and z) < h/2.
+
+	6. Tall thin notch: y < h/2 and z > h/2.
+
+Thanks to {2} and {4}, a lies on the floor, its notch at the upper right.
+Put b on the floor next to a.
+If b has its back to a, or its left end to a, that tall thin notch can't be filled.
+Tab is not long enough; face is too wide.
+Suppose b is the reflection of a,
+and presents a double notch that will be filled by c.
+Unfortunately the tab of c isn't long enough to do the job.
+But c might lie face down, if 2y = w - y. That is, w = 3y.
+If c points left then the space between c and the left wall has width y,
+which can only be filled if h - z = y.
+Slide d into this slot, facing right,
+and let e fill the corner created by c and d,
+having width w-z and height 2y.
+
+If e points up we must compare w - z and h (which is y+z).
+Sinze z > y, 3y - z < y + z.
+Thus e extends beyond c, over b, producing a gap of height h-z.
+An even longer gap is produced if e lies on its back.
+Let f slide its tab between e and b.
+We can't afford any gaps between e and f, so w - z + y is either w or h.
+The former forces y = z (contrary to our assumptions),
+and the latter implies 4y = h+z = y+z+z, or 3y = 2z.
+This establishes the shape, a 6×5 rectangle minus a 2×3 rectangle,
+which is ruled out by trec @fcfcf0f0f0.
+
+If e points down into the c-d corner, and its tab does not cover all of c,
+we find a ((w-z)-(h-z))×y gap.
+If w = h we find the now-familiar shape e0e080 of order 28.
+With w > h we have a gap to fill.
+Even if f could fill this gap with its tab,
+lying face down, it would crash into b.
+
+Next, e might point down and face d, wrapping around c, whence w - z = z.
+Thus 2z = 3y, building the same shape we saw before, fcfcf0f0f0.
+
+That brings us to the last orientation of e, lying face down.
+Since w - y > w - z, e still extends beyond c.
+Once again we ask the tab of f to slide under without gaps,
+forcing w-z + y = w-y, or 2y = z. This gives our order 28 shape again.
+That takes care of c pointing left.
+
+Next let c point right. Since 2y < h,
+d places its face or tab in the gap above a.
+If its tab is down, then 2y = h-z, and the tab cannot reach all the way down to a.
+So d is the vertical reflection of a.
+Let e fill the gap between c and the tab of d.
+Thus 2z-h is either 2y or h-z.
+Assume the former, hence z-y is half of h.
+The gap between the tabs of d and e is z-y, or half of h.
+Since 3y is at least h, 2y is more than half of h,
+so let the tab of f fill the corner of d and e.
+If f faces left we can't afford a gap between d and f, hence y = h-z.
+This makes y ¼ of h and z ¾ of h, whence 3y < h, hence w < h,
+which is impossible.
+Thus f faces right and its tab fills the entire gap,
+hence h-z = h/2, giving a shape of order 2.
+
+Therefore e lies on its back across c, and 2z - h = h-z, or z = 2h/3.
+Remember that y is at least h/3, else h < w.
+If y is exactly h/3 we create a shape we've seen before, of order 28,
+so assume y > h/3. Remember that y < h/2.
+If f, above d, points up,
+we have a gap of width w-h = 3y-h, which is smaller than y.
+If filled by the tab of g, we have 3y = 4h/3, or 9y = 4h.
+This establishes the shape, a 12×9 rectangle minus a 4×6 rectangle.
+It also produces a thin gap of height 1 between e and g that cannot be filled.
+Therefore, f lies back-to-back atop d.
+
+f can't point left because of its tall thin gap, so f points right.
+Place g above f.
+If g stands up or lies on its back we have a gap of height z.
+2y is too large, and h-z is too small,
+so g is the vertical reflection of f. The double notch has height 2z.
+If h stands up in this double notch we will not be able to fill the notch of
+h, because of the tab of g, which is longer than h-z.
+Nor can h face left, because 2y < 2z.
+We must fill the double notch with two horizontal pieces,
+reaffirming 2z = h + h-z. Once h and i are placed,
+i extends above the top surface of g.
+This is exactly the same pattern we saw 2h rows below.
+By induction, pieces climb up the left wall forever.
+That completes the case of b lying down and pointing towards a.
+
+At this point b stands up and faces left.
+Note that w-y >= h-y > h-z, so the notch of a is lower,
+and must be filled first. Since w-y > y,
+only the thin tab of c can fill the notch of a. In fact c and b interlock.
+Thus y = h-z. Also, h-z + y = w-y, or w = 3y.
+z can't be more than twice y, else h > w.
+z is greater than y by the assumptions of this section.
+When z = 2y we find e0e0c0 again.
+Thus z is strictly between y and 2y.
+That puts y between h/3 and h/2.
+
+Piece d filss the space between c and the left wall, just above a.
+h-z is smaller than 2y, and leavs a gap,
+so pieces d and a are vertical reflections.
+This gives a gap between c and the tab of d of height 2z-3y.
+If there is no gap, we have 2z = 3y.
+This establishes the shape, fcfcf0f0f0, which we saw before.
+So there is a real gap, filled by the tab of e.
+If 2z-3y = h-z = y, then z is twice y, which has already been handled.
+This completes the case of b standing up.
+
+When this result is combined with {5}, we can assume, hereinafter,
+that y is at least h/2.
+
+	7. y = h/2.
+
+Assume w > h, else the shape has order 2.
+That means w-y > y.
+We can't put the face of a shape in a gap of width y.
+
+Remember that {2} and {4} rule out certain orientations.
+Let a lie on the floor and point right.
+Put b on the floor next to a.
+If b has its back or left end next to a, there is a y by z gap to fill.
+Even if b faces a, we still have a gap of width y to fill.
+Only the tab of c might fit into this gap.
+If two tabs, then 2(h-z) = h/2, or 3h = 4z.
+Now the tab of c isn't long enough to reach down into the notch of a.
+If one tab, then h-z = h/2, or h = 2z. This has order 2.
+
+b is the reflection of a, and presents a double notch of size h×z.
+Suppose c fills this double notch, or at least the left side of it,
+by lying face down, whence w - y <= h.
+Equivalently, w - h <= y.
+If c points left then the space between c and the left wall has width w-2y = w-h <= y.
+The tab of d must precisely fill this gap.
+To reach down to a, y is at least h - z, thus z >= h/2.
+In fact z > h/2.
+There is a gap of height z-y between d and c.
+The tab of e isn't long enough to reach the notch of d.
+
+Therefore, c points right, and w-y is precisely h.
+Our shape is a square with a tab attached.
+The space between c and the left wall now has width h, the side of the square.
+If d fills this space, and is the vertical reflection of a,
+there must be a gap between c and the tab of d, (since z cannot be half of h).
+This gap has height 2z-h, which forces z > h/2.
+The gap is filled by the tab of e, hence 2z-h = h-z, or 3z = 2h.
+This establishes the shape, a 9×6 rectangle minus a 3×4 notch.
+See theorems/ff+ff+fcfcfcfc.
+
+If we still want c to point right, d must point up the left wall.
+Let e fill the corner of c and d.
+If e presents a flat side, any side, against d,
+the notch of d cannot be filled.
+A piece pointing down into this notch crashes into the left wall or leaves a tall thin gap with the left wall.
+If e lies face down and points left,
+if will perfectly wrap around d. This because h+z = h+z.
+Tabs must not collide, so z > h/2.
+This leaves a gap between d and e and once again a piece points its tab
+down into the notch of d, and crashes into the left wall
+or leaves a gap with the left wall.
+
+Finally e lies back-to-back atop c, and points towards d.
+If d and e are flush then z is half of h, which gives an order of 2.
+Since the pieces are not flush, we have a gap above d or e,
+of width z or y respectively, that cannot be filled.
+That's it for e, and d, and c lying face down.
+
+Since w > h, c cannot lie on its back inside the double notch,
+and we can't fit two downward tabs precisely in the double notch (z would be half of h),
+and one tab doesn't fill the entire gap,
+so c stands up.
+Where is the notch of c, relative to the height of a and b?
+If the notch is lower than h, we have w-y + h-z < h, or y+z > w.
+Thus y+z > h and z is bigger than y.
+Piece d could lie face down in the notch of c, pointing over the tab of c -
+we know there's room across c.
+Yet this leaves a square gap of side z-(w-y).
+It's a real gap, since y+z > w.
+With w-y at least h/2, the face of e won't fit into this gap.
+Only the tab of e can fill this gap.
+Since 2z > y+z > w, e can't lie face down without crashing into  a or b (depending on which way c faces).
+e is face up, and one tab fills the gap.
+The gap between e and a or b is too long and narrow to be filled.
+If you try to slide a piece in it crashes into e, or a or b.
+
+We must use tabs to fill the notch of c.
+One thin tab cannot fill the notch, since h-z is less than half of h.
+If two thin tabs fill the notch, 2(h-z) = z, or 2h = 3z.
+w floats between h and 7/6 of h.
+one of the two pieces, facing away from the tab of c,
+creates a gap of width z and height w-z.
+Only a tab can slide in, and it isn't long enough to close the gap.
+That completes the notch of c below the a-b line.
+
+Suppose the notch of c is flush with its neighbor, hence w-y = z.
+z is still bigger than y, so that w can be bigger than h.
+If c faces right, the space between c and the left wall has width z,
+and can only be filled by the vertical reflection of a.
+Since 2z > y+z, there is a gap between the tabs of c and d,
+which is h-z by z-y.
+Only a tab can fit, and e can't face down, else it crashes into c.
+This leaves a long narrow gap above c and b of height y that cannot be filled.
+So c faces left, and the space between c and the left wall has width 2z.
+
+Let d sit atop a, against the left wall.
+If d lies on its back, the gap between the tabs of d and c has width z-y.
+Only a downward pointing tab is thin enough to slide in.
+e can't face left, or it crashes into d, so just one tab, with e facing right.
+z-y = h-z. z is 3/4 of h.
+This establishes the shape, f8e0e0e0, which we've seen before.
+
+If d lies face down, d and c create an enclosed space that can't be filled.
+
+If d points down, the gap between d and a can't be filled.
+
+Finally d stands up along the left wall.
+The gap between d and the tab of c has width 2z-h.
+Only a tab fits, one tab, as e faces right.
+Thus 2z-h = h-z, or z = 2h/3.
+This establishes the shape, a 7×6 rectangle minus a 3×4 rectangle.
+This is ruled out by trec @fefef0f0f0f0.
+
+At this point, the notch of c rises above a and b.
+In other words, w-y > z.
+
+Let d, just to the left of c, lie down on top of a,
+the vertical reflection of a,
+and suppose c faces right.
+We know w > y+z, and if y > z, w > 2z,
+whence c won't fit.
+z can't equal y, half of h,
+so y < z, and the tab of d extends beyond the tab of c.
+Place e in the gap between the two tabs.
+This gap has height 2z - w, which is less than z-y.
+Only the tab of e can fit.
+e can't face down or it crashes into c.
+Thus we have a long narrow gap between e and c+b that can't be filled.
+
+So c faces left and d wraps around c, giving 2z = w-y.
+If z < h/2, the tabs of c and d collide.
+Thus z > h/2, and there is a gap between the tabs of d and c of width z-y.
+Let the tab of e fill the corner where c and d meet.
+If e faces left, there is a gap between d and e that cannot be filled.
+So e faces right and interlocks with the tab of c, and z = 3h/4.
+This establishes the shape, an 8×4 rectangle minus a 2×3 rectangle.
+This is ruled out by trec @fffcfcfc.
+That's the end of d lying down.
+
+If d points down onto a, and c faces right, y+z = w; yet w > y+z.
+If c faces left, y+z = w-y, and h-z = w-y, hence y+2z = h.
+This establishes the shape, f8f8f8e0, which we've seen before.
+
+Finally let d point up along the left wall.
+If there is a gap between d and c above a, it is filled by the tab of e.
+e can't face left or it perfectly interlocks with d, giving order 2.
+If e faces right then the gap between d ane is filled by two pieces pointing down,
+and the left piece crashes into the left wall.
+There is no gap, and w-y = h.
+
+Suppose c faces d, d standing z ssquares higher than c.
+With w-y > z, only the thin tab can be used to fill the notch of c.
+In fact we must use two of them, one facing left, and that forces y = z. Yet z can't equal h/2.
+Thus c faces right.
+d still stands z squares higher than c.
+If z < y, the bracketed notch of d cannot be filled, hence z > y.
+Let e fill the corner where c and d meet.
+If e presents a straight left vertical edge, it brackets the notch of d,
+which cannot be filled.
+If e presents a straight horizontal edge, beyond the tab of c,
+the notch of c cannot be filled.
+The only way to save the situation is for e to point down and face left,
+and interlock with d.
+This gives y = z-y, which is impossible.
+That's it for d, and c rising above the landscape.
+
+We've placed the notch of c below, at, and above the a-b line,
+and made no progress. Thus b does not point towards a.
+Instead, b stands up and faces a.
+
+If the notch of b is higher than the tab of a,
+the gap of width h/2 cannot be filled.
+One tab sets h-z = y.
+Two tabs forces c to face left and hang over a,
+which sets z = y, or makes a thin gap between a and c of height y-z, which could not be filled.
+
+Suppose they are flush, hence h-z = w-y.
+thus h-z >= h-y, and z <= y.
+Since z can't equal y, z < y.
+This in turn makes w > h.
+
+The gap is y+z, which is less than h. Place c in the notch of a.
+It can't stand up, and its tab won't precisely reach the notch of a,
+so c lies face down.
+If it points right, its tab crashes into b, which is standing up.
+Thus c points left across a.
+If c is a perfect fit in the gap we have w-y = y+z.
+This establishes the shape, f8f8f8e0, which we have seen before.
+whose disposition is unknown. If we need to supplement with the tab of d,
+we have w-y + h-z = y+z, which forces 2z = w, and w becomes smaller than h.
+
+Finally let the notch of b remain lower than the tab of a, whence w-y < h-z.
+Clearly y has to be larger than z, to make up for the fact that w exceeds h.
+Now w-y, which is larger than y, is larger than z,
+so the face of c will not fit into the notch of b.
+Nor will the tab, since h-z > z.
+That takes care of b standing next to a.
+
+Those are all the cases for this section.
+With {5}, {6}, and {7} behind us,
+we can assume y > h/2.
+
+	8. y < h, c points down in the notch of a and faces left
+
+Let's see how far we get with y between h/2 and h.
+{2} and {4} are in effect, so put a in the corner, face up and pointing right,
+and put b on the floor next to a.
+Without regard to b, put the tab of c in the notch of a, with c facing left.
+If y > z then there is a thin gap between c and a. It is z by y-z.
+h-z is bigger than y-z, so no tabs in this gap.
+If d faces c interlocked then w-y = y-z.
+Yet with d standing on a, w-y >= h.
+This is a contradiction, so there is no thin gap between a and c, and y = z.
+The piece has a square bite taken out of it.
+
+If c reaches the left wall we have w-y = y, giving a shape of order 2.
+So we have a gap of w-2y by w-y to fill.
+
+If the gap is less than h across,
+neither tab nor face, of length y, can reach down to a, so w-2y is at least h.
+
+All pieces between c and the left wall stand up.
+If there are two or more, they create a gap at level h+w-y that can't be filled by a face, as the face of a below is longer.
+If d and e stand front to back, the square gap can't be filled by one tab,
+order 2, or two tabs, the leftmost piece crashing into the left wall.
+If d and e face each other, two tabs imply order 2,
+and one tab makes z = h/3.
+By assumption, z is more than half of h.
+Therefore d is entirely sufficient.
+w-y = h+y.
+
+Let d point up the left wall and place e on top of d.
+If e is anything other than the reflection of d,
+we have a square notch to fill, similar to the notch of a.
+This can only be done with tabs, two tabs in fact,
+but then the bottom tab isn't long enough to reach across c into d.
+So e points down, and f fills the notch of d.
+If f stands up its face must fill the double notch perfectly.
+This sets w = 3y, yet the height of d is w-2y, setting h = y.
+Thus f points right.
+If f fills the gap perfectly then 2y = h.
+There has to be more room, so slide the tab of g in between e and f.
+Now 2y = h + h-y.
+y is 2/3 of h.
+This establishes the shape, a 7 by 3 rectangle minus a 2 by 2 square.
+This is ruled out by trec @fef8f8.
+That takes care of c facing left.
+
+	9. y < h, c lies face down in the notch of a
+
+Let c face down in the notch of a.
+Since w-y is not y, it's not a perfect fit.
+If w-y < y, and c points left, its tab crashes into the left wall.
+If c points right, we wonder what to put in the gap between the tabs of a and c.
+
+It can't be one tab, else z = h-z.
+It can't be two tabs, else the face of the lower piece crashes into the floor.
+If it is a face, then w-y <= z.
+h-y <= z, and h-z <= y.
+b can't point down unless h-z = y.
+Looking across the tab of a, y = w-y + z.
+w = 2y - z.
+If b perfectly fills the gap, w-y = z, or w = y+z.
+y+z = 2y -z.
+z is half of y.
+This is e0e080, order 28.
+If two faces fill the gap, the top piece has the tab of c running toward its notch, whence z >y,
+which contradicts y > half of h.
+If a tab slides in between b and c, z = w-y + h-z.
+thus z = w, which is impossible.
+So this piece, call it d, points up, and fills the gap perfectly, whence w-y = z.
+Looking at the tab of c, z >= y.
+Suppose z > y, and there is a gap between the tabs.
+w-y is z and that won't fit.
+if one tab fits in then h-z + y is z.
+h = 2z - y.
+If two tabs then 2h = 3z - y.
+h + w-y > y, so d extends well beyond the tab of a, leaving a gap with the floor.
+Put a face in this gap, of height w-y, which is z,
+and with z >= y, z is more than half of h, and higher than h-z.
+The tab of b slides in, and is naturally the proper height.
+Is it long enough?
+We must exactly fill h+w-2y, or h+z-y.
+In other words, h+z-2y = 0.
+With one tab between c and d, h was 2z-y.
+y = z, but then there is no gap between the tabs of c and d.
+Two tabs:2h = 3z - y.
+Again y = z.
+Therefore there is no gap between the tabs of c and d, and y = z.
+Remember that h + z -2y = 0, so h = y, which is impossible.
+A face does not sit in the corner of a and c.
+That takes care of w-y < y.
+
+With w-y > y, c extends beyond the tab of a,
+and b has to slide in along the floor.
+If it is the face of b then h-z = w-y and w-y = y+z.
+h = 2z + y.
+z is less than a quarter of h, and certainly less than y.
+c cannot point right; its tab would crash into b.
+c points left, and the gap above a is w-2y by h-z.
+Clearly a face won't fit, since the span of a is w-y.
+With w-2y = z, a piece can't stand up.
+The tab of d fills the gap, and h-z = w-2y.
+Yet h-z = w-y, whence y = 0.
+The face of b does not slide in under c;
+it is the tab of b, which is of course the proper height.
+2y is at least w-y.
+If it is more, then one tab fits into the notch of b, giving 2y = w-y + h-z.
+
+Let c point left, giving a gap of width w-2y above a.
+With w-y <= 2y, w-2y <= y.
+One tab fills this gap, thus w-2y = h-z.
+If c does not completely fill the double notch then h-z = 2y - (w-y).
+5y = 2w 
+Go back to h-z = w - 2y and replace w = 5y/2, and h-z = y/2.
+There is a gap between the tab of c and the face of d.
+The tab of e fits this gap perfectly.
+e lies atop c, and they are vertical reflections.
+If there is no gap between the faces of e and d, then y = z.
+y = z = 2h/3.
+This is f8e0e0, order 270.
+A gap between the faces is filled by a tab.
+This gives another gap between faces, filled by a tab, and pieces go up and to the right forever.
+Or, write y-z = h-z, whence h = y.
+
+Keep c pointing left, but let it fill the double notch, whence w-y = 2y.
+The tab of d still points down onto a, giving h-z = y.
+y > z.
+The corner of c and d is w-z by w-y.
+
+Put e in this corner.
+Let e lie face up atop c.
+e extends z squares to the right of c.
+Slide the tab of f into this gap.
+f is face up, and if there is no gap between the faces then y = z.
+That puts y at half of h, so there is a gap of width y-z.
+y-z = h-z, or 2(h-z); these are dead ends.
+
+Let e lie face down and find a gap of height z between c and the tab of e.
+One tab can't fill this gap, else h-z = z.
+Two tabs means f wraps perfectly around c, and h-z = z.
+
+Let e point down onto c.
+d and e consume h squares across c.
+h = y+z < w = y+y+y.
+There is a gap of height y to fill.
+Two tabs means f wraps around c, as in the last paragraph.
+One tab means f lies face up.
+f extends h beyond c.
+The gap between b and f is longer than y, and can't be filled.
+
+e stands up in the corner of c and d.
+d and e consume h+z squares across c.
+This leaves 2y-2z squares of c.
+Put f in the corner of c and e.
+If f is face up the thin gap between b and f can't be filled.
+If f is face down then add up z + h + w-y and subtract w, giving h+z-y.
+This is 2z, so if g slides its tab between b and f, y = 2z.
+y = 2h/3 and z = h/3.
+This is fcfcf0, which fails.
+If f points left and wraps around c, then 2z = h.
+If f points down and wraps around c, then 2y - 2z = z.
+Let f point down onto c, with its back to e.
+The span across c is z + h + h-z, or 2h, or 2y+2z.
+If f and c are flush then y = 2z.
+This is fcfcf0 again.
+As y is greater or less than 2z, we have a gap of height y to fill,
+to the right of f or to the right of c.
+Fill this with the tap of g pointing left.
+It's tab is h-z high which is perfectly y.
+If next to c then g is face up.
+w+y is always larger than 2y+2z, so there is
+a gap between f and g, and blocked above by the face of f, thus unfillable.
+Put g against f and g can't lie face up,
+or the long narrow gap between b and g can't be filled.
+g wraps perfectly around c, but then z = h-z.
+The last and only orientation for f is standing up along side e.
+Compare z+h+h with w, the width of c.
+If they are equal then 3z = y.
+This puts y at 3/4 of h.
+The shape is ff+ff+ff+fc, which fails.
+Let f extend beyond c and slide the tab of g under f.
+If there is no gap between f and g then z+h+h = w+y, or 3z = 2y.
+This is ff+ff+ff+fcfc, which we've seen before.
+So there is a gap, filled by the tab of h, but that makes f and c flush again.
+Finally suppose f does not make it all the way to the end of c.
+3z < y so z is pretty small.
+Place g in the corner of c and f.
+Face up, and the long gap above b can't be filled.
+Same for face down and pointing right.
+If g points left it wraps around c, and h-z = z.
+Let g point down and face left and wrap around c.
+Now z + h + h + z = w, or 4z = y.
+This is a 12 by 5 rectangle minus a 4 by 1 rectangle.
+In our notation this is ff{c0}ff{c0}ff{c0}ff{c0}ff.
+treck can't tile rectangles with polyominoes more than 9 squares across,
+however, the first quadrant diagonal test can handle pieces 16 squares across.
+This one fails.
+If you don't trust the computer, look at e and f.
+If the aren't back to back there is a thin gap between them that can't be filled.
+So e faces left but then there is a gap above d that can't be filled.
+Let g point down and face right.
+z + h + h + h-z > w and g extends beyond c, so the tab of h slides under the tab of g.
+Again if g meets the face of h then c and f were flush in the first place.
+There's a gap between g and h and blocked above by the face of g,
+that can't be filled.
+g can only stand up, like f and e.
+z + h + h + h is of course > 3y and > w, so g goes well beyond c.
+Slide the tab of h between b and g.
+If the faces of g and h meet then 4z = y, which gives a shape we've seen before.
+Leave enough room for the tab of i, and
+z + h + h + h + h-z = 4y.
+4h can't equal 4y.
+
+Now let's unwind the stack.
+That was the last orientation for g, the last orientation for f,
+the last orientation for e, the only orientation for d.
+and the end of c lying face down in the notch of a and pointing left.
+
+Let c lie down and point right.
+Remember that the face of c extends beyond a, and b slides its tab beneath c.
+We took care of c having a short face, and b putting its face under c, before.
+
+A gap between b and c is enclosed, so there is no gap. w-y = 2y.
+
+Put d above a and note that d cannot lie face up.
+
+Let d point down; if it fills the gap above a then h-z = w-y = 2y.
+h-z < h and 2y > h so this doesn't work.
+Nor can we put a piece next to d, so d does not point down.
+
+Let d stand up atop a.
+If d fills the gap then h = 2y, which doesn't work.
+If e stands next to d then 2h <= 2y, which doesn't work.
+e must point down, putting its back against d.
+In the notch of d is a z by y gap to fill.
+One tab sets h-z = z.
+Two tabs causes the left piece to crash into the wall.
+
+The last orientation for d is the vertical reflection of a.
+If d wraps perfectly around c, then 2z = h.
+This is order 2, so 2z > h, and there is an h-2z gap between c and the tab of d.
+Put the tab of e in the gap, with e lying atop c.
+2z = h + h-z, or 3z = 2h.
+That's the second equation; we still don't know the ratio of w to h.
+
+Put f in the corner of b and c.
+If f points left and wraps around b, there is a gap of width 2y along the floor that can't be filled.
+If f points down and wraps around b then y = z.
+This is fcf0f0, with order 396.
+
+Let f point down onto b.
+h-z is h/3, which is less than y,
+so there is a gap of height y between b and the face of f.
+One tab sets y = h-z, whence y is too small, so put in two tabs.
+y = 2(h-z), y is 2/3 of h, y = z, and we're back to fcf0f0.
+
+Let f stand up.
+f extends beyond b, and g lies on the floor next to be, under f, pointing right.
+f can't extend y squares beyond b, or h >= 2y.
+Let h stand next to f.
+If they are face to back, there is a z by y notch to fill.
+One tab sets h-z = z, and two tabs produces fcf0f0 again.
+If they face each other there is a 2z by y gap to fill.
+A piece standing up in the gap sets h = 2z.
+A piece standing and a tab sets 2z = h + h-z, whence h = z.
+A piece lying down sets y = 2z/3.
+Since z = 2/3 of h, y is less than half of h.
+Put a face in the gap and 2y = 2z.
+A face and a tab means 2y + h-z = 2z.
+This means 2y = 2h - h.
+Two tabs sets h-z = z.
+One tab sets h-z = 2z, whence z is only a third of h.
+Those are all the choices, so pieces do not stand facing each other.
+They must stand back to back,
+and it follows that three pieces can never stand next to each other.
+So f and h stand back to back.
+If h is flush with the face of g then 2h = 3y. This sets y = z, which we already handled.
+If h goes beyond the face of g there is a gap of height z,
+which we can't fill with one tab, or two.
+thus h doesn't quite reach across, and 2h < w.
+Well something has to be flush with the face of g, or something has to wrap around g,
+or we get that same gap that can't be filled.
+If a piece wraps around the face of g then 3y = 2h+y or 2h+z. These give h <= y.
+If a tab tries to make a flush edge with the face of g then 3y = 2h + h-z.
+y = 7h/9.
+This is a 21 by 9 rectangle minus a 7 by 6 rectangle.
+Well that's beyond anything trec can handle.
+We have to continue by hand.
+There is a gap of height 13 between g and i.
+It is 7 across on the bottom and 6 across on top.
+Try some combinations and you'll see it cannot be filled.
+So h doesn't stand next to f.
+h can't be horizontal or it goes well past the face of g - unless it is face down and interlocks.
+This sets h+y = 3y, which doesn't work.
+So h is vertical, and points down.
+If h faces left and wraps around g then h+z = 3y. y = 5h/9, which is just above half.
+However, there is a very thin gap between the tabs of g and h, height h/9, that can't be filled.
+So h points down and faces right.
+f and h span 4h/3.
+This can't go past the face of g, and can't even be flush with
+the face of g, since y would be 4/9 of h, which is less than half.
+Back up, and let f point down.
+f must face right, giving a gap of height y.
+One tab or two, y is h/3 or 2h/3, we've seen this before.
+f lies face up across b and g, and is flush with the face of g.
+If f points left there is another gap of width y, no good.
+So f points right.
+Now put h in the notch of g.
+If h rises above the tab of f we have another gap of width y.
+Some exploring will convince you the only orientation for h is face down
+pointing right, with i below h interlocked.
+If i touches the right wall we have a gap of width y above i,
+so things must continue.
+g i and h look rather like a b and c.
+Put j in the corner of h and i,
+and if j is face up pointing right the pattern repeates.
+Most of the other orientations lead to contradictions, as we saw with f.
+j could wrap around the tab of h; that wasn't possible with f.
+This sets h-z equal to z, or y, and those don't work.
+Therefore j lies down and points left.
+That is the orientation that stops the repeating pattern.
+Put k below j pointing right.
+Put l on the floor next to k.
+A gap of y is not allowed, and l can't point down or face down to wrap around k,
+so l points left.
+Put m in the notch of k.
+If m is face down pointing right, k m l looks like a b c, and we repeat.
+m has to do something else.
+Specifically, m has to stand up.
+If it fills the gap then h = 2y.
+If it joins the tab of n to fill the gap then 4h/3 = 2y.
+This sets y = z, which we've seen before.
+
+Unwind the stack, and d is not the reflection of a,
+this was the last orientation for d, c does not point right,
+and c cannot lie face down in the notch of a.
+
+	10. y < h, b points right or faces right
+
+Put b on the floor next to a.
+If b faces right or points right there is a gap of width y.
+c cannot lie face down in this gap, or point down facing left.
+We have ruled those out.
+If c points down facing right then it fills the gap, thus y = h-z.
+z is less than half of h.
+d, above a, can't be the vertical reflection of a, because 2z is not h, and certainly not w.
+The face of c is y + h-z off the floor, or if you prefer, 2y off the floor.
+If b faces right then 2y >= w, hence w-y <= y.
+We need equality, so d can point its tab down onto a.
+Now z+y is at least w, but z+y = h, so h = w.
+The outline of our shape is a square.
+There is a y-z gap between b and c.
+A tab of thickness h-z = y won't fit.
+Only a face might, if w-y = y-z. That is, h-y = y-z.
+Thus 2z = y.
+This is e0e080.
+That's it for b facing right.
+
+Let b point right, and as we saw above, c points down and faces right.
+y + z is still h, and z is less than half of h.
+d, above a, can't be the vertical reflection of a, because 2z is not h, and certainly not w.
+The face of c is y + h-z off the floor, or if you prefer, 2y off the floor.
+There is a y-z gap between b and c.
+A tab of thickness h-z = y won't fit.
+Only a face might, if w-y = y-z.
+So the gap above a is y -z across.
+d can't stand up in this gap, and we already ruled out the vertical reflection.
+d points down, and y+z is at least w.
+But y+z = h, so w = h.
+We're back to e0e080.
+That's it for b pointing right.
+
+	11. y < h, b faces left
+
+Let b face left.
+Again, c points down into the notch of a and faces right.
+Either c and b interlock, or the tab of c fills the combined gap of a and b.
+Let's consider the latter case.
+h-z = w-y,
+and h-z = y+z.
+z is less than a quarter of h.
+d, above a, can't be the vertical reflection of a, because 2z is not h, and certainly not w.
+With w-y < h, d can't stand atop a.
+d points down onto a, which is consistent with h-z = w-y.
+z+y is at least w.
+However, z+y is less than h.
+That takes care of the rather strange case of the tab of a flush with the face of b.
+
+c and b interlock.
+c fills the notch of a, so that h-z = y.
+z is still less than y.
+The face of c is y + h-z off the floor, or if you prefer, 2y off the floor.
+The face of b fills this gap, so that w-y = 2y.
+The gap above a is 2y across, which is more than h.
+d, above a, can't be the vertical reflection of a, because 2z is not h, and certainly not w.
+d can't point down because nothing can fill the gap between d and a.
+d stands up, leaving a gap of 2y-h between d and c.
+This gap is y-z by 2y.
+Nothing is long and skinny enough to fill this gap.
+That takes care of b facing left.
+
+	12. y < h, b points left
+
+The last case is b pointing left, creating a double notch that is 2y by z.
+c does not lie face down in this gap, or point down and face left.
+We have ruled those out.
+c can't point down and face right because nothing fills the gap next to c.
+Let c stand up, leaving a gap of 2y-h between c and b.
+Its neighbor e cannot stand up, since 2h > 2y.
+(I'm reserving d for the piece above a.)
+A face or a tab fills the gap.
+Suppose we put in the face of e, with e pointing left, which means c faces right.
+e wraps around the face of c.
+z = w-y, and z >= y.
+w-y >= y.
+The face of e consumes the tab of b and maybe more.
+c, of width h consumes more than the tab of a.
+They can't both fit.
+So let e point right.
+h + w-y = 2y.
+
+Assume c faces right.
+Across the a b gap, h > w-y.
+Going up along the border of c and e, h > w-y.
+There is a gap above c of width z.
+Put f in the notch of c. This is a face or a tab.
+Let f lie face down and point right.
+Thus w-y = z.
+If there is no gap between e and the tab of f then we have our third equation,
+h = w-y + z, or h = 2z. That is order 2.
+So there is a gap, and a face won't fit in, since w-y is already z.
+It has to be the tab of a piece lying atop e.
+2z = h + h-z.
+ff+ff+f0f0f0f0, which fails.
+Let f lie face down and point left.
+If f fills the gap, as it did before, then z = w-y.
+y + z >= h, and y >= h-z.
+The tab of f pokes past the back of c.
+The gap above a has width w-y,
+which is smaller than y, and smaller than h.
+It is z squares up to the tab of f.
+With f poking in, nothing can fill this gap.
+thus f does not fill the notch of c, and g slides in between f and e.
+If the tab of g, then g faces right, and there are no other pieces in between.
+w-y + h-z = z.
+Combine this with the first equation and find y = z.
+Fine, but y > h-z, and the tab of f still extends beyond c, and we still have the same problem above a.
+Put the face of g between f and e,
+and 2(w-y) = z.
+If there is a gap between e and the tab of g, you might try to put a face in,
+but then w-y + z = h + w-y.
+If there is a gap between e and the tab of g, you might try to put a tab in,
+but then z/2 + z = h + h-z, or 5z = 4h.
+This is a new one, an 11 by 10 rectangle minus a 7 by 8 rectangle.
+You can analyze it by trec, or note that the tab of f goes well beyond c
+and hangs over a.
+So there is no gap between e and g, and z/2 + z = h.
+h-z = h/3, and the tab of f extends beyond c.
+Therefore f puts its tab into the notch of c, rather than its face.
+One tab won't work as z would be half of h.
+Two tabs makes z 2/3 of h.
+The face of f extends beyond c, and the gap above a cannot be filled.
+c cannot stand facing right.
+
+Let c stand up and face left.
+Let d be the vertical reflection of a.
+d wraps around the face of c, 2z = w-y, and z >= y.
+w-Y >= 2y.
+The face of e fills the whole gap, without room for c at all.
+
+Let d point down onto a.
+If the face of c rises above a then d must wrap around c.
+y + z = w-y, but w-y < y.
+If the face of c remains below the height of a, there is no way to fill the notch of d.
+If the face of c is level with a then z = w-y.
+The tab of d has to go all the way across, so that h-z = w-y + z.
+This is our friend e0e080 again.
+
+Let d stand up atop a.
+With h > y > w-y, d goes beyond the face of a.
+The face of c must be level with the height of a.
+z = w-y.
+If there is no gap between d and the tab of c then h = 2z, which is order 2.
+No room for a face, so a tab, and just one tab of a piece facing right.
+h + h-z = 2z.
+trec @ff+ff+f0f0f0f0 fails.
+
+A strange possibility is d lying down across a and c.
+Again c is flush with the height of a, and z = w-y.
+If d fits exactly then w = 2z.
+This sets y = z = h.
+If there is a gap then w < 2z, and y < z, and h < z.
+That is the end of d, and c facing left, and e face down in b.
+
+e points down into the notch of b and faces right.
+h + h-z = 2y, and y >= z.
+If there is no gap between b and the face of e then y = z = 2h/3.
+If c faces left its face is not flush with the height of a, else w-y = z
+and the shape has order 2.
+Let d point down onto a.
+h-z is no larger than w-y.
+c must face right, the tab of d fills the gap above a,
+h=z = w-y, h = w, and we have the pentomino e08080, which fails.
+Let d be the reflection of a.
+If c faces left then d wraps around the face of c, 2z = w-z, giving fcf0f0.
+If c faces right then there is a gap between c and e, and the tab of d hangs above this gap so it can't be filled.
+Since c and a are not flush, d cannot lie across a and c.
+d stands atop a and faces right.
+Since a and c are not flush, d cannot extend beyond the face of a.
+w-y >= h.
+That puts the face of c well above the height of a.
+The gap above a is w-y across.
+If h   = w-y we have f8e0e0, order 270.
+Put f above a in the gap between d and c.
+If f has its back to d then the z by z gap in the notch of d can't be filled.
+f is face to face with d.
+There is only one way to fill this double notch.
+g points up and faces left; h points down and faces right; so that h + h-z = 2z.
+At the left wall, w-z = 2z, but w-z is at least 2h.
+That's it for f, and for d.
+Therefore there is a gap between the face of b and the face of e.
+
+No tabs in this gap, since h-z + z is h, which is larger than y.
+Put the face of f in this gap, with f pointing down.
+Across b, z = w-y.
+If f fills the gap then y = 2z, giving fcfcfcf0f0, which fails.
+If a second face fits in the gap we have y = 3z.
+This yields ffffffffffc0c0, which fails.
+Therefore the face of f fills the gap, with f pointing up.
+y = z + w-y.
+If the face of c is flush with the height of a, then w-y = z,
+and we have the same three equations we saw before,
+and the same piece fcfcfcf0f0.
+The face of c is above or below a, and d, atop a, does not stand up or face up.
+Let d lie face down, and let the face of c fill the double notch.
+2z = w-y.
+This is new, a 10 by 7 rectangle minus a 6 by 2 rectangle,
+but the tabs of d and c collide.
+If c faces right, the tab of d extends past the tab of c, since y > z-h.
+The gap between c and e can't be filled.
+Therefore d points down onto a.
+If c faces right then w-y = z-h.
+This implies y = h.
+If c faces left, remember that c and a are not flush.
+If c is below a we have gaps that can't be filled.
+If c rises above a then w-y = z-h, and we have the same problem.
+That's all for d, and filling the gap between b and e,
+and e in the notch of b, and c standing up.
+
+We're not quite done; c could lie face up in the double notch of a and b.
+It won't be an exact fit, since y is not half of w.
+If you add h, you have at least 2h, but the gap is 2y.
+Put the face of d next to c in this gap.
+If c points left then d points right.
+If c points right then d can't point left or the piece has order 2.
+Either way d points right, and its tab runs along the face of b.
+With c and d we have our first equation: 2y = w + w-y. y = 2w/3.
+Since y > w-y, the tab of d extends beyond the end of b.
+In fact it extends y/2 or w/3 past b.
+
+Put e on the floor next to b.
+e can't point left, unless z is half of h.
+e can't put its face under d, since w-y = h, and y/2 = h, making y > h.
+e points right along the floor.
+The tab of d is flush with the face of e.
+
+Put f on the floor next to e.
+Let f face or point right so that the gap in the notch of e has width y.
+This is filled with faces or tabs.
+Put g in the notch of e.
+It can't point left because the tab of d is in the way, and it can't point right without creating a hole.
+Suppose the tab of g fills the gap, so that h-z = y.
+If g faces left, y >= z + h-z, which is impossible.
+g faces right, and the face of g is 2y off the floor.
+With w = 3y, f must point right.
+With no gap between f and g, h = 2y. This sets 2z = h.
+So there is a gap, and a tab won't fit.
+Suppose the face of h fits in, with h pointing down.
+Across the face of f we find w-y = z.
+But y > w-y, so going down the face of f, the tab of h crashes into the tab of f.
+Thus h points up, just one face in the gap, and 2y = h + w-y.
+3y = w+h, and w = h.
+This is our old friend e0e080.
+So we need two tabs, g and h pointing down and back to back.
+That has g facing left which we already ruled out.
+That's the end of f facing or pointing right.
+
+Let f face left.
+If the face of f rises above e we have the same gap of y, with the same problems.
+The case that is somewhat different is g pointing down and facing right,
+and filling the gap of e,
+but then w-y must be more than y, when it is only half of y.
+The face of f below the tab of e doesn't work at all.
+Let e and f be flush, giving a gap of width y+z, which is less than 2h.
+h-z = w-y = y/2.
+Put g in the notch of e.
+As before, g can't lie face down, and can't point down and face left.
+Let g point down facing right, whence h fits in the gap of g.
+This could only be a tab, with y = h-z, thus y = w-y, which doesn't work.
+Let g stand.
+The gap is y+z, or 2(y/2) + z, or 2(h-z) + z, or h + h-z.
+The tab or face of h, either having width h-z, fills the gap between g and f.
+h can't face left with g standing there.
+h can't point left because g would face right, and z = w-y = h-z.
+Let h point right.
+With no gaps we have z = y.
+This is e08080.
+With at least one tab in between we have z >= y + h-z.
+This is z >= w which doesn't work.
+Therefore h points down and faces right.
+If g faces right there is a z by y gap to fill.
+If g faces left there is a z by z gap to fill.
+If one tab fills the gap we have h-z = z.
+Two tabs sets 2(h-z) = z, or z is 2/3 of h.
+This is again e08080.
+That's the end of g standing up in the notch of e.
+
+Let g lie face up across e and f.
+If g fits exactly then w = y+z.
+This makes z half of y.
+h-y/2 = y/2, and h = y.
+If there's more room we need one or more tabs or faces,
+but we already saw, when g stood up, there was just room for g and one more piece.
+w is at least h, so g is square with h = w.
+3y/2 - z = y/2.
+y = z, and we're back to e08080.
+That's the end of g, and f facing left.
+
+Finally f points left, so that e and f look like a and b.
+g, in the notch of e,doesn't face down or point down facing left.
+If g points down and faces right then h points left and puts its tab in the notch of g.
+h-z = y.
+Across e and f, h-z + w = w + w-y, hence h-z = w-y.
+w-y = y, which is a contradiction.
+Let g stand in the notch of e.
+g goes beyond e, but doesn't fill the entire gap.
+If the tab of h completes it then h + h-z = 2y.
+If g faces right there is a z by y gap to fill.
+If g faces left there is a z by h-y/2 gap to fill.
+One tab never works in this context.
+Two tabs sets z = 2/3 of h.
+y = z, and we have e08080 again.
+One face sets w-y = z, or z = half of y.
+z isn't long enough to fill the gap between g and h, so g faces left, and i, in the notch of g, points left.
+travel up the face of g, and i, and find w-y + z, or y/2 + y/2, or y.
+This is less than h, so i crashes into d.
+
+With g still standing, h lies face down next to g.
+If h points left then z = w-y = y/2.
+Across g, z < y, so the tab of h crashes into the tab of g.
+thus h points right.
+h + w-y = 2y.
+h is 3/2 of y, as is w.
+Whether g faces left or right, there is a z by h-y/2 gap to fill.
+One tab won't do, and two tabs creates e08080 again.
+If one face fits in then z = w-y = y/2.
+This is e0e080.
+If two faces fit in then z = y/2 + y/2, and e08080 again.
+If we have a face and a tab, z = h-z + w-y = h-z + y/2.
+z = y, and it's e08080 again.
+That's it for g standing up.
+
+g lies down across e and f, so that e f and g look somewhat like a b and c.
+Let h lie face down next to g.
+h can't point left or it's order 2.
+h points right, and extends beyond f.
+In fact this looks just like b and d.
+The pattern repeats, but it can't repeat forever,
+so assume h points down into the corner of f and g.
+This is an orientation we haven't yet considered for d.
+It's coming, but when we consider that we won't have our first equation relating w and y.
+Let h face left, which means g points right.
+h-z = y.
+Between the faces of g and h is a y-z gap to fill.
+h-z is bigger than y-z, so even one tab is too much.
+Two faces is y, also too much.
+One face means y/2 = y-z.
+This is e0e080.
+h faces right, and completes the e-f double notch, so that h-z is half of y.
+If there is no gap between the faces of f and h, then y = z.
+This is e08080.
+The gap is y-z, and since h-z is larger, even a tab won't fit.
+A face of w-y sets z to half of y.
+h-z is also half of y, h-z = z, order 2.
+two faces would equal y, which is too much.
+And that is all the posibilities for h, g, f, and e.
+
+As promised, we must consider d pointing down into the corner of b and c.
+Let d face left, whence c points right against the tab of d.
+h-z = y.
+The a-b double notch is 2y across, and c takes up more than half of it, w being greater than y.
+The tab of d is h-z, which is y, and there isn't room for this tab.
+
+Let d face right.
+Its tab must complete the double notch, thus w + h-z = 2y.
+If there is no gap between the faces of b and d then y = z.
+w + h = 3y.
+With z > h/2,the tab of c stays below the height of a.
+There is a gap of width y to fill.
+A tab is not enough.
+A face can't fill the gap exactly, so it is not enough or too much.
+Two faces makes 2w = 3y. Yet w + h = 3y, so w = h.
+This is e08080.
+Two tabs creats the same shape.
+A tab and a face sets w + h = 3y, which is already implied by equations 1 and 2.
+If c points left, and e and f fill the notch of c, there is a gap between a and e that can't be filled.
+If c points right, h-z + z >= w.
+This sets h = w, and we're back to e08080.
+Therefore there is a gap between b and d.
+
+This gap is y-z, too small for a tab.
+If filled by a face then w-y = y-z, w + z = 2y.
+Combine this with equation 1, and h = 2z.
+Put in e pointing down and f pointing up.
+To cover the face of b, 2z = w-y.
+Going up the tab of d, 3z = y.
+This creates the impossible situation of h < y.
+That's all for d, and c, and b, and a.
+
+Combine {7} through {12}, and we are done with y < h.
+Henceforth, y >= h.
+
+	13. y = h and h+z = w.
+
+This shape has order 4.
+a points down into the corner,
+and b fills the notch of a and points right, into another corner, etc.
+The result is a square, w + h-z on a side.
+
+This is a class of shapes.
+If h = 1, z can be any real number strictly between 0 and 1.
+The square has area 4.
+If z is irrational the result isn't even a polyomino, but still has order 4.
+For z rational, scale the picture so that z and h are relatively prime integers.
+Example: h = 5 and z = 3.
+This is ffffe0e0e0.
+
+	14. y=h.
+
+One of the three equations is established at the outset, but there are
+more possibilities, such as a piece pointing down onto the floor.
+{4} is not in force.
+
+Suppose a points down onto the floor, and b points into a.
+Since h is not h-z, there is a gap.
+Thanks to {13}, the face of c cannot fill the gap between a and b.
+If we want a to point down, b points right, filling the notch of a.
+
+Thanks to {13}, a and b are not flush.
+Suppose a extends beyond the face of b, hence z > w-y.
+Only the face of c can fill the notch of b,
+but this would again set w-y = z.
+So the face of b is farther right, giving w-y > z.
+
+I'll continue this theorem as time permits, or you can continue my work.
+Please review this theorem and send along any corrections.
+If you wish, clean it up, improve the explanations, and add pictures for clarity.
+

@@ -686,7 +686,7 @@ if(rc == (signed)n) return; // good write
 // Disk failure, disk is probably full,
 // you could save the situation by clearing space.
 if(rc > 0) n -= rc, s += rc;
-printf("\nCrap on ice! Disk failure, errno %d.\n\
+printf("\nDisk failure, errno %d.\n\
 If I stop now, all your work at this depth could be lost.\n\
 See if you can fix the problem, then hit return, and I will try again.\n\
 Or type x and I will exit, and it's game over.\n", errno);
@@ -2778,7 +2778,7 @@ hb = hashIdx + n;
 ++nodesDisk;
 ++nodesPending;
 if(++nodesCache >= maxNodes && !inTerm) {
-printf("\ncache overflow; you will have to restart with a higher cache.\n%d@%d^%d\n",
+printf("\nCache overflow; you will have to restart with a higher cache.\n%d@%d^%d\n",
 curWidth, curDepth, megaNodes);
 inTerm = 1;
 }
