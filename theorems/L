@@ -37,7 +37,7 @@ So the face of b slides under the tab of a.
 
 If there are no gaps anywhere, y = z and z = w-y, hence w = 2y.
 This contradicts {1}, so there must be a gap between the tab of a and the notch of b.
-This means z = w - y and z > y. In other words, z + y = w, and z is the larger.
+This means z = w-y and z > y. In other words, z + y = w, and z is the larger.
 z is more than half of w and certainly more than half of h.
 With h > z, h is more than half of w. Our shape is not long and skinny.
 
@@ -64,7 +64,7 @@ and the shape is established, a 4×4 square minus a 1times3 rectangle.
 This is ruled out by trec @f0f0f080.
 
 Finally let c face right. Since d cannot stand next to c facing left,
-c fills the gap entirely, giving z - y = h - z, or h + y = 2z.
+c fills the gap entirely, giving z - y = h-z, or h + y = 2z.
 Now c hangs z-(h-z) squares beyond b. This is y squares beyond b.
 Put d on the floor beneath c, and assume d points right. This gives a gap of height w-h.
 We dealt with the square shape, w = h, in the last paragraph, giving e0c0c0,
@@ -130,17 +130,17 @@ This puts z < y < h.
 Place c in the corner of a and b.
 This must be the face or tab of c.
 Suppose c lies face down and points left, extending over the top of a.
-If z = w - y then we have a square (h=w).
-If z > w - y then z > h - y, yet z = h - y.
+If z = w-y then we have a square (h=w).
+If z > w-y then z > h - y, yet z = h - y.
 Therefore c points right, and completely fills the a-b gap,
-giving w - y = y - z.
+giving w-y = y - z.
 This is a b c interlock,
 where c extends z squares beyond b.
 Put d on the floor below c.
-If d faces left it must fit exactly, giving w - y = h.
-Yet w - y = y - z, so h = y - z, which contradicts y < h.
+If d faces left it must fit exactly, giving w-y = h.
+Yet w-y = y - z, so h = y - z, which contradicts y < h.
 Instead, d must lie down and point right.
-We already know z + y = h, hence z < w - y. Thus c does not reach the notch of d.
+We already know z + y = h, hence z < w-y. Thus c does not reach the notch of d.
 Place e in the corner of c and d.
 If e extends beyond the face of d we have a gap of height z, between d and e,
 that cannot be filled by f without crashing into e or creating holes with d or with the floor.
@@ -149,7 +149,7 @@ e can't lie face down and point left and interlock with d, because e would crash
 Therefore, c cannot lie face down atop b.
 
 We now know that c points down onto b.
-If c faces right, its tab fills the entire gap, giving y - z = h - z, or y = h.
+If c faces right, its tab fills the entire gap, giving y - z = h-z, or y = h.
 So c faces left, d stands back-to-back against c, and 2(h-z) = y-z.
 this implies 2h = y  +  z, yet y + z is h.
 That takes care of c, and b, hence a cannot point down.
@@ -166,7 +166,7 @@ cannot place its back or base against a, else the notch cannot be filled.
 
 Suppose b stands up and faces left.
 If the two notches do not coincide in height,
-one or the other will create a gap that cannot be filled. Thus h - z = w - y.
+one or the other will create a gap that cannot be filled. Thus h-z = w-y.
 It is possible that w = h and y = z,
 but this square in a square will be handled in the next paragraph.
 For now, assume w > h, hence y > z. This is illustrated by a 8×7 rectangle
@@ -175,7 +175,7 @@ which is strictly less than h. It must be filled by a tab of width w-y or h-z (s
 Assume c lies on top of a, and the two are 180° rotations of each other.
 We say that a and c are "interlocked".
 A rectangular space now exists between c and the left wall, just above a.
-Its width is w - 2y and its height is h - z.
+Its width is w - 2y and its height is h-z.
 Rewrite w - 2y as h-z - y, a width considerably smaller than h,
 and even smaller than the tab h-z. Nothing can fill this space.
 Thus c stands up, with its tab pointing down into the a-b gap.
@@ -183,8 +183,8 @@ If c faces left there is a gap between a and the overhang of c,
 having height y-z. This is clearly unfillable, unless y = z (no gap),
 but we're assuming y > z, so let's move on.
 Let c face right and interlock with b.
-The rectangular space between c and the left wall now has width w - y and height w - z.
-A tab of width w - y can indeed slide into this space,
+The rectangular space between c and the left wall now has width w-y and height w - z.
+A tab of width w-y can indeed slide into this space,
 but in order to reach all the way down to a, w - z must be <= y or z.
 If y+z is at least w then y+z exceeds h, which contradicts (y and z) < h/2.
 Thus b does not stand up next to a.
@@ -192,15 +192,15 @@ Thus b does not stand up next to a.
 Since b does not stand up next to a, it must lie down on the flor,
 the horizontal reflection of a.
 This presents a 2y×z gap which will be filled by the face or tab of c.
-Suppose c is horizontal, hence 2y = w - y, or w = 3y.
+Suppose c is horizontal, hence 2y = w-y, or w = 3y.
 If c points left then the space between c and the left wall has width y,
 and cannot be filled. If c points right then this space has width 2y,
 just like the a-b gap. Since 2y < h,
 only a tab or face can slide into this space.
-Yet the space has height h - z, which is longer than y or z.
+Yet the space has height h-z, which is longer than y or z.
 
 Now c points down, its tab filling the double notch.
-This implies 2y = h - z. The vertical gap between c and (a or b)
+This implies 2y = h-z. The vertical gap between c and (a or b)
 has height y - z, which implies y >= z.
 Nothing fits into a gap of height y, much less y-z, so y equals z.
 Combined with the last equation, y = z = h/3. That is, h = 3z.
@@ -208,27 +208,27 @@ If w = h, a situation that was postponed before, we have established the shape,
 a 3×3 square minus a 1×1 square.
 This is ruled out by trec @e0e0c0, hence w > h.
 
-Place d on top of a, at the left wall, in the gap of width w - y - z and height w - y.
-Since y and z are both smaller than w - y, d cannot point down or face down
+Place d on top of a, at the left wall, in the gap of width w-y - z and height w-y.
+Since y and z are both smaller than w-y, d cannot point down or face down
 without crashing into c or creating an unfillable gap.
 d stands up and faces right.
 Any other pieces between d and c must also stand up.
 If there is an adjacent piece e with its back to d,
 the d-e gap can only be filled with the tab of f,
-as w - y > h - z, (remembering w > h and y = z),
+as w-y > h-z, (remembering w > h and y = z),
 and f creates holes against the left wall.
 e faces d,
 creating a double notch that is filled by f.
-d and e mean w is at least 2h + z, so w - y is at least 2h.
+d and e mean w is at least 2h + z, so w-y is at least 2h.
 The face of f won't fit in this gap.
 Nor two tabs, since h-z is more than half of h.
 Put the tab of f in this d-e gap.
 If f faces left the space between f and the left wall, h - 2z = z,
 is too small. If f faces right the gap is h-z,
-so the tab of g might slide in, but then y >= w - y, which contradicts 2y < h.
+so the tab of g might slide in, but then y >= w-y, which contradicts 2y < h.
 Thus d is the lone vertical piece.
 
-If c faces left then w - y = h + z, or w = h + 2y.
+If c faces left then w-y = h + z, or w = h + 2y.
 This establishes the shape, a 5×3 rectangle minus a 1×1 square,
 which is handled as a separate theorem f8f8f8e0.
 Thus c faces right, and w-y = h. This establishes the shape,
@@ -244,9 +244,9 @@ Tab is not long enough; face is too wide.
 Suppose b is the reflection of a,
 and presents a double notch that will be filled by c.
 Unfortunately the tab of c isn't long enough to do the job.
-But c might lie face down, if 2y = w - y. That is, w = 3y.
+But c might lie face down, if 2y = w-y. That is, w = 3y.
 If c points left then the space between c and the left wall has width y,
-which can only be filled if h - z = y.
+which can only be filled if h-z = y.
 Slide d into this slot, facing right,
 and let e fill the corner created by c and d,
 having width w-z and height 2y.
@@ -273,7 +273,7 @@ Next, e might point down and face d, wrapping around c, whence w - z = z.
 Thus 2z = 3y, building the same shape we saw before, fcfcf0f0f0.
 
 That brings us to the last orientation of e, lying face down.
-Since w - y > w - z, e still extends beyond c.
+Since w-y > w - z, e still extends beyond c.
 Once again we ask the tab of f to slide under without gaps,
 forcing w-z + y = w-y, or 2y = z. This gives our order 28 shape again.
 That takes care of c pointing left.
@@ -362,11 +362,11 @@ If one tab, then h-z = h/2, or h = 2z. This has order 2.
 
 b is the reflection of a, and presents a double notch of size h×z.
 Suppose c fills this double notch, or at least the left side of it,
-by lying face down, whence w - y <= h.
+by lying face down, whence w-y <= h.
 Equivalently, w - h <= y.
 If c points left then the space between c and the left wall has width w-2y = w-h <= y.
 The tab of d must precisely fill this gap.
-To reach down to a, y is at least h - z, thus z >= h/2.
+To reach down to a, y is at least h-z, thus z >= h/2.
 In fact z > h/2.
 There is a gap of height z-y between d and c.
 The tab of e isn't long enough to reach the notch of d.
@@ -1285,6 +1285,42 @@ One of the three equations is established at the outset, but there are
 more possibilities, such as a piece pointing down onto the floor.
 {4} is not in force.
 
+Suppose a and b stand up next to each other front to back, or face to face.
+Put c face down in the notch of a.
+Since z < y, c can't point left.
+If a and b are face to face maybe there is room for c to point right,
+2z could be larger than w,
+but d must slide its face under the tab of c.
+w-y = z,
+but looking across the gap, a and b give 2z, while c and d give z+h.
+So nothing lies face down in this gap.
+If a and b are front to back we only have room for one tab, whence z is half of h,
+Or two tabs, whence z is 2/3 of h.
+Continue on with a and b facing each other.
+If c stands up then c can't fill the gap, or h = 2z.
+Two pieces standing make 2h = 2z,
+two pieces standing and anything else makes z > h.
+So we have c and the tab of d, h + h-z = 2z.
+Once again z is 2/3 of h.
+Put c in the middle and a tab on either side, but c faces left or right,
+and either way there is a z by y gap that would force z = 2h/3.
+If c points down into the notch of a and faces left,
+the only other option is d lying down across the gap.
+This means w < 2z.
+We know w is not y+z.
+If we know w is more than y+z, it is more than 2z,
+and we don't have to consider a piece lying down in the gap,
+with a possible tab on one side, or the other, or both.
+
+Three vertical pieces in a row imply a z by y gap, or a 2z by y gap.
+If the piece is wide enough, this in turn implies z = 2h/3.
+
+Let a and b face right, with b lower than a.
+In fact the tab of b could be just a hair above the face of a.
+Still there is a gap of width z.
+The face of c would imply w-y = z, which is ruled out by {13}.
+We have, as we did above, two tabs, and z = 2h/3.
+
 Suppose a points down onto the floor, and b points into a.
 Since h is not h-z, there is a gap.
 Thanks to {13}, the face of c cannot fill the gap between a and b.
@@ -1295,6 +1331,131 @@ Suppose a extends beyond the face of b, hence z > w-y.
 Only the face of c can fill the notch of b,
 but this would again set w-y = z.
 So the face of b is farther right, giving w-y > z.
+
+Put c in the notch of b.
+Start with the unlikely orientation, c points down and faces left.
+y > z, so there is a gap.
+Put the face of d in this gap, so that z + w-y = y.
+Thus w-y = y-z.
+There isn't room for d to stand on the face of b.
+
+Let c face right.
+This creates a gap of width w-y - z between a and c.
+A face isn't long enough to reach down into this gap,
+and is also too wide to fit.
+Let d point down into the corner of a and b and face left.
+y can't equal w-y, so e stands on top of a and interlocks with d.
+This sets y = 2w/3.
+w-y is half of y, so no room for a piece to stand atop the face of b.
+There isn't even room for the face of a and the tab of d, z + h-z.
+d can't slide in this way.
+Let d point down but face right.
+It has to fill the gap, so that w-y = z + h-z.
+w-y = y, and that's order 2.
+Let d stand up between a and c.
+w-y = z+h.
+c is lower then d by z, which is less than y.
+If d faces right there is a gap of width z, and that brings our third equation, z = 2h/3.
+This is fff8f8, which fails.
+Let d face left.
+Its face is flush with a, giving a h+z by y gap.
+w > y+z, so nothing lies down in this gap.
+A piece stands up against the left wall, giving a gap of width z, and z = 2h/3, and fff8f8 again.
+Perhaps there are more pieces standing between d and c.
+Look again at d facing left.
+e stands atop a, and the tabs of f and g go in between e and d,
+but w-y can't equal y, so e and f can't interlock, and this doesn't work.
+d faces right, and e stands atop a.
+Yes w-y > z but it could be less than y.
+If it is then there is a gap of width z between the tabs of e and d.
+This is filled by the tabs of two pieces pointing down, but the leftmost crashes into the left wall.
+Thus w-y > y.
+If the vertical piece to the right of d creates a gap of width z in the notch of d,
+put the tabs of f and g in,
+but the face of f crashes into the face of e.
+d is face to face with a vertical piece, giving a notch of width 2z.
+This is filled by a piece standing up and a piece pointing down.
+If the left piece ppoints down into the notch of d and faces left,
+it crashes into the face of e as before.
+f stands up and creates a small gap above the tab of d of width h-z.
+It's natural to put the tab of h in, since it fits.
+If h faces right there is a gap of width z in the notch of e,
+two pieces fill it pointing down, and the leftmost crashes into the left wall.
+If h faces left it must interlock with e.
+w-y = 2y.
+That doesn't leave room for two pieces to stand on the face of b.
+Try to put a face in the gap, but w-y > z,
+and z is 2/3 of h, so z > h-z. The face won't fit.
+That ends c facing right.
+
+Let c face left.
+With w-y > z, the face of c rises above b.
+There is a gap above b of width w-y-z, as there was before.
+Smaller than w-y, we can't put a face in.
+d can't point down into the corner of a and b and face left,
+for the same reason as the previous paragraph.
+d can't point down into the corner of a and b and face right,
+for the same reason as the previous paragraph.
+d can't stand up and face left,
+for the same reason as the previous paragraph.
+d stands in the corner of a and b and faces right.
+We can't have another vertical piece between d and c,
+for the same reason as the previous paragraph.
+That means d is up against c.
+d and c are reflections, but d stands z squares above c.
+The notch of c is a gap of width z,
+and the tabs of f and g point into this gap.
+Travel up c and the tab of f, w-y + y.
+Travel up the face of b and the face of d, z + w-y.
+There is a hole between d and f that can't be filled.
+That's it for c standing up.
+
+Let c point right.
+Since h > z, c rises above a.
+There is a gap above b of width w-y-z, as there was before.
+Smaller than w-y, we can't put a face in.
+d can't point down into the corner of a and b and face left,
+for the same reason as the previous paragraph.
+d can't point down and fill the gap above b and face right,
+for the same reason as the previous paragraph.
+You might think d could point down and f could fill the notch of d
+and point right and wrap around c,
+but there isn't room for the face of f atop the face of b,
+with a and d taking up territory.
+d can't stand up and face left,
+for the same reason as the previous paragraph.
+d stands in the corner of a and b and faces right.
+We can't have another vertical piece between d and c,
+for the same reason as the previous paragraph.
+That means d is up against c.
+z + h = w-y.
+w > 2y.
+If c lies face up, a tab or a face cannot slide underneath c and reach b.
+If c lies face down, its face goes beyond the tab of b.
+The tab of f slides under c, and f and c interlock.
+y + y = w-y.
+w = 3y.
+Yet w = h+z+y, whence y = z.
+That's it for c pointing right.
+
+Let c lie face down and interlock with b, its tab pointing left.
+We need room for the tab of c, so w-y >= y+z.
+c extends beyond b, creating a gap above the floor that is at least z wide, and h-z high.
+A face won't fit, so slide the tab of f beneath c.
+It is naturally the correct height.
+w-y is greater than y + z, but is no more than 2y.
+That leaves a gap above b between a and c that is no more than y-z.
+This is too small for a face or a tab or anything.
+
+Let c face down and point left and put its tab in the notch of b.
+This is the last orientation.
+This means z is less than half of h.
+We have a w-y by h-2z gap along the floor.
+w-y > z, so a face isn't long enough to reach b.
+Slide a tab in, and h-z = h-2z, which is impossible.
+
+With no more choices for c, or b, a does not point down.
+We have a traditional corner with a lying down and pointing right.
 
 I'll continue this theorem as time permits, or you can continue my work.
 Please review this theorem and send along any corrections.
