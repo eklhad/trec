@@ -1322,6 +1322,9 @@ In fact the tab of b could be just a hair above the face of a.
 Still there is a gap of width z.
 The face of c would imply w-y = z, which is ruled out by {13}.
 We have, as we did above, two tabs, and z = 2h/3.
+If b is higher than a, whence one wall of the gap is higher than y,
+then two tabs can't fit in, because the face
+of the rightmost piece crashes into the back of b.
 
 Perpendicular tabs.
 Let a be face up and point right anywhere on the board.
@@ -1686,6 +1689,135 @@ f lies atop b and is the reflection of b.
 This implies ff+fcfc.
 Traveling up to the notch of c is 7 squares on the left and 9 squares on the right.
 That's it for e, and for c facing right.
+
+Let c stand in the notch of a facing left.
+Suppose w-y < z.
+Two tabs go in the notch of c, but the face of a is so small,
+that the left piece crashes into the left wall.
+So w-y > z, and c rises above the height of a.
+
+Put d above a and against the left wall.
+d cannot be horizontal.
+If d points down it interlocks with c.
+By the face of c, w-y = z + y.
+By the face of a, w-y = h-z.
+z = -z, which is impossible.
+d points up the left wall.
+The face of d is z higher than the face of c.
+If d and c touch, there is a gap of width z and height z on the left.
+Two tabs in, but the left piece creates a hole with d that can't be filled.
+Let e stand next to d.
+These must be face to face.
+w-y is now at least 2y, and that means d and e have to create ff+fcfc.
+e touches c, putting two tabs in the notch of c, and the leftmost piece
+crashes into the back of e.
+That completes c vertical in the notch of a.
+
+Put d face down atop a. This can go down two paths,
+but the most common is ff+fcfc, which we've seen before.
+b is on the floor as the reflection of a,
+c is in the double notch, and e puts its tab between c and d.
+We have 9 squares across d, then 6 across e.
+This will be our base as we climb the left wall.
+Let f g and h stand up atop d.
+These must face right left and right respectively.
+Put i in the corner of e and h.
+If i is vertical, one square higher than h,
+the notch of h is a gap of width 2.
+Put two tabs in, and the rightmost piece collides with,
+or creates a hole with, i.
+Let i point toward h and put j in the notch of i.
+j is now 2 squares higher than h.
+Pieces in the notch of h still cause trouble.
+Let i point right and put j in the corner of h and i.
+j is 4 squares higher than h.
+j can't point down and wrap around h, or be vertical at all.
+If j points right then tabs fit into the notch of h, and the left piece crashes into the piece that points down into the notch of g.
+j points left, and k stands in its notch, and again the notch of h can't be filled.
+That's it for 3 pieces standing atop d, so let f lie down on top of d.
+Let f point left and put g in the notch of f.
+Put h in the corner of f and g, h 2 squares higher than g.
+If h is vertical the notch of g can't be filled by tabs without causing trouble.
+Let h point left and put i in the notch of h.
+If i stands up the notch of g is trouble.
+Let i point down and wrap around g.
+This seems to work, until you fill the gap of width 2 between i and h.
+So h points right, i is in the corner of g and h, and i is 5 squares higher than g.
+The only way to avoid the notch of g, of width 2, is to have i point left.
+This creates a gap of width 5.
+Try a couple of combinations and find this cannot be filled.
+Therefore f points right.
+If g is horizontal atop f it is face down and points right.
+Put h and i in the double notch, and g and i look just like d and e.
+The base repeats.
+If g points down, and h in the notch of g, the notch of f, of height 2, is trouble.
+Let g stand up atop f.
+Put h in the corner of f and g.
+If h points right or points left face up, the notch of f can't be filled.
+Let h point left and interlock with f.
+Put i in the corner of g and h, i 1 square higher than g.
+I can't be vertical, or the notch of g is trouble.
+If i points left, j stands in the notch of i,
+2 squares higher than g, and still the notch of g is trouble.
+i points right, and j is in the corner of g and i.
+j creates a gap in the notch of g, or j points left and k,
+standing in the notch of j, establishes the same notch of g.
+Thus h is vertical.
+h is face to face with g.
+Fill g and h, and a piece extends 1 square to the right of h.
+This creates a gap of height 11.
+Put i in the notch of f.
+If i stands up, there is a gap of height 2.
+Two tabs go in, and we have gaps that can't be filled.
+Let i point left and let j stand up in the notch of i.
+Put the tab of k in the gap of 1 above j.
+This creates a gap of width 2 that can't be filled.
+Therefore i points right.
+Now we have a gap of height 8.
+Another piece points right, giving a gap of height 5.
+Another piece points right, giving a gap of height 2.
+We can't put two tabs in this gap.
+Let f stand up atop d, and let g lie face down, filling the rest of d.
+h slides its tab under the tab of g.
+g is now a gap of width 9.
+Put i in the corner of f and g, 3 squares above f.
+If i points down and interlocks with f, the resulting gap of width 8 can't be filled.
+If i stands next to f, the notch of f is trouble.
+If i points left, j goes in the notch of i, and the notch of f is trouble.
+Thus i points right.
+The faces of f and i are flush.
+Put j in the notch of f.
+If j lies face up it extends 1 square past the face of i.
+This creates a gap of height 2 that can't be filled.
+If j is face down the notch of j can't be filled
+without creating a hole in the notch of i.
+If j faces right the gap between j and the left wall can't be filled.
+j faces left, and k interlocks with j going up the left wall.
+There are still 5 squares along the face of i.
+Put l in the notch of i,
+and most of the time you find a gap of width 5 that can't be filled.
+You could let k point left and interlock with i, but that gives a gap of width 2 that can't be filled.
+That completes the analysis of ff+fcfc when d is face to face with a.
+
+With d still atop a, and remembering that c is horizontal, there is one other path.
+The tab of c fills the double notch of a and d, and z = h/3.
+If a face slides under c, and c face down,
+we have our third equation: w-y = h/3.
+This is f0f080, order 4.
+If a face slides under c, and c face up,
+we have our third equation: w-y = 2h/3.
+This is f8f8c0, which fails.
+Therefore the tab of b slides under c, which means c is face up.
+w-y is not y, so there is a gap between c and b.
+This gap is less than y, so two tabs can't fit in.
+One tab sets w-y + y-z = y, w-z = y, which is handled in {13}.
+A face sets w-y + w-y = y.
+This is ff+ff+ff+ff+e0e0, which fails.
+The last possibility is a tab pointing down and a face pointing right.
+w-y + h-z + w-y = y.
+2w = 2y + z.
+This is fefefefe8080, which fails.
+That completes d and a face to face.
 
 I'll continue this theorem as time permits, or you can continue my work.
 Please review this theorem and send along any corrections.
