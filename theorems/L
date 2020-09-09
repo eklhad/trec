@@ -1285,7 +1285,7 @@ One of the three equations is established at the outset, but there are
 more possibilities, such as a piece pointing down onto the floor.
 {4} is not in force.
 
-w > h, or the piece is a rectangle.
+w > h, i.e. the piece is not a square.
 
 Suppose a and b stand up next to each other front to back, or face to face.
 Put c face down in the notch of a.
@@ -1313,11 +1313,11 @@ the only other option is d lying down across the gap.
 This means w < 2z.
 We know w is not y+z.
 If we know w is more than y+z, it is more than 2z,
-and we don't have to consider a piece lying down in the gap,
+then we don't have to consider a piece lying down in the gap,
 with tabs on one side, or the other, or both.
 
 Three vertical pieces in a row imply a z by y gap, or a 2z by y gap.
-If the piece is wide enough, this in turn implies z is a third of h or two thirds of h.
+If w is large enough, this in turn implies z is a third of h or two thirds of h.
 
 Let a and b face right, with b lower than a.
 In fact the tab of b could be just a hair above the face of a.
@@ -1338,26 +1338,39 @@ If b faces right we might try to put two tabs in the gap,
 but the face of the right most piece crashes into the back of b.
 
 Look again at a and b face to face, with w small enough where c might lie down inside.
+If z is forced to 2h/3, which is not uncommon, the walls consume 2h/3,
+and one tab consumes h/3. That leaves only h, and c must be longer than h.
+So there are no tabls, and w = 4h/3.
+This is f08080, which fails.
+Be on the lookout for this situation.
+
+One way to encounter this is to put e in the notch of c, standing up and facing left.
+w <= 2z, so w-y < z.
+The notch of e forms a gap of width z.
+One tab is order 2, and two tabs trips our condition.
+You might try to put the face of f in the corner of c and e.
+The face can't fill the gap, w-y being less than z, but maybe a tab fills the rest.
+w-y + h-z = z, w-z = z, and there is no room for tabs.
+Squeezing in two tabs sets z = w-y + y-z + y-z, or w+y = 3z.
+w <= 2z, so 2z+y <= 3z, which is impossible.
+
 Let c point right followed by the tab of d.
 By perpendicular tabs, d faces right.
 Put e in the corner of c and d.
 If e is face down and points left it has order 2.
-If e is face down and points right its tab, h above the a-b gap, crashes into d.
-Let e stand up, and remember that w-y < z.
-The notch of e presents a gap of width z.
-Two tabs fit in this gap, and z = 2h/3.
-d consumes h/3, and w <= h, which is impossible.
-A tab can't fill the entire gap, else h-z = y.
+If e is face down and points right, its tab, h above the a-b gap, crashes into d.
+Let e stand up.
+We already handled e facing left.
+If e faces right we have the same gap of width z in the notch of e.
+Let e point down into the corner of c and d.
+The tab of e can't fill the entire gap, else h-z = y.
 Two tabs would set z = h/2.
 Therefore c doesn't point to a tab.
 We have instead c pointing into the notch of b,
 giving a y by z gap in the notch of c.
 Let e stand up in this gap.
-This gives a gap of width 2 in the notch of e, as it did before.
-z = 2h/3.
-Any tabs to the left of c would make w <= h.
-With no other tabls, w = 4h/3.
-This is f08080, which fails.
+This gives a gap of width z in the notch of e, as it did before.
+This was already discussed.
 Put e face down in the notch of c.
 If e points right it must fill the gap, whence w-y = y.
 Let e point left and its tab must extend beyond the left edge of c.
@@ -1977,6 +1990,104 @@ No orientation of g will work.
 
 Unwind the stack through f, e, d, c, and a.
 The case of y = h is complete.
+
+	16. y>h, Lemmas.
+
+Many of the lemmas of {14} are still in force,
+although we don't have {13} to fall back on.
+
+w > h, i.e. the piece is not a square.
+
+Suppose a and b stand up next to each other front to back, or face to face.
+Put c face down in the notch of a.
+Since z < y, c can't point left.
+If a and b are face to face maybe there is room for c to point right,
+2z could be larger than w,
+but d must slide its face under the tab of c.
+w-y = z.
+That's ok, but z < y, so the face doesn't reach c.
+So nothing lies face down in this gap.
+If a and b are front to back we only have room for one tab, whence z is half of h,
+Or two tabs, whence z is 2/3 of h.
+Continue on with a and b facing each other.
+If c stands up then c can't fill the gap, else h = 2z.
+Two pieces standing make 2h = 2z,
+two pieces standing and anything else makes z > h.
+So we have c and the tab of d, h + h-z = 2z.
+Once again z is 2/3 of h.
+Put c in the middle and a tab on either side, but c faces left or right,
+and either way there is a z by y gap that would force z = 2h/3.
+Across the double notch, 5/3 h can't equal 4/3 h.
+If c points down into the notch of a and faces left,
+c could fill the double notch, whence z = h/3.
+Otherwise put d next to c. We already handled d vertical.
+the only other option is d lying down across the gap.
+This means w < 2z.
+If we know w is more than 2z,
+then we don't have to consider a piece lying down in the gap,
+with tabs on one side, or the other, or both.
+
+Three vertical pieces in a row imply a z by y gap, or a 2z by y gap.
+If w is large enough, this in turn implies z is a third of h or two thirds of h.
+
+Let a and b face right, with b lower than a.
+As long as the tab of b is more than z above the face of a,
+we can't put the face of c into the notch of a.
+We have, as we did above, two tabs, and z = 2h/3.
+If b is higher than a, whence one wall of the gap is higher than y,
+then two tabs can't fit in, because the face
+of the rightmost piece crashes into the back of b.
+
+Look again at a and b face to face, with w small enough where c might lie down inside.
+c might have pieces pointing down on one side or the other or both.
+Let c point right.
+Suppose e lies face down on c.
+If there is a gap below the tab of e, slide f beneath.
+If the tab of f then we have holes, or order 2.
+The face of f cannot reach the face of e, since z < y.
+The tab of e rides z-h + z = h above the a-b gap.
+The walls are higher than h, and the tab of any vertical piece next to c is higher than h.
+The tab of e would run into this wall and create a hole.
+If the tab rests on the face of c, then rotate everything 180 degrees,
+and see that the face of e rests on the tab of c.
+Either there is a hole in the middle or the piece has order 2.
+So we can forget e lying down on c.
+
+If z is forced to 2h/3, which is not uncommon, the walls consume 2h/3,
+and one tab consumes h/3. That leaves only h, and c must be longer than h.
+So there are no tabls, and w = 4h/3.
+Be on the lookout for this situation.
+
+One way to encounter this is to put e in the notch of c, standing up and facing left.
+w <= 2z, so w-y < z.
+The notch of e forms a gap of width z.
+One tab is order 2, and two tabs trips our condition.
+You might try to put the face of f in the corner of c and e.
+The face can't fill the gap, w-y being less than z, but maybe one or two tabs fills the rest.
+Well now there is a gap of height w-y between the face of c and the tab of f.
+Put g in this gap and g travels across the face of c for at least h squares.
+With w-y < z, w-y < h, and g crashes into the left wall or any vertical piece next to c.
+Even 2 tabs is trouble.
+The face of the left piece hangs above the face of c, and goes beyond c.
+Meantime the left wall, or a vertical piece to the left of c, rises above the face of c.
+We have enclosed an area that can't be filled.
+So e does not stand up and face left.
+
+e in the notch of c and facing right isn't any better.
+With y > h, there is some other piece f to the right of e.
+They both can't stand up, since 2h > 2z, so f points down.
+If f faces left we have order 2.
+If f faces right the notch of e implies z = 2h/3.
+y = 4h/3, the walls are 2h/3, and w = y, which is impossible.
+
+Let e point down into the notch of c.
+If e faces left we have the same problem we saw before.
+The flag hangs above the face of c and extends to the left of c,
+while a left wall or piece rises above the face of c, and encloses a space that can't be filled.
+So e faces right, but then we can't put f next to e.
+Even if w is less than 2z, c can't lie down in this gap.
+We are back to vertical pieces,
+and z = h/3 or 2h/3.
 
 I'll continue this theorem as time permits, or you can continue my work.
 Please review this theorem and send along any corrections.
