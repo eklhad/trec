@@ -152,7 +152,8 @@ I also allow a + to set the ninth bit.
 Thus ff+fcfc is a long version of Oklahoma,
 with a row of 9 squares and two rows of 6 squares.
 Use braces for a longer row, as in ffff{e0} for a row of 11,
-although shapes with a diameter greaterer than 9 cannot currrently be analyzed.
+although shapes with a diameter greaterer than 9 consume almost twice as much
+disk space, and are not well tested.
 
 You can specify a set of polyominoes on the first line, using _ as delimiter.
 Thus f820_e070 describes a pair of hexominoes
@@ -442,12 +443,6 @@ f08080
 fefef0f0f0f0
 fcfcf0
 fcfcf0f0f0  (this one goes all the way out to diagonal 55)
-
-treck can't tile rectangles with polyominoes more than 9 squares across,
-however, the first quadrant diagonal test can handle pieces 16 squares across.
-At least I think it can, I should read through the code again and test it.
-trec @ff{c0}ff{c0}ff{c0}ff{c0}ff
-failed at diagonal 14
 
 You may be wondering about higher dimensions.
 Three dimensional polyominoes are built by pasting unit cubes together.

@@ -87,6 +87,7 @@ Set curDepth = 0 to start.
 static int nsq; // number of squares in the polyomino
 static int curWidth; // current width of rectangle being tiled
 static int curWidth1; // curWidth + 1
+static int curNodeWidth;
 static int curDepth; // depth of nodes being expanded
 
 /*********************************************************************
@@ -559,7 +560,6 @@ a lot of code will have to change!
 
 
 #define REPDIAMETER 16 // represent pieces this large
-#define ANADIAMETER 9 // analyze pieces this large
 #define NSQ 80 // number of squares in largest polyomino
 #define SETSIZE 10 // number of pieces in the set
 #define NUMTHREADS 64 // max number of worker threads
@@ -824,13 +824,13 @@ return c-'0';
 
 static const uchar nibbleCount[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
 static const shapebits revNibble[] = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
-static shapebits reverseBits(shapebits v)
+static shapebits reverseShort(shapebits v)
 {
 return revNibble[v>>12] |
 (revNibble[(v>>8)&0xf]<<4) |
 (revNibble[(v>>4)&0xf]<<8) |
 (revNibble[v&0xf]<<12);
-} /* reverseBits */
+} /* reverseShort */
 
 static uchar reverseByte(uchar v)
 {
@@ -1104,7 +1104,7 @@ o->y = 0;
 o->pno = setSize;
 o->ono = convert_ono[ono];
 for(j=0; j<by; ++j)
-o->pattern[j] = reverseBits(new[j]);
+o->pattern[j] = reverseShort(new[j]);
 
 /* compute the break level */
 o->breakLine = (o->h-1)/2;
@@ -1340,6 +1340,7 @@ static int restartParent;
 static int startMega;
 static int numThreads;
 static int lookahead; /* look ahead this many rows when tiling */
+static char r_shorts; // nodes must use shorts, rather than bytes
 #define BADSPANCOUNT 10
 static struct BADSPAN { schar drop, span, up, filler; } badSpan[BADSPANCOUNT+1];
 
@@ -1377,7 +1378,7 @@ if(!strcmp(line, "-")) { --lineno; break; }
 switch(lineno) {
 case 1:
 stringPiece(line);
-if(setMaxDimension > ANADIAMETER) bailout("polyomino is too large, limit %d rows or columns", ANADIAMETER);
+if(setMaxDimension > 9) r_shorts = 1;
 sortOrientations();
 break;
 
@@ -1440,6 +1441,7 @@ curWidth += dimFactor-1;
 curWidth -= curWidth%dimFactor;
 }
 curWidth1 = curWidth + 1;
+curNodeWidth = curWidth * (1+r_shorts);
 break;
 
 case 9:
@@ -1606,7 +1608,7 @@ quadTest();
 if(argc == 2 && argv[1][0] == '^') {
 /* polyomino on the command line, other values default. */
 stringPiece(argv[1]+1);
-if(setMaxDimension > ANADIAMETER) bailout("polyomino is too large, limit %d rows or columns", ANADIAMETER);
+if(setMaxDimension > 9) r_shorts = 1;
 sortOrientations();
 curWidth = setMinDimension;
 bestOrder = 4000;
@@ -1615,6 +1617,7 @@ lookahead = 1;
 ordFactor = (cbflag ? 2 : 1);
 dimFactor = 1;
 curWidth1 = curWidth + 1;
+curNodeWidth = curWidth * (1+r_shorts);
 piecename = argv[1] + 1;
 goto config_set;
 }
@@ -1678,8 +1681,9 @@ restart = 0;
 restartParent = 0;
 noincrease = false;
 curWidth += dimFactor;
-curWidth1 = curWidth + 1;
 if(curWidth > BOARDWIDTH-2) bailout("width cannot exceed %d", BOARDWIDTH-2);
+curWidth1 = curWidth + 1;
+curNodeWidth = curWidth * (1+r_shorts);
 }
 
 return 0;
@@ -1827,7 +1831,10 @@ long hash; // hash value of this pattern
 short depth; // the depth of this node
 uchar gap; // the gap of this pattern
 bool dead;
-uchar pattern[BOARDWIDTH];
+union {
+uchar b[BOARDWIDTH]; // bytes
+ushort s[BOARDWIDTH]; // shorts
+} pattern;
 };
 
 static int nodeSize; // adjusted for the actual width
@@ -2000,8 +2007,9 @@ static bool findNode( struct NODE *look, bool insert, struct NODE *dest);
 static void matchFound(const struct NODE *left, const struct NODE *right) ;
 static int reachup; /* greatest reach of node so far */
 
-static void expandNode(long this_idx, const uchar *base)
+static void expandNode(long this_idx, const uchar *base_b)
 {
+ushort *base_s = (ushort*)base_b;
 int lev; /* placement level */
 struct PLACE *p;
 const struct PLACE *q;
@@ -2049,9 +2057,16 @@ min_y = 0;
 min_y_bit = 1;
 min_y_count = 0;
 // copy the board to the board on-stack for manipulation
+if(r_shorts) {
 for(j=0; j<curWidth; ++j) {
-if(!(base[j]&1)) ++min_y_count;
-b0[j+1] = base[j];
+if(!(base_s[j]&1)) ++min_y_count;
+b0[j+1] = base_s[j];
+}
+} else {
+for(j=0; j<curWidth; ++j) {
+if(!(base_b[j]&1)) ++min_y_count;
+b0[j+1] = base_b[j];
+}
 }
 memset(b0pad, 0xff, (REPDIAMETER+1)*sizeof(shapebits));
 b0[curWidth1] = 0xffff;
@@ -2343,8 +2358,12 @@ reset = breakLine - (setMinDimension-1)/2;
 recomplete:
 /* build a new instance of the board, with only those pieces
  * that would be included on the lower side of the breakLine. */
+if(r_shorts)
 for(j=0; j<curWidth; ++j)
-b1[j+1] = base[j];
+b1[j+1] = base_s[j];
+else
+for(j=0; j<curWidth; ++j)
+b1[j+1] = base_b[j];
 b1[0] = b1[curWidth1] = 0xffff;
 
 for(q=placeTry; q<p; ++q) {
@@ -2371,29 +2390,41 @@ mask &= b1[j];
 i = lowEmpty[mask];
 newnode.depth = curDepth + i;
 if(i) {
-if(i > 8) bailout("depth difference %d is too high", i);
+if(i > 8*(1+r_shorts)) bailout("depth difference %d is too high", i);
 for(j=1; j<=curWidth; ++j)
 b1[j] >>= i;
 } else if(ambnode) {
 /* did we make the same node again? */
+if(r_shorts)
 for(j=1; j<=curWidth; ++j)
-if(b1[j] != base[j]) break;
+if(b1[j] != base_s[j]) break;
+else
+for(j=1; j<=curWidth; ++j)
+if(b1[j] != base_b[j]) break;
 if(j == curWidth1) goto ambtest;
 }
 
 mask = 0;
-for(j=1; j<=curWidth; ++j)
-mask |= newnode.pattern[j-1] = b1[j];
+for(j=1; j<=curWidth; ++j) {
+mask |= b1[j];
+if(r_shorts)
+newnode.pattern.s[j-1] = b1[j];
+else
+newnode.pattern.b[j-1] = b1[j];
+}
 for(i=0; mask; ++i, mask>>=1)  ;
 newnode.gap = i;
-if(i > 8) bailout("gap %d is too high", i);
+if(i > 8*(1+r_shorts)) bailout("gap %d is too high", i);
 if(i == 0) bailout("zero gap at depth %d", newnode.depth);
 newnode.dead = false;
 newnode.parent = this_idx;
 
 if(checkBits&NODECHECK) {
 printf("%d:%d:", newnode.depth, newnode.gap);
-showSmallPattern(newnode.pattern);
+if(r_shorts)
+showPattern(newnode.pattern.s);
+else
+showSmallPattern(newnode.pattern.b);
 printf(" from ");
 showPattern(b0+1);
 printf("\n");
@@ -2412,11 +2443,19 @@ checkBits&LOOKALLCHECK) {
 /* by inserting first, this complement check now tests whether
  * the node matches itself. */
 mask = (1<<newnode.gap) - 1;
+if(r_shorts) {
 for(j=0; j<curWidth; ++j)
-compnode.pattern[j] = (reverseByte((uchar)(newnode.pattern[j]^mask)) >> (8-newnode.gap));
+compnode.pattern.s[j] = (reverseShort((newnode.pattern.s[j]^mask)) >> (16-newnode.gap));
+} else {
+for(j=0; j<curWidth; ++j)
+compnode.pattern.b[j] = (reverseByte((uchar)(newnode.pattern.b[j]^mask)) >> (8-newnode.gap));
+}
 if(checkBits&NODECHECK) {
 printf("complement:");
-showSmallPattern(compnode.pattern);
+if(r_shorts)
+showPattern(compnode.pattern.s);
+else
+showSmallPattern(compnode.pattern.b);
 printf("\n");
 }
 ThreadLock;
@@ -2437,7 +2476,7 @@ static void *expandWorker(void *notused)
 long n; /* index of node being expanded */
 struct NODE buf; /* node buffer */
 while(n = getNode(&buf)) {
-expandNode(n, buf.pattern);
+expandNode(n, buf.pattern.b);
 // Wait a minute - we might have found a better solution.
 // Can we stop searching?
 if(stopsearch) break;
@@ -2523,7 +2562,7 @@ So when we mark a node as old we decrement nodesCache.
 static long *hashIdx; // array of hashed indexes
 static bool reversibleHash = true;
 
-static long computeHash(uchar *p)
+static long computeHashBytes(uchar *p)
 {
 int j, k, direction;
 ulong hash = 0;
@@ -2561,7 +2600,47 @@ if(hash >= prime) bailout("hash value too large", 0);
 // 0 hash value is not allowed
 if(!hash) hash = 1;
 return (long)hash;
-} /* computeHash */
+}
+
+static long computeHashShorts(ushort *p)
+{
+int j, k, direction;
+ulong hash = 0;
+shapebits v;
+ushort swap;
+ulong prime = 2147483629;
+ulong m_factor = (ulong)0x80000000 - prime;
+
+direction = 1;
+if(reversibleHash) {
+k = curWidth-1;
+for(j=0; j+j<curWidth; ++j, --k) {
+if(p[j] == p[k]) continue;
+if(p[j] < p[k]) direction = -1;
+break;
+}
+
+if(direction < 0) {
+k = curWidth-1;
+for(j=0; j+j<curWidth; ++j, --k)
+swap = p[j], p[j] = p[k], p[k] = swap;
+}
+}
+
+for(j=0; j<curWidth; ++j) {
+v = p[j];
+// hash = (hash * 65536 + v) mod prime
+hash = ((hash&0x7fff)<<16) + ((hash>>15)*m_factor);
+hash += v;
+if(hash >= prime) hash -= prime;
+}
+
+if(hash >= prime) bailout("hash value too large", 0);
+
+// 0 hash value is not allowed
+if(!hash) hash = 1;
+return (long)hash;
+}
 
 
 static void recache(void);
@@ -2579,7 +2658,8 @@ workAlloc = 60;
 workList = emalloc(4*workAlloc);
 workEnd = 0;
 
-nodeSize = sizeof(struct NODE) - BOARDWIDTH + curWidth;
+nodeSize = sizeof(struct NODE) - BOARDWIDTH*2 + curWidth;
+if(r_shorts) nodeSize += curWidth;
 nodeSize = (nodeSize + 3) & ~3;
 nodesInFile = 0x7fff0000 / nodeSize;
 megaNodes = startMega;
@@ -2705,7 +2785,7 @@ if(!idx) break;
 idx &= 0x7fffffff;
 readNode(idx, &redest);
 if(redest.hash != hash) goto nextnode;
-if(memcmp(redest.pattern, rebuf.pattern, curWidth)) goto nextnode;
+if(memcmp(redest.pattern.b, rebuf.pattern.b, curNodeWidth)) goto nextnode;
 if(rebuf.depth < redest.depth) *hb = j;
 goto nextDisk;
 nextnode:
@@ -2731,7 +2811,10 @@ long n, hash, idx;
 long empty = -1;
 int j;
 
-hash = computeHash(look->pattern);
+if(r_shorts)
+hash = computeHashShorts(look->pattern.s);
+else
+hash = computeHashBytes(look->pattern.b);
 n = hash % slopNodes;
 
 hb = hashIdx + n;
@@ -2746,7 +2829,7 @@ idx &= 0x7fffffff;
 
 readNode(idx, dest);
 if(dest->hash != hash) goto nextnode;
-if(memcmp(dest->pattern, look->pattern, curWidth)) goto nextnode;
+if(memcmp(dest->pattern.b, look->pattern.b, curNodeWidth)) goto nextnode;
 if(insert && look->depth < dest->depth) {
 dest->depth = look->depth;
 dest->parent = look->parent;
@@ -2834,7 +2917,7 @@ if(buf.depth == cutoff) markOldNode(idx, buf.hash);
 static void expandFirstNode(void)
 {
 static struct NODE floor;
-expandNode(0, floor.pattern);
+expandNode(0, floor.pattern.b);
 } /* expandFirstNode */
 
 
@@ -2868,20 +2951,37 @@ int diff = nt->depth - nb->depth;
 
 if(checkBits&SOLVECHECK) {
 printf("between %d and %d:", nb->depth, nt->depth);
-showSmallPattern(nb->pattern);
+if(r_shorts) {
+showPattern(nb->pattern.s);
 printf(":");
-showSmallPattern(nt->pattern);
+showPattern(nt->pattern.s);
+} else {
+showSmallPattern(nb->pattern.b);
+printf(":");
+showSmallPattern(nt->pattern.b);
+}
 printf("\n");
 }
 
 b[0] = b[curWidth1] = 0xffff;
+if(r_shorts) {
 for(i=0; i<curWidth; ++i) {
-mask = nt->pattern[i];
+mask = nt->pattern.s[i];
 mask ^= 0xffff;
 mask <<= diff;
-if(mask & nb->pattern[i]) return 0;
-mask |= nb->pattern[i];
+if(mask & nb->pattern.s[i]) return 0;
+mask |= nb->pattern.s[i];
 b[i+1] = mask;
+}
+} else {
+for(i=0; i<curWidth; ++i) {
+mask = nt->pattern.b[i];
+mask ^= 0xffff;
+mask <<= diff;
+if(mask & nb->pattern.b[i]) return 0;
+mask |= nb->pattern.b[i];
+b[i+1] = mask;
+}
 }
 
 if(checkBits&SOLVECHECK) {
@@ -2995,11 +3095,13 @@ long parent;
 int added;
 struct PLACE *p;
 int i, j, k;
-uchar swap;
 
 if(checkBits&SOLVECHECK) {
 printf("top%d:", top->depth);
-showSmallPattern(top->pattern);
+if(r_shorts)
+showPattern(top->pattern.s);
+else
+showSmallPattern(top->pattern.b);
 printf("\n");
 }
 
@@ -3016,14 +3118,29 @@ n1 = floor;
 added = betweenNodes(&n1, &n2);
 if(!added) { /* try flipping the pattern */
 k = curWidth-1;
+if(r_shorts) {
+ushort swap;
 for(j=0; j+j<curWidth; ++j, --k)
-swap = n1.pattern[j], n1.pattern[j] = n1.pattern[k], n1.pattern[k] = swap;
+swap = n1.pattern.s[j], n1.pattern.s[j] = n1.pattern.s[k], n1.pattern.s[k] = swap;
+} else {
+uchar swap;
+for(j=0; j+j<curWidth; ++j, --k)
+swap = n1.pattern.b[j], n1.pattern.b[j] = n1.pattern.b[k], n1.pattern.b[k] = swap;
+}
 added = betweenNodes(&n1, &n2);
 }
 if(!added) {
 printf("\nunfillable %d.%d:\n", n1.depth, n2.depth);
-showSmallPattern(n1.pattern); printf("\n");
-showSmallPattern(n2.pattern); printf("\n");
+if(r_shorts)
+showPattern(n1.pattern.s);
+else
+showSmallPattern(n1.pattern.b);
+printf("\n");
+if(r_shorts)
+showPattern(n2.pattern.s);
+else
+showSmallPattern(n2.pattern.b);
+printf("\n");
 bailout("cannot fill the space between two successive nodes.", 0);
 }
 
@@ -3401,7 +3518,7 @@ return true;
 }
 
 /* Have we seen this node before? */
-hash = computeHash(b2);
+hash = computeHashBytes(b2);
 n = hash % slopNodes;
 hb = hashIdx + n;
 while(true) {
@@ -3442,6 +3559,7 @@ hashIdx = emalloc(slopNodes*sizeof(long));
 
 for(; curWidth < BOARDWIDTH-setMaxDimension; curWidth += dimFactor) {
 curWidth1 = curWidth + 1;
+curNodeWidth = curWidth * (1+r_shorts);
 printf("?%d", curWidth);
 oenArray = emalloc(maxNodes*curWidth);
 memset(hashIdx, 0, slopNodes*sizeof(long));
