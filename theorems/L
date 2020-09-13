@@ -2090,6 +2090,181 @@ Even if w is less than 2z, c can't lie down in this gap.
 We are back to vertical pieces,
 and z = h/3 or 2h/3.
 
+	18. a points down and b points into a.
+
+Let a point down onto the floor facing right, and let b point left into a.
+c, in the corner of a and b, has to face left and fill the gap.
+This makes w-y < y.
+Specifically, h-z + w-y = y.
+This is our first equation.
+
+The gap between c and b is y - h,
+or w - y - z.
+Since h is less than y, this gap is nonzero.
+w-y is strictly between z and y.
+A face will never fit into a gap of width z.
+w-y-z is less than w-y, so no faces fit in the c b gap.
+We have one or more pieces standing up, and perhaps a piece pointing down in the notch of b.
+Let d be the piece in the notch of b, and put e in the corner of b and d.
+Even if d faces right, the face of d rises above b, so there is a corner to fill.
+
+Let e lie face up.
+The gap between the floor and e is y by h.
+f fills this gap by pointing right.
+Since w-y < y, the notch of f is a gap of height z.
+Two tabs fit in and the bottom piece collides with the floor.
+
+Let e point left and face down.
+The gap between b and e has width h-z.
+This has to be the face of f, whence w-y = h-z.
+This implies w-y and h-z are each half of y.
+c consumes h across the tab of b, which is more than h-z, and more than half of y.
+There is no room for even a tab, no room for d.
+
+The last horizontal orientation for e is face down and pointing right.
+The gap between the floor and e is y by h+z.
+h+z < y+z, which is less than w, so nothing stands up in this gap.
+Put f on the floor next to b pointing right.
+The gap between f and e is w-y by z.
+This is filled by two tabs, and there is a hole in the notch of f that can't be filled.
+Therefore e is vertical.
+
+With y > h, e cannot point down and face left and wrap around b.
+
+With w > y+z, e cannot point down and face left and wrap around d, d facing left.
+If d faces right, e and d trap a hole that can't be filled.
+
+Let e point down and face right.
+e is z higher than d.
+d does not hang over b.
+d stands up, and y is at least 2h.
+But this isn't enough.
+Whether d faces c or e, two tabs fill its notch,
+and the rightmost piece crashes into the back of e.
+Something is between c and d, and y is at least 3h.
+Since w-y + h-z = y, w-y is more than 2h.
+This is certainly more than h-z.
+Even though e is z higher than d, a face cannot perfectly cover the tab of d and point right.
+Let s stand to the left of d, face to face with d.
+Put i and j in the double notch, one pointing up and one pointing down.
+If i is on the right, it can't point down, or it crashes into e.
+i stands up, and j, to the left of i, points down and faces left.
+With w-y < y, the notch of i has width z, and two tabs fill the notch of i.
+Whether i faces left or right, the rightmost piece hangs over the tab of d.
+This creates a hole above the tab of d that can't be filled.
+Therefore one tab fills the double notch of d and s.
+z = h/3.
+Remember that w-y > h-z, so the tab of e does not reach the right edge of b.
+Put f on the floor next to b, and note that f cannot be vertical.
+That would lead to pieces standing up atop b, the first one interlocked with e.
+Let f point left and put g in the corner of f and b.
+g cannot be vertical, for the same reasons that f could not be vertical.
+Yet g cannot lie face down either, with w-y > y.
+Therefore f points right.
+The gap between b and e is stil y in height, and more than w-y across.
+Put g in the corner of b and e.
+Let g lie face down and point right.
+The notch of g has height z, and is filled with two tabs.
+This leaves a hole in the notch of f that can't be filled.
+Let g point left and interlock with f.
+h-z + y = 2(w-y).
+h-z + w-y + y = 3(w-y).
+2y = 3(w-y).
+w-y is 2/3 of y and h-z is 1/3 of y.
+y is 3 times h-z, but it is at least 3h. This is a contradiction.
+Let g lie face up.
+Even if the tab of e wasn't there, g would extend beyond the face of f.
+The notch of f is a gap of height z.
+Two tabs won't work with the floor ahead of f.
+g can't stand up under e, or interlock with e (order 2).
+That takes care of e pointing down.
+
+e stands up atop b.
+Let e face left.
+If d points down and faces right then e and d interlock.
+y = z + w-y.
+h-z + w-y = z + w-y.
+h = 2z, order 2.
+So d stands up.
+Let d face right.
+e and d are reflections, but e stands z squares above d.
+Two tabs fill the notch of d, but this creates a hole above the notch of e.
+Let d face left.
+Two tabs fill the notch of e,
+and the face of the left piece hangs over and above and past the tab of d.
+However we fill the notch of d, or the double notch of d and s,
+pieces will collide, or leave a hole above the tab of d that can't be filled.
+Therefore e faces right.
+
+The back of e is against d, just as it was when e pointed down.
+The same reasoning tells us w-y > 2h, and z = h/3.
+Put f on the floor to the right of b.
+If f is vertical in any way, there is a gap across b of width w-y - h.
+Pieces stand up across the face of b, with perhaps one tab next to f.
+w-y is a multiple of h, or a multiple of h + 2h/3.
+y is a multiple of h.
+Subtract the two, and find a multiple of h, or a multiple of h + h/3.
+However, the difference is h-z, which is 2h/3.
+This is a contradiction, so f is horizontal.
+Let f point toward b. This creates a gap of width y.
+Put g in the corner of f and b.
+In any orientation of g, we have the same gap across the face of b, and the same contradiction.
+Therefore f points right.
+Put g in the notch of f.
+Let g face right.
+Put i in the corner of f and g.
+Since w > y+z, i can't point down and face right.
+There is no tab.
+z + z is even smaller than y + z, so i does not lie face down and point right.
+Looking back at a, w is longer than w-y + w-y, so i can't lie down across b and f.
+Pieces stand up all the way across b and f.
+w-y is a multiple of h, or a multiple of h + half of h.
+We can't subtract this from y, a multiple of h, and get 2h/3.
+Let g point down and face left.
+This time there are definitely no tabs, and the same contradiction.
+Let g stand up and face left.
+Since y > w-y, i can't point down, face right, and interlock with g.
+Since y > z, i can't lie face down and put its tab across the face of g.
+Pieces stand up and it's the same contradiction.
+Let g point left and interlock with f, so its tab runs across f and onto b.
+Now we have to be a bit more specific.
+y is an odd multiple of h.
+w-y is an even multiple plus h/3.
+2(w-y), as in b + f, is an even multiple of h + 2h/3, as realized by a tab pointing down.
+This time the tab runs across.
+Between d and g, we need an odd multiple of h plus a tab pointing down.
+Starting with e, the pieces face right, left, right, left, etc, so that the last piece faces right.
+This is followed by a piece pointing down to realize the tab.
+The thin gap between these two pieces can't be filled.
+Let g point left, and put its tab in the notch of f.
+If g is face down the thin gap above the floor can't be filled.
+So g is face up.
+If i is the reflection of f, enclosing the tab of g,
+we are back to b, which has to be a multiple of h plus a third of h, which is impossible.
+To avoid our combinatorial contradiction, i must point down and face right.
+The vertical gap along i is w-y + h/3.
+Needless to say, a face won't work.
+j, in the corner of g and i, is horizontal.
+The fact that g is face up makes this impossible.
+The last orientation for g is pointing right.
+If g is face down there is a thin gap between f and g that can't be filled.
+g is face up, and rises 2h/3 above f.
+i can't lie face down and put its tab across g.
+To avoid our contradiction, i points down and face right.
+This gives a gap of height y - (h-z), or w-y, which seems promising.
+Put the face of j in this gap, and put k in the notch of g.
+In every orientation of k, the face of g presents a surface of w-y.
+The first h is consumed by j.
+From here we need a multiple of h + h/3, which is not possible.
+To get around this, j lies down atop g, and is the reflection of g.
+Horizontal pieces stack up as they climb the tab of i, until we run into the face of i.
+Starting with j, we have a multiple of h.
+Below j is 2/3 of h.
+At the face of i we might have a tab, another 2/3 of h.
+This can't come out to a perfect multiple of h.
+
+Unwind through j, i, g, f, e, d, and c; and b cannot point into the tab of a.
+
 I'll continue this theorem as time permits, or you can continue my work.
 Please review this theorem and send along any corrections.
 If you wish, clean it up, improve the explanations, and add pictures for clarity.
