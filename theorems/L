@@ -2090,7 +2090,7 @@ Even if w is less than 2z, c can't lie down in this gap.
 We are back to vertical pieces,
 and z = h/3 or 2h/3.
 
-	18. y = 2h and w = 3h.
+	18. y = 2h, and w-y = h.
 
 We have two of the three equations, so you'd think this one is easy,
 but it's not trivial.
@@ -2897,6 +2897,294 @@ All orientations of c have been explored.
 a does not point down, with b pointing right.
 Combine this with {19}, and a piece never points down onto the floor.
 This is analogous to {4}.
+
+	21. w-y = h.
+
+As per {2}, {18}, {19}, and {20}, y is not 2h,
+and a piece does not lie down or point down onto the floor.
+
+Let a face right, and let b point left to a.
+a presents a z by z block which is difficult to surround.
+With w-y = h, we can only satisfy z with the tabs of c and d pointing down.
+Put e in the corner of b and a.
+No orientation works, thus a and b are not face to tab.
+
+Let a face left, and let b point left to a.
+Put c in the corner of b and a.
+c is not horizontal.
+Since w-y > h-z, c does not point down and face left.
+Let c point down and face right.
+d, in the corner of b and c, has one possible orientation, face down and pointing right.
+This sets y = h + h-z.
+The tab of e fills the h-z gap between d and the face of c.
+e lies back to back on d.
+Put f under the tab of d.
+f presents a z by z block.
+We saw before, this requires two tabs, on the top or the side of the block,
+whence z = 2h/3.
+This is fee0e0, which fails.
+
+Let c stand up and face left, creating a gap of width z in the notch of c.
+This is filled by the tabs of d and e, and z = 2h/3.
+The tab of f pointing right fills the gap between a and the face of d.
+If f is face down, g, in the corner of a and f, has to point left
+and interlock with f. This is fee0e0 again.
+Thus f is face up.
+The tab of g is not long enough for g to point right and face up.
+If g points right and faces down, nothing fits in the corner of a and g.
+Therefore g points left.
+The gap from the face of a to g has height y-h, and the gap from c to the face of b has width y-h.
+Put i below g.
+If i points right, its tab completes the gap,
+but then we can't fill the space between the floor and i,
+or there is more gap, and nothing fits in the corner of a and i.
+Thus i points left.
+This continus down the tab of a, to the face of a.
+y is a multiple of h, more than 2h.
+Let k be the bottom piece in this parade.
+Put l on the floor below k pointing left.
+If k is face down we can't fill the notch of k.
+With k face up, we might fill the notch of l with two tabs,
+but the bottom piece crashes into the floor.
+
+Let c stand up and face right, the last orientation.
+Put d next to c.
+y is not 2h, so d does not lie face down.
+Let d point down, whence if must face right.
+If d completes the gap we have fee0e0 again.
+Otherwise e completes the gap by lying face down.
+y = h + h-z + h, and of course, z = 2h/3.
+This is ff{c0}e0e0, which fails.
+So d stands up.
+The gap between d and the face of b is y-2h.
+We have standard tabs, thick or thin.
+Pieces stand in a parade across the tab of b, until the last piece,
+call it k, meets the face of b.
+If k is face down pointing right, l fits under the tab of k,
+but we can't put tabs in the notch of l.
+With k vertical, put l in the corner of b and k.
+If l is horizontal, we can't fill the space between the floor and l.
+l is vertical, and k can't point down.
+l rides z higher than k, so k can't face right.
+c faces right, and somewhere we have our first face to face pair.
+If tabs are thick, it has to be c and d,
+and it's face to face pairs thereafter, ending in k.
+If tabs are thin, assume d and e are face to face, just for illustration.
+i and j fill the double notch, one standing up and the other pointing down.
+For illustration, let i stand up on the left, and let j point down on the right.
+With w-y < y, let the tabs of m and n fill the notch of i.
+The piece left of d, if there is one, can't face d,
+and the piece right of e, if there is one, can't face e.
+The next piece over has to face the d e complex.
+All pieces are in face to face pairs, and y is an even multiple of h.
+Remember that l is vertical.
+With z < w-y, l can't point down and face left.
+If l stands up and faces left, its notch can't be filled
+without crashing into the pieces above k.
+l has its back to k.
+If tabs are thin, the pieces in the notch of k crash into l,
+or create a thin gap above the tab of k that can't be filled.
+Tabs are thick, and z = h/3.
+Put s in the double notch of k and its partner.
+s faces left.
+Put the tab of t between s and l, and assume t faces left.
+The gap between s and the face of t is y-h.
+Put u in the corner of s and t.
+Since y is not 2h, u can't stand up and interlock with t.
+u is therefore horizontal.
+There is more than one pair standing on the tab of b.
+The next pair also has a piece sticking up, and something stands between that piece and s.
+That piece crashes into u.
+Therefore t faces right.
+The gap between l and the face of t is y-z.
+Put m on the flor next to b and verify that m is not vertical.
+Let m point left.
+If l points down, b presents a z by z block that cannot be surrounded.
+Let l stand up and face right.
+This presents a z by h+z block.
+No collection of pieces equals z.
+There is one way to make h+z, two tabs, but that doesn't work in this case.
+Therefore m points right.
+Let l point down.
+This gives a h+z by z block.
+Two tabs cover the h+z span, but that isn't possible with the face of l.
+Therefore l points up and faces right.
+Put n in the corner of m and l, an h by h corner.
+It can't be the tab of n, nor can n be face up, or face right.
+n is face down or face left.
+The double notch is filled by the tab of o.
+Let n stand up face to face with l.
+The gap between t and o can't be filled.
+Thus n points right.
+If anything rises above l, the gap above l, next to t, can't be filled.
+Put p in the notch of l.
+p is not vertical.
+p is face up.
+Put q in the corner of p and l, and q is not vertical.
+p and q point right, with the tab of r between.
+o is face up, so that the tab of u can slide underneath.
+v is horizontal, between o and r.
+x is horizontal, between u and v, next to o.
+y is not 2h, so there is a hole between u and x.
+Unwind all the way back to c facing right.
+
+A piece on the floor cannot point to a piece standing up.
+If b points left, a is horizontal,
+and if a points left it can't point to the left wall,
+so something to the left of a is horizontal.
+This continues until two pieces point to each other.
+
+Put a in the corner, pointing right.
+Put b next to a on the floor, also pointing right.
+Put c on the face of a.
+Because of the face of b, c is not horizontal.
+Let c point down.
+The face of a presents a z by z block.
+Try to cover a span of z with two tabs, but the face of b, or the face of c, makes that impossible.
+Therefore c stands up.
+This gives a z by h+z block.
+We can't put two tabs in the notch of c, because of the left wall.
+Put d in the notch of a.
+d has no viable orientations, except perhaps pointing down and interlocked with c.
+y = h+z, our second equation.
+The gap between the tab of d and the face of b is y - (h-z).
+Put e in the corner of a and d.
+Since h + z cannot equal h + h-z, e does not lie face down.
+Let e point down, and let the face of f finish the gap.
+The tabs of d and e have the thickness of z, we have thin tabs,
+those tabs fill the notch of b, and a piece crashes into the floor.
+Thus e stands up.
+The gap between e and the face of b is 2z-h.
+This has to be the tab of f, and z = 2h/3.
+This is ffe0e0, which fails.
+Therefore, b does not point right.
+
+We are left with a pointing right and b pointing left.
+Again, put c on the face of a.
+The only horizontal orientation is c face down, the reflection of a.
+This doesn't work with thin tabs, so z = h/3.
+Put the tab of d between a and c, and put e in the corner of b and d.
+Since y is not 2h, e is not face down.
+If e points down and fills the gap, we have ffffe0, which fails.
+IF two tabs fill the gap, we have ff{c0}ff{c0}e0, which fails.
+Thus e stands up, and y > 2h.
+Nothing can lie face down and interlock with b, since we couldn't fill the space on the floor next to b.
+Pieces are vertical from e along the tab of b to the face of b.
+Let k be the last of these.
+If k points down and faces right, put l in the corner of b and k.
+l is horizontal, and we can't fill the space between the floor and l.
+All pieces stand up, and y is a multiple of h.
+l still can't be horizontal, hanging over the floor.
+l is vertical, z higher than k, and k cannot face l without creating a thin gap.
+k puts its back to l, and now, l puts its back to k.
+Suppose e faces left.
+The tabs of f and g fill the gap above d and e.
+Put i in the corner of c and f.
+Remember that i can't point to the left wall.
+The only orientation is i pointing right as it lies across c.
+Nothing fits in the corner of i and f.
+Thus e faces right.
+Pieces are in face to face pairs, and y is an odd multiple of h.
+If there is just one pair, e and k, we have ff{f0}ff{f0}e0, which fails.
+There are at least two pair, and two pieces sticking up from these double
+notches, and one piece sticking up between those.
+This resurrects the same logic we saw when b pointed to the back of a.
+t puts its tab in the corner of k and l, faces right, and hangs over l.
+The gap between l and the face of t is y-z.
+Put m on the flor next to b and verify that m is not vertical.
+Let m point left.
+If l points down, b presents a z by z block that cannot be surrounded.
+Let l stand up and face right.
+This presents a z by h+z block.
+No collection of pieces equals z.
+There is one way to make h+z, two tabs, but that doesn't work in this case.
+Therefore m points right.
+Let l point down.
+This gives a h+z by z block.
+Two tabs cover the h+z span, but that isn't possible with the face of l.
+Therefore l points up and faces right.
+Put n in the corner of m and l, an h by h corner.
+It can't be the tab of n, nor can n be face up, or face right.
+n is face down or face left.
+The double notch is filled by the tab of o.
+Let n stand up face to face with l.
+The gap between t and o can't be filled.
+Thus n points right.
+If anything rises above l, the gap above l, next to t, can't be filled.
+Put p in the notch of l.
+p is not vertical.
+p is face up.
+Put q in the corner of p and l, and q is not vertical.
+p and q point right, with the tab of r between.
+o is face up, so that the tab of u can slide underneath.
+v is horizontal, between o and r.
+x is horizontal, between u and v, next to o.
+y is not 2h, so there is a hole between u and x.
+Unwind all the way back to c pointing right.
+That's it for c horizontal.
+
+If c points down, the face of a presents a z by z block that can't be surrounded.
+Thus c stands up, giving a z by h+z block.
+We can't put two tabs in the notch of c, because of the left wall.
+Put d in the notch of a.
+As before, let d point down and interlock with c.
+y = h+z, our second equation.
+The gap between the tab of d and the face of b is 2y - (h-z).
+This is h + 3z.
+Put e in the corner of a and d.
+The gap is larger than h, so e does not lie face down.
+A tab won't fill the gap, so if e points down,
+then the tab of e and the face of f fill the gap.
+h + h-z = h + 3z, h = 4z.
+This is ff+ff+ff+f0, which fails.
+e stands up with its back to d.
+We already saw that h does not complete the gap, so there's more.
+There is 3z remaining.
+f can't point down because of the face of e.
+If f completes the gap  then h = 3z, thick tabs again.
+This is fefee0, which fails.
+f stands up next to e.
+We have standard tabs.
+The remaining gap is 3z-h.
+We saw this was nonzero, so tabs are thin, and 3z-h is the same as h.
+This is ffe0e0, which we saw before.
+d does not interlock with c, and in fact, d is not vertical.
+d is face up, and 2y > w.
+Assume d points left, and put e in the corner of d and a, or d and c.
+e cannot be horizontal.
+But with the notches of c and e at different levels, e cannot be vertical either,
+unless, perhaps, e points down and interlocks with c.
+y > h, so the tab of e descends below c, and z > h/2.
+z + h = y + h-z.
+y = 2z.
+2y = 4z.
+2y - w = 2z-h.
+The gap from d to the face of b is 2z-h.
+This is less than h, so one tab or two.
+z is 2/3 or 3/4 of h.
+These are fee0e0, and ff{c0}f0f0f0, which fail.
+That's it for e, hence d points right.
+The face of c presents a z by z block.
+We can't cover the top of this block exactly, so the tabs of e and f  complete the face of c.
+z = 2h/3.
+The gap from the tab of c to the face of f has width y+z.
+Put g in the notch of c.
+g is not horizontal.
+g does not face left.
+If g points down, we can't put anything in the corner of c and g.
+Thus g stands up and faces right.
+The gap from g to the face of f is y-h/3.
+A parade of pieces from g to the face of f is vertical.
+In fact the next piece, i, is vertical.
+Remember that tabs are thin.
+If i faces right, two tabs go in the notch of g,
+and the gap between g and the left wall can't be filled.
+i is face to face with g.
+However we fill the double notch of g and i, the gap between g and the left wall can't be filled.
+Unwind from i all the way back to a.
+
+Combine with {18},
+and a piece with y > h and w-y = h does not tile a rectangle.
 
 I'll continue this theorem as time permits, or you can continue my work.
 Please review this theorem and send along any corrections.
