@@ -2040,38 +2040,47 @@ then two tabs can't fit in, because the face
 of the rightmost piece crashes into the back of b.
 
 Look again at a and b face to face, with w small enough where c might lie down inside.
-c might have pieces pointing down on one side or the other or both.
+There is not room for another piece to stand up, w+h compared to 2z.
+So c might have tabs pointing down on one side or the other or both.
 Let c point right.
-Suppose e lies face down on c.
-If there is a gap below the tab of e, slide f beneath.
-If the tab of f then we have holes, or order 2.
-The face of f cannot reach the face of e, since z < y.
+Suppose e lies face down anywhere on the tab of c.
 The tab of e rides z-h + z = h above the a-b gap.
+Suppose e also points right.
 The walls are higher than h, and the tab of any vertical piece next to c is higher than h.
-The tab of e would run into this wall and create a hole.
-If the tab rests on the face of c, without crashing into a wall, then rotate
-everything 180 degrees, and see that the face of e rests on the tab of c.
-Either there is a hole in the middle or the piece has order 2.
-So we can forget e lying down on the tab of c.
+The tab of e would crash into this wall.
+So e points left.
+This creats a hole unless c and e interlock.
+Again the tab of e crashes into the left wall or a piece pointing down,
+unless y < w-y.
+e extends beyond the tab of c on the right.
+If a face slides in by a piece standing up we have w+h across.
+If a tab slides in we have w+w across.
+Either way there isn't room.
+So we can forget e lying down anywhere on the tab of c.
+
+Suppose e lies face up on the tab of c.
+e extends beyond the tab of c, and once again,
+there isn't room for a piece to slide beneath.
 
 If z is forced to 2h/3, which is not uncommon, the walls consume 2h/3,
-and one tab consumes h/3. That leaves only h, and c must be longer than h.
+and just one tab consumes h/3. That leaves only h, yet c must be longer than h.
 So there are no tabls, and w = 4h/3.
+The tab of c is y, is more than h.
+Vertical pieces cover this gap.
+Two tabs won't do, so one piece stands up and consumes h.
+We need more, but one more tab is 4h/3, which is the entire width of c.
+This fails.
 Be on the lookout for this situation.
 
 One way to encounter this is to put e in the notch of c, standing up and facing left.
 w <= 2z, so w-y < z.
 The notch of e forms a gap of width z.
-One tab is order 2, and two tabs trips our condition.
+One tab is order 2, and two tabs trips the previous paragraph.
 You might try to put the face of f in the corner of c and e.
 The face can't fill the gap, w-y being less than z, but maybe one or two tabs fills the rest.
 Well now there is a gap of height w-y between the face of c and the tab of f.
 Put g in this gap and g travels across the face of c for at least h squares.
 With w-y < z, w-y < h, and g crashes into the left wall or any vertical piece next to c.
-Even 2 tabs in the notch of e is trouble.
-The face of the left piece hangs above the face of c, and goes beyond c.
-Meantime the left wall, or a vertical piece to the left of c, rises above the face of c.
-We have enclosed an area that can't be filled.
 So e does not stand up and face left.
 
 e in the notch of c and facing right isn't any better.
@@ -2079,10 +2088,9 @@ With y > h, there is some other piece f to the right of e.
 They both can't stand up, since 2h > 2z, so f points down.
 If f faces left we have order 2.
 If f faces right the notch of e implies z = 2h/3.
-y = 4h/3, the walls are 2h/3, and w = y, which is impossible.
 
-Let e point down into the notch of c.
-If e faces left we have the same problem we saw before.
+Let e point down into the notch of c and face left.
+Remember that w <= 2z, so w-y < z.
 The flag hangs above the face of c and extends to the left of c,
 while a left wall or piece rises above the face of c, and encloses a space that can't be filled.
 So e faces right, but then we can't put f next to e.
@@ -2229,7 +2237,116 @@ a can't point down or point left.
 But a can't face right, or lie face up.
 The corner doesn't work, and the piece doesn't tile a rectangle.
 
-	19. a points down, and b points into a.
+	19. The Phase Shift Lemma.
+
+The floor on the left is r higher than the floor on the right, where r < w-y, and r < y.
+In practice, r is often z, or h-z, or h, so r < y is automatic,
+and r < w-y can often be demonstrated.
+
+Assume k on the left and l on the right are both vertical.
+Let l point down and face left, hanging over k.
+This requires an interlock.
+r + w-y = y.
+We assume this is not the case, w-y is more than the gap, or doesn't quite fill the gap.
+Because of situations to the right, assume l does not point down and face right.
+Let k point down and face right, hanging over l.
+This requires an interlock.
+r + y = w-y.
+We assume this is not the case, w-y is more than the gap, or doesn't quite fill the gap.
+Because of situations to the left, assume k does not point down and face left.
+These pieces stand up.
+l cannot face left, due to the notch of l.
+l has its back to k.
+If we know m stands next to l, as we often do, m cannot face right.
+Two tabs would fit in the notch of l, and the leftmost piece would crash into
+the back of k, or hang over the notch of k.
+m faces l, and we have standard tabs, z = h/3 or z = 2h/3.
+If z = h/3 then k faces left, it's notch is too thin to fill.
+We'll return to this later.
+Let z = 2h/3 and continue.
+s can't point down into the notch of l and face left, just as it couldn't before.
+Let k face right, and let the tabs of u and v fill the notch of k.
+The face of v hangs over the tab of l.
+However we fill the double notch of l and m,
+the gap of height r between l and the face of v can't be filled.
+Thus k and l are back to back.
+
+If we know j stands next to k, as we often do, j cannot face left.
+The face of v hangs over the tab of l as it did before.
+However we fill the double notch of l and m, the gap of height r can't be filled.
+j faces k, and still, the tab of v does not point down into the notch of k.
+v stands in the notch of k, facing left or right,
+just as s stands in the notch of l, facing left or right.
+Let s face left.
+Since w-y is not y, s is not flush with the tab of l.
+If s is below l, two more tabs fill the notch of s,
+and the hole above the tab of l can't be filled.
+s rises above l, as it would if it were facing right.
+Put x above l between k and s.
+If x is face down, which is pretty unlikely, its tab, longer than h,
+crashes into v.
+So x points down.
+x can't face right without crashing into s or making a hole with s.
+x points left and hangs over the notch of k.
+Since r < y, there is a gap between k and the face of x.
+This gap remains no matter how we fill the notch of j and k.
+Phase shifted stand up pairs, with thin tabs, can't exist.
+
+Assume the same phase shift, with a pair on each side, and thick tabs,
+that is, z = h/3.
+The tab of s is in l and m, and s faces right.
+The tab of i is in j and k.
+Put the tab of t between l and s.
+If t faces left, the gap between t and i can't be filled.
+t faces right, but that requires y >= w-y.
+(Actually y > w-y, since they can't be equal.)
+If y < w-y, phase shifted stand up pairs can't exist.
+
+Next assume y - (w-y) is not w-y.
+Put o in the corner of s and t, whence o is horizontal.
+Assume there is another pair to the right of m. We often know this.
+Let u put its tab into this pair.
+v fits between s and u, but v is vertical, and crashes into o.
+If y not equal 2(w-y), we can't have one pair on the left and two pair on the right.
+
+Assume y = 2(w-y) and continue.
+o stands up and interlocks with t.
+s and o form a wall.
+If there are two pair on the left, we can conclude the same thing.
+s1, t1, and o1 are the reflections of s, t, and o, but r higher.
+There is a gap of width h above t, between t1 and o.
+p stands up in this gap.
+Then, p1 stands up above t1, between o1 and p.
+p1 and p stand back to back.
+Go back to u pointing down into the second pair on the right.
+v fits between s and u.
+If u faces left, then v points down, and the face of v hangs over u.
+Assume there is a third pair on the right, which is not unusual.
+c, in the corner of u and v, stands up and interlocks with v.
+So v and c look like t and o.
+d stands on top of v, between o and c.
+If d faces right, the gap across the face of p and the tab of o has width h.
+The walls have height y.
+Something stands in this gap, but it can't face right or left.
+So d faces left, and the gap is now h+z.
+This is filled by two tabs.
+Let the left piece be q.
+The face of q coveres half of the tab of p.
+The gap between p1 and q has width z, and cannot be filled.
+Therefore u faces right, and v stands up.
+v faces right.
+Between u and the next piece pointing down into the next pair is c.
+From the face of u, across v, and possibly, the face of c,
+if c stands up and faces left, is a gap of width h+z or h+2z.
+The former is filled with the tabs of d and e.
+The latter is filled with the tab of d and e standing up.
+So the face of d covers half of the tab of v.
+From p across o and v, to d, is a gap of h+2z.
+This is filled with the tab of f and then g standing up and facing right.
+The gap of width z, above p, from p1 to the face of f, can't be filled.
+Unwind, and two pair on the left, and three pair on the right, is not workable.
+
+	20. a points down, and b points into a.
 
 Let a point down onto the floor facing right, and let b point left into a.
 c, in the corner of a and b, has to face left and fill the gap.
@@ -2404,7 +2521,7 @@ This can't come out to a perfect multiple of h.
 
 Unwind through j, i, g, f, e, d, and c; and b cannot point into the tab of a.
 
-	20. a points down, and b points away from a.
+	21. a points down, and b points away from a.
 
 Let a point down to the floor facing right, and put b next to a pointing right.
 Since y > h, there is a gap between b and a.
@@ -2895,12 +3012,12 @@ That is the end of c pointing right.
 
 All orientations of c have been explored.
 a does not point down, with b pointing right.
-Combine this with {19}, and a piece never points down onto the floor.
+Combine this with {20}, and a piece never points down onto the floor.
 This is analogous to {4}.
 
-	21. w-y = h.
+	22. w-y = h.
 
-As per {2}, {18}, {19}, and {20}, y is not 2h,
+As per {2}, {18}, {20}, and {21}, y is not 2h,
 and a piece does not lie down or point down onto the floor.
 
 Let a face right, and let b point left to a.
