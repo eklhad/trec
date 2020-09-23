@@ -1279,7 +1279,7 @@ For z rational, scale the picture so that z and h are relatively prime integers.
 Example: h = 5 and z = 3.
 This is ffffe0e0e0.
 
-	14. y=h, Lemmas.
+	14. y=h, Standard Tab Lemmas.
 
 One of the three equations is established at the outset, but there are
 more possibilities, such as a piece pointing down onto the floor.
@@ -1993,7 +1993,7 @@ No orientation of g will work.
 Unwind the stack through f, e, d, c, and a.
 The case of y = h is complete.
 
-	17. y>h, Lemmas.
+	17. y>h, Standard Tab Lemmas.
 
 Many of the lemmas of {14} are still in force,
 although we don't have {13} to fall back on.
@@ -2295,9 +2295,9 @@ Phase shifted stand up pairs, with thin tabs, can't exist.
 Assume the same phase shift, with a pair on each side, and thick tabs,
 that is, z = h/3.
 The tab of s is in l and m, and s faces right.
-The tab of i is in j and k.
+The tab of s1 is in j and k.
 Put the tab of t between l and s.
-If t faces left, the gap between t and i can't be filled.
+If t faces left, the gap between t and s1 can't be filled.
 t faces right, but that requires y >= w-y.
 (Actually y > w-y, since they can't be equal.)
 If y < w-y, phase shifted stand up pairs can't exist.
@@ -2309,10 +2309,19 @@ Let u put its tab into this pair.
 v fits between s and u, but v is vertical, and crashes into o.
 If y not equal 2(w-y), we can't have one pair on the left and two pair on the right.
 
-Assume y = 2(w-y) and continue.
+Put t1 above k between s1 and t.
+Since r < w-y, t1 can't face right.
+t1 faces left, the reflection of t standing r higher.
+Put o1 in the corner of s1 and t1.
+Like o, o1 is horizontal.
+Assume there is another pair to the left of j. We often know this.
+Apply the reasoning in the previous paragraph, and obtain a contradiction.
+If y not equal 2(w-y), we can't have one pair on the right and two pair on the left.
+
+Finally, assume y = 2(w-y) and continue.
 o stands up and interlocks with t.
 s and o form a wall.
-If there are two pair on the left, we can conclude the same thing.
+If there are two pair on the left, we can conclude the same thing about o1.
 s1, t1, and o1 are the reflections of s, t, and o, but r higher.
 There is a gap of width h above t, between t1 and o.
 p stands up in this gap.
@@ -2336,15 +2345,32 @@ The gap between p1 and q has width z, and cannot be filled.
 Therefore u faces right, and v stands up.
 v faces right.
 Between u and the next piece pointing down into the next pair is c.
-From the face of u, across v, and possibly, the face of c,
+From the face of u, across v, and possibly the face of c
 if c stands up and faces left, is a gap of width h+z or h+2z.
 The former is filled with the tabs of d and e.
 The latter is filled with the tab of d and e standing up.
 So the face of d covers half of the tab of v.
-From p across o and v, to d, is a gap of h+2z.
-This is filled with the tab of f and then g standing up and facing right.
-The gap of width z, above p, from p1 to the face of f, can't be filled.
+The gap above v between o and d has width z, and can't be filled.
 Unwind, and two pair on the left, and three pair on the right, is not workable.
+
+Suppose there are two pair on the right and three on the left.
+By symmetry, q1 points down into the notch of p1, and the face of q1
+covers half of the tab of p1.
+p1 presents a z by r block.
+w-y > r, and in practice r is at least z, so w-y > z.
+The span of z can never be satisfied.
+Let x point left and face down with its tab in the corner of p and p1.
+Only 2z of the tab is consumed.
+2z + w-y is certainly not w-y + w-y.
+Nothing fits in the corner of p and x.
+2 tabs canot consume r.
+It can only be one tab facing up.
+If r is not 2z, this is impossible.
+If r is not 2z, two pair on the right, and three pair on the left, is not workable.
+
+Here is another variation: the back of k, and t1, and p1, is the left wall.
+If there are 3 or more pair standing, we find a gap of width z
+between d and the left wall that can't be filled.
 
 	20. a points down, and b points into a.
 
@@ -3302,6 +3328,309 @@ Unwind from i all the way back to a.
 
 Combine with {18},
 and a piece with y > h and w-y = h does not tile a rectangle.
+
+	23. a is face up and b points right.
+
+Put a on the floor facing right, and put b next to a pointing right.
+By {22}, a and b are not flush.
+Let a be lower than b, that is, w-y < h.
+The notch of a is a gap of width z.
+Suppose c lies face down in this gap with its tab
+resting on and extending past the face of b.
+w-y + z = h.
+Now the notch of b is a gap of height z.
+With y > h, a face isn't going to fit in below the tab of c and reach the face of b.
+We have two tabs, and the bottom piece crashes into the floor.
+So perhaps c hangs above the face of b.
+Put in the tab of d, and d is face up.
+Once again two tabs in the notch of b, and the bottom piece crashes into the floor.
+Therefore the tabs of c and d satisfy the notch of a, and z = 2h/3.
+The gap from the face of b to the face of d is w-h.
+Put e in the corner of b and d.
+If e is vertical it interlockes with d.
+w-h = w-y, yet y > h.
+If e is face up, two tabs fill the notch of b, which doesn't work.
+The only orientation for e is face down, the reflection of b.
+As per c and d, tabs are thin.
+Fill the notches of b and e, and something crashes into the floor,
+or leaves a hole next to the tab of b.
+Unwind, and conclude that w-y > h.
+
+The face of a presents a z by w-y-h block.
+w-y can't cover z, so suppose the tabs of c and d point down and cover z.
+The gap from b to the face of d is w-h, as it was before.
+Put e in the corner of b and a.
+If e is vertical it interlockes with d.
+w-h = w-y, yet y > h.
+If e is face up, two tabs fill the notch of b, which doesn't work.
+The only orientation for e is face down, the reflection of b.
+As per c and d, tabs are thin.
+Fill the notches of b and e, and something crashes into the floor,
+or leaves a hole next to the tab of b.
+We cannot satisfy the span of width z across the face of a.
+
+Try something exotic, let c point down and interlock with a.
+w-y >= h+y.
+w is at least 3h.
+Assume c touches b. Then w-y = h+y, which is still more than 2h.
+Let d point left and interlock with b.
+The gap between c and d has width z.
+We can't put two tabs in due to the back of c.
+Put e in the corner of b and c.
+No matter how e is oriented, the b d interlock will no longer be possible.
+If e is horizontal, we get in trouble putting two tabs in the notch of b.
+So e is vertical.
+The next piece is vertical, and the next, until we reach, precisely, the end of the face of b.
+There are at least 3 pieces atop b, so we have standard tabs.
+Let k be the last piece on the face of b, and put l in the notch of b.
+If l is face up, then another tab slides under l, and 2y is at least w, yet w-2y = h.
+l can't point left and face down, whether tabs are thick or thin.
+Let l point right, face down.
+The face of l extends h beyond the tab of b.
+Slide a tab under l and find a hole in the notch of l.
+Therefore l is vertical.
+With w-y > y, l does not point down and face left and interlock with k.
+Suppose l points down and faces right.
+Put m in the corner of b and l.
+m is not vertical, or face up, or face down pointing left.
+Let m point right with its face on the tab of b.
+Put the tab of n under m.
+2y = w-y + h-z.
+2y = h+y + h-z.
+y+z = 2h.
+Try this with z = h/3 and z = 2h/3.
+This is ff{f8}ff{f8}ff, or ff{e0}fefe, which fail.
+Therefore l stands up.
+If k points down then l interlocks with k.
+y+z = w-y.
+Yet y+z = h+y, a contradiction.
+k stands up, and w-y is a multiple of h, plus the tab of c.
+With k higher than l, l faces right.
+Try the orientations of m that we tried before.
+When m points right, face down, we now have 2y = h + w-y = 2h+y, so that y = 2h.
+Try this with z = h/3 and z = 2h/3.
+This is ff{fe}ff{fe}ff+, or ff{fe}ff+ff+, which fail.
+m is vertical.
+Apply the phase shift lemma.
+With w-y > y, these phase shifted pairs can't exist.
+Unwind all the way back to c.
+If c interlocks with a, its tab does not touch b.
+
+Put d in the corner of b and a.
+If d is vertical, it faces left, and meets c,
+whence h + w-y + y = w-y.
+That is impossible, so d is horizontal.
+The only possibility is face down, the reflection of b.
+Thin tabs causes trouble with the floor, so tabs are thick, and z = h/3.
+Put the tab of e between b and d, whence e is face up,
+and put the tab of f under e.
+Now 2y >= w,
+yet w-2y >= h.
+c does not interlock with a.
+
+Pieces above the face of b must somehow become flush with the face of a.
+These pieces are all horizontal.
+The first piece atop b, call it c, is face down, the reflection of b.
+Thin tabs causes trouble with the floor, so tabs are thick, and z = h/3.
+Put the tab of d between b and c, d face up, and the tab of e under d.
+y > w-y.
+Put f in the corner of d and c.
+Suppose f points left, face down, and wraps around c.
+The gap between a and f, across c, is w-y, or w-y+z if a and c are flush.
+The tab of f is 2z thick, so nothing ever lies down in this gap.
+Consider a and c flush, whence w-y = 2h.
+The gap is 2h+z.
+This can only be filled by two tabs and a piece standing up.
+These three vertical pieces always create thin gaps that can't be filled.
+Thus the face of a rises above c.
+Put g in the corner of c and a.
+g is vertical.
+Since y > w-y, g and a do not interlock.
+However g stands, the notch of a cannot be filled.
+Therefore f does not wrap around c.
+Every other orientation creats a gap of width w across the back of c, or w+z if a and c are flush.
+Let f point down and face left.
+The gap has height y-z.
+Put g in the corner of c and f.
+Suppose g standsa up and interlocks with f.
+y - (w-y) = z.
+The gap between d and e has width z, and can't be filled.
+g is horizontal.
+Assume g points right, and put i in the corner of g and f.
+The only orientation for i is standing up and interlocked with f.
+z + h-z + w-y = y.
+The gap between d and e has width h.
+That seems good, j can stand up in this gap,
+but then the gap between f and j has width z and can't be filled.
+Therefore g ppoints left.
+Again put i in the corner of g and f.
+If i and f interlock, the gap between d and e has width h+z.
+This is two tabs pointing down, and still a gap of width z next to f.
+Thus i points right and is the reflection of g.
+A tab slides in between g and i, and that horizontal piece crashes into a.
+Let f point up and face left.
+Put g in the corner of c and f.
+g is z higher than f.
+g is not vertical, due to the notch of f.
+If g points right, i, in the corner of g and f, is vertical, and that doesn't work either.
+g points left as before.
+i, in the corner of g and f, can't be vertical.
+g and i lie face to face, and create the same contradiction as before.
+Lef f face right.
+Now the back of f creates a straight wall of height w-z.
+Put v in the corner of e and d.
+Verify that v is not vertical, due to the notch of f and/or the notch of v.
+v is horizontal, and that means the face of v fills the gap.
+2(w-y) = y.
+Put g in the corner of c and f.
+If g points down, i, in the corner of c and g, has no valid orientations.
+Let g stand up and face left.
+i, in the corner of c and g, can only stand up facing g.
+This continues, as pairs of pieces stand up atop c.
+Let k be the leftmost in this parade.
+This is the only piece that might point down.
+If a and c are flush, we have our third equation, w-y = 2h.
+This is the 18 by 3 rectangle minus the 12 by 1 rectangle.
+We've run across this before.
+There are six pieces standing on d.
+k has to face right, and that leaves a gap of width z between a and k.
+So a rises above c.
+With y > w-y, k does not point down and interlock with a.
+k stands up, and w is a multiple of h.
+Whether k faces left or right, the notch of a can't be filled.
+Unwind back to f, which can no longer be vertical.
+
+v is, as it was before, face down in the gap between d and e,
+and our second equation, y = 2(w-y), still holds.
+f is face up along d and the back of v.
+Suppose a and c are flush, giving our 18 by 3 rectangle again.
+Let f point left, and let g lie face down on d and wrap around f.
+The gap from a to g has width 13.
+This is three pieces standing and two tabs.
+The tabs are at either end.
+Somewhere there is a gap of width z that can't be filled.
+If g is not in this position the gap from a to f has width 19.
+This is five pieces standing and two tabs.
+The tabs are at either end.
+Somewhere there is a gap of width z that can't be filled.
+Thus a rises above c.
+
+Put g in the corner of c and a.
+Because of the notch of a, g can't be vertical.
+g is face up, and the face of a rises at least as high as g.
+Put u on the floor under v pointing right.
+Let g point right and put i in the notch of g.
+i can't interlock with g, else the tab of i crashes in to a.
+i can't point down and face left, else nothing fits in the corner of g and i.
+If i faces right, or points right, put k in the corner of g and i.
+k is vertical.
+k begins a parade of vertical pieces standing on the face of g.
+If a rises above g, we can't fill the notch of a.
+a and g are flush.
+This is a 27 by 3 rectangle minus an 18 by 1 rectangle.
+The gap across the face of a and the face of g is 10.
+This is two pieces standing face to face and two tabs.
+k points down and faces right.
+The gap along k has height 16.
+This could be filled by 4 pieces pointing right and two tabs.
+But the piece lying above i can't point left.
+Let something interlock with k, so the gap is now 7.
+This is a piece pointing right and 2 tabs, which doesn't work for the same reason.
+The last orientation for i is pointing left.
+If k is still vertical, the gap along k is now 17.
+This is 5 pieces pointing right and a tab.
+Since the number of pieces is odd, there is a thin gap that can't be filled.
+If something interlocks with k, the gap is now 8.
+This is a pair of pieces pointing right and a tab.
+Call the pair l and m, with the tab of n between.
+i is face down.
+f points left.
+The remaining gap along the tab of f is 9 by 4 or 5, depending on whether n faces up or down.
+Well n has to face up, and o interlocks with f.
+o extends beyond f and hangs over v.
+p is between v and o, and points right.
+If p is face down, the gap from u to v has height h+z.
+This is two tabs, which doesn't work with the floor.
+p is face up, and q is in the notch of u pointing right.
+q creates a thin gap, whether it is face up or face down.
+Therefore, k has to do something new, and it can.
+k lies face down atop g, and its tab runs along the tab of i.
+w-y is at least 4h.
+This is a second pair climbing up the face of a.
+If there is a third pair, we have the phase shift lemma.
+If not, some of the machinery from that lemma should be familiar.
+e v and u is what we use to call t o and p.
+Let i face down, whence f points left.
+Put j in the corner of i and f.
+If there was a third pair climbing the face of a, j would have to be horizontal,
+and we know that causes trouble.
+Let's do it anyways.
+j interlocks with f.
+q fits next to f between j and v.
+If q is face up, we can't put anything between u and q without making a thin gap.
+q is face down, and two tabs slide in.
+The bottom piece has a gap of height z with the floor,
+just as the left piece had a gap of width z against p1 in the phase shift lemma.
+Sure enough, j is vertical, and we're not going to have a third pair.
+There is a gap along i of width w-y between k and j.
+This is filled by a parade of pieces standing up.
+Suppose this parade ends in a tab.
+Nothing can stand on k and interlock.
+There is at least one pair of pieces on top of k pointing left.
+Another piece puts its tab in the double notch, and that piece crashes into a.
+Therefore, w-y is a multiple of h.
+w is a multiple of h.
+Pieces stand up along the back of k, and end at the edge of k.
+Or, x lies on top of k, and pieces stand up along the tab and face of x, and endat the edge of x.
+The notch of a can't be filled.
+Next let i face up, which means f points right.
+This also recapitulates the phase shift lemma.
+Put j in the corner of i and l.
+Let j be horizontal, as a third pair would force.
+From the face of f, along i, and possibly the face of j
+if j points right and faces down, is a gap of width h+z or h+2z.
+The former is filled with the tabs of q and r.
+The latter is filled with the tab of q and r pointing right.
+So the face of q covers half of the tab of f.
+The gap between v and q has height z and can't be filled.
+As expected, j is vertical.
+If two horizontal pieces stand up on top of k, there is a double notch,
+and the piece that fills that notch crashes into a or j.
+At most one piece lies atop k, and we will call that piece x.
+Assume x is not there.
+Pieces stand up and march along the back of k.
+They can't end at the edge of k, else the notch of a can't be filled.
+They continue on and fill the notch of a.
+w is a multiple of h + 2z.
+w is a multiple of 3z, plus 2z.
+w-y is a multiple of z, plus 2/3 of z.
+This is a contradiction, so x is present.
+At the face of x, where we have a phase shift of z, a piece cannot point down,
+because we can't perform the necessary interlock.
+Thus pieces march along from j, to the left, along the tab or face of x.
+This is a multiple of h.
+Pieces continue and then stop at the end of x.
+The notch of a can't be filled.
+Unwind through j, k, i, and g pointing right.
+
+g points left, and that marks the top of the face of a.
+That is our third equation.
+The shape is a 24 by 3 rectangle minus a 16 by 1 rectangle.
+The gap across a and g is 17.
+This is 5 pieces and a tab.
+The tab is at the left, across a and g, then two pairs, then k standing up and facing right.
+Put l in the corner of g and k.
+Due to the notch of k, l is not vertical.
+l extends 16 beyond the end of g.
+If f points left, the region between f and l can't be filled.
+f points right, and is z below g.
+At this point l puts its face on the face of g and points right,
+so that the gap between f and l has height 2z.
+The tab of m goes in this gap, but whether m faces up or down,
+the notch of f can't be filled.
+
+Hereinafter, we don't have to consider a piece facing right on the floor,
+followed by a piece pointing right.
 
 I'll continue this theorem as time permits, or you can continue my work.
 Please review this theorem and send along any corrections.
