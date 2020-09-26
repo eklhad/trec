@@ -2301,6 +2301,7 @@ If t faces left, the gap between t and s1 can't be filled.
 t faces right, but that requires y >= w-y.
 (Actually y > w-y, since they can't be equal.)
 If y < w-y, phase shifted stand up pairs can't exist.
+Nor a stand up pair next to the left wall, which has the same effect.
 
 Next assume y - (w-y) is not w-y.
 Put o in the corner of s and t, whence o is horizontal.
@@ -2308,6 +2309,7 @@ Assume there is another pair to the right of m. We often know this.
 Let u put its tab into this pair.
 v fits between s and u, but v is vertical, and crashes into o.
 If y not equal 2(w-y), we can't have one pair on the left and two pair on the right.
+Nor can we have two pairs standing next to the left wall.
 
 Put t1 above k between s1 and t.
 Since r < w-y, t1 can't face right.
@@ -3631,6 +3633,380 @@ the notch of f can't be filled.
 
 Hereinafter, we don't have to consider a piece facing right on the floor,
 followed by a piece pointing right.
+
+	24. w-y < h-z.
+
+Put a on the floor facing right.
+Because of {23}, b does not point right.
+Let b point left toward a.
+Thus there is a gap of width z in the notch of a.
+Put c face down in the corner of a and b.
+We can't have a gap between b and the tab of c, thus w-y + z = h-z.
+If c fills the gap then w-y = z.
+z = h/3.
+Try to slide a tab in next to c, and z = w-y + h-z.
+2h = 4z, order 2.
+Two tabs inserted implies z = w-y + 2(h-z).
+z = 3h/5.
+w-y comes out negative.
+So the face of c fills the gap.
+Since y > h, a rises higher than c.
+c presents a w by z block.
+We can satisfy z only with the face of d, as d points up.
+The gap from a to d is w+z.
+The only place a face could b is in the corner of c and a, with e pointing left.
+If a touches e, we have the troublesome shape f8f880, whose order has not been determined.
+If there is a gap between a and e, it is less than z, and nothing fits in.
+So no faces in this gap.
+Put e in the corner of c and d.
+e cannot lie down, as that leaves a gap of z,
+requiring a face, which we just handled.
+Vertical pieces march along from d to a.
+The span is a multiple of z.
+The same holds for w, and for y.
+a rises above c, and we already talked abou y = h+z.
+Let y = h+2z.
+This is fcfc80, which fails.
+If y = 2h we have fefe80, order 60.
+Set y= 2h+z, and the span is 3h, 3 pieces standing between a and d,
+giving a thin notch that can't be filled.
+y = 2h+2z, span is 3h+z, a face to face pair and a tab on either side.
+This is ff+ff+80, which fails.
+y = 3h, span is 3h+2z.
+An odd number of stand up pieces doesn't work.
+Therefore y > 3h.
+Suppose the vertical piece next to a, call it k, points down.
+k faces left.
+The gap from a to the face of k has height h.
+l, in the corner of a and k, is horizontal.
+If l points left, face down, then the face of m fills the gap as m points down,
+and the gap of height z between m and the floor can't be filled.
+l extends to the left from the top of a.
+The space between the floor and l has height w, just like a.
+Put m on the floor next to a.
+If m is horizontal, it starts a parade of pieces pointing left.
+This parade includes at least two pair, which contradicts the phase shift lemma.
+Therefore m stands up facing left.
+There is now a gap of y along the tab of m.
+This starts with a piece pointing left and face down.
+Thus y is an odd multiple of h, or an odd multiple of h + 2z if the top piece points right.
+Go back up to c.
+k consumes 2z as it points down, leaving y.
+We can't accommodate an odd number of pieces standing up.
+Therefore k does not point down.
+It stands up facing right.
+If we still have l horizontal, we still have y an odd multiple of h, possibley + 2z.
+The span across c and the face of d is an odd multiple of h plus 2z or 4z.
+4z doesn't work since we can't have a tab on both ends.
+The parade starts with k facing right.
+Again we can't have an odd number of stand up pieces; therefore l is vertical.
+Let l point down and face right.
+Again k faces right.
+The gap from k to l is 2y-w-h, or y-h-z.
+Starting with k, at least two pair stand up.
+Put m in the corner of l and k, and m is horizontal, and collides with,
+or leavs gaps with, the pieces that stand in these pairs.
+l can't stand up and face right, due to its thin gap with k.
+l faces left.
+It rises y-h higher than k.
+Put m in the corner of k and l.
+m can't run horizontal, as we described before.
+m points down, as n, in the notch of k, points down and faces right.
+Let p point down into the next pair.
+Put o between n and p.
+We get in trouble unless p faces right, and o faces left,
+and two tabs fit between m and o.
+This pattern continues until we reach d.
+Suppose there is a tab pointing down at d.
+w-z is an even multiple of h.
+Let the last stand up piece be s, with t pointing down into its notch.
+Let u point down between s and d.
+Now s and u present a h+z by z block.
+Put e on the floor next to b, pointing right.
+Put f in the notch of e, with f pointing up.
+Now go back to our h+z by z block.
+Let the face of v satisfy z, with v pointing up.
+The gap between f and v can't be filled.
+v can't wrap around u, as it crashes into t.
+To keep the pattern going, v stands up next to t, facing left.
+Now we have a z by z block, and we already know we can't satisfy u on the right.
+Let x face down on u.
+Put the tab of q between d and x.
+The gap between f and q can't be filled.
+u is not there; s is next to d.
+w+z is an even multiple of h.
+y is an odd multiple of h + z.
+Remember y > 3h.
+s presents a z by z block.
+Put x face down on s, put q between d and x, and find the same gap between f and q.
+Put the face of u to the right of s, with u poiinting up.
+Put the face of v between f and u, with v pointing up.
+v extends past f by z.
+Imagine another pair, i and j, next to j, with k in the notch.
+If k faces right then l is face down with its face between v and k,
+and m puts its face between j and l, with m pointing down.
+There is a 2z by z gap between f and m that can't be filled.
+So k faces left.
+This is an h+z by z block.
+The face of m could satisfy z, with m pointing up, this continues the pattern,
+with m analogous to v.
+Or l could point down onto k, followed by the face of m.
+Then the tab of n fits between j and m, and now we really extend beyond j.
+Or l could stand up atop k facing right, and giving a z by 2z block.
+Satisf 2z with the tab of m, and we're going well beyond j again.
+Or by two faces, but then m points down and the gap between f and m can't be filled.
+Or let m lie face down and satisfy z, giving a gap of h.
+This is filled by n pointing right, and n extends well beyond j,
+but z higher than j.
+If there is another pair next to j, none of these is viable,
+except for m standing up and facing left, and continuing the pattern.
+This continues across all the stand up pairs atop f, and atop g if g points left.
+Suppose g points right or faces right.
+y is an odd multiple of h + z.
+We have f, plus some pairs, and then a gap of z.
+The face of m might fill this gap, if g points right,
+but then there is a long thin gap between g and m.
+Therefore g points left.
+Could pairs march along to the fce of g?
+2y is an even multiple of h + 2z.
+With f facing left, the last standup piece faces right, and we can't put a tab after that.
+So the parade stops when it runs into x lying down.
+Suppose x is all the way to the right, touching the face of g.
+The parade stops at y-z, at an odd number of stand up pieces,
+a piece facing left, with an overhang or an overhang z higher.
+In general, we might run into x after a piece faces left.
+If x points left, nothing fits in the corner of x and j.
+x points right, giving a gap of height w-h, or w+z-h.
+This is an even multiple of h + 2z, or an odd multiple of h.
+The bottom piece, on the face of x, is face down pointing right.
+The even multiple of h + 2z doesn't work.
+The odd multiple of h might, since the top piece is also face down pointing right, and m wraps neatly around it.
+There are at least two pair climbing the back of j, starting with x.
+If there are exactly two pair, then y = 3h+z, but that is ff{c0}ff{c0}80, which fails.
+So at least 3 pair.
+This is pattern γ, which I will refer to later.
+Assume there is more to the tab of g.
+Let o point left and fill the notch of the lowest pair.
+If o is face up, the tab of p slides between g and o, but then p collides with the face of g.
+If o is face down, the face of p slides under o, p stands up,
+and there are gaps to the left of p.
+So x is, as we said earlier, all the way to the right.
+o is still face down.
+p fills the next pair, and q fills the next pair.
+These pieces are face up or face down.
+Put r between o and p.
+If q is face down then the tab of r fills the gap.
+If q is face up then r points right and fills the gap.
+The space between the floor and r is 2h by y or 2h+z by y.
+The latter doesn't work.
+Forgive me if I reuse some letters, as I am running out.
+Let an i j pair point right, next to g and o.
+Let k fill the notch of i and j, with k facing up.
+Put the tab of l below k.
+Put m in the corner of l and k.
+m is not horizontal.
+In fact m stands up and faces right.
+There is a z by z gap above the face of k, between j and m, that can't be filled.
+Therefore x does not meet a piece facing left,
+and x is not all the way over to the right.
+A piece facing right, call it i, is followed by x.
+x points left, and y lies down and wraps around x.
+Put m in the corner of g and x.
+m is not horizontal.
+In fact m stands up and faces right.
+The face of n fills the gap above x, between y and m.
+The z by 2z gap between i and n can't be filled.
+Unwind all the way back to d standing up with its face against the right edge of c.
+
+If d is face up, or face down pointing left,
+put e on the floor next to b, pointing right.
+The face of b, and the face of e, and even z, is just h, is less than y,
+so the notch of e can't be filled.
+Put d face down and pointing right.
+The gap between the floor and d has height h+z.
+w = y+z > h+z, so e does not stand up.
+We need two tabs, which is impossible.
+Put d face down and pointing left across c.
+The gap between a and d is w-y.
+This is filled by the face of e pointing left.
+This is f8f880 again.
+Therefore d is vertical.
+We already put the face of d against c, so this time d forms a wall next to c.
+The gap across c has width w.
+Let d stand up and face right.
+Put e on the floor next to b.
+e points right, and f puts its face in the notch of e.
+The notch of d can't be filled, thus d points down.
+Still e is on the floor next to b pointing right.
+Let d face left.
+The gap along the tab of d has height y-z.
+This is filled by pieces pointing left, except perhaps the top piece which could point right.
+y is a multiple of h, + z,
+or an even multiple of h + 2z + z, which is an odd multiple of h.
+We already talked about h+z, f8f880.
+y is at least 2h+z.
+a rises more than h above c.
+Pieces can't point left into the tab of a, as there is no way to fill their notches.
+Therefore d faces right.
+d pointing down onto e, this is pattern α.
+with the span of c, or perhaps x lying on top of c,
+and pieces standing up on c or x, y is a multiple of z.
+If pieces stand on c, w is an even multiple of h, with perhaps one tab, or perhaps two tabs.
+If x lies on c, y is an odd multiple of h, with perhaps one tab.
+But that is the same as the statement we made about w.
+Put f in the notch of e, and let f be horizontal.
+This starts a parade of pieces up the tab of d.
+The shortest y to consider is 2h+z, hence w is at least 2h+2z.
+Even if f points left, we have at least one pair pointing right,
+with something in the notch of that pair.
+If f points left face down, then the face of g slides between f and the floor,
+and the gap above f, next to g, can't be filled.
+f is face up pointing right, and g slides its tab under f.
+i, in the corner of g and f, is vertical, and leaves gaps that can't be filled.
+We didn't consider f pointing left because of the face of d,
+but let's pretend like that face isn't there.
+A parade of pieces marches across the tab of f.
+An odd number of pieces stand up, with perhaps a tab on one side or the other, but not both.
+The parade starts with a possible tab, and then a piece facing right.
+so the last piece, call it k, faces right.
+With g sliding under f, this presents a 2z by h block.
+Because of the face of g, there is no way to satisfy h.
+Let l point down to satisfy 2z.
+the gap across g is y-z, which is an odd multiple of h, plus or minus z.
+The first piece faces right, and so does the last, with a gap of z, which doesn't work.
+Or we have a set of pairs and then a tab in the notch of g.
+This is a gap of height y-z.
+The piece just above the face of g is horizontal, and we can't fill the space between this piece and the floor.
+Therefore f does not point left.
+f is vertical and covers the entire gap of height w.
+Still put g on the floor next to e.
+g cannot stand up and face left,
+since the piece that fills the notch of g would crash into f.
+Let f point down.
+A parade of pieces points right and climbs the tab of f.
+There is at least one pair at the bottom, and g puts its tab under this pair.
+i, the next piece above g, is vertical,
+and leaves gaps with this pair and its insert.
+Therefore f stands up.
+Let g point right or face right.
+f begins a parade of pieces standing up.
+Let k be the last, in the corner of e and g.
+Even if g points right, we can't put k face down on e around the face of g,
+as the thin gap above g can't be filled.
+With f facing right, y is a multiple of h, or an even multiple of h + 2z if k points down.
+Yet y is an odd multiple of h plus or minus a tab.
+This cannot equal an even multiple of h plus a tab.
+So k does not point down.
+y is an odd multiple of h.
+k faces right, and g points right.
+We already looked at fefe80 and ff{c0}ff{c0}80, so y is at leasst 5h.
+We have a 2z by z block at k and g.
+If l satisfies z by facing left, m stands in the notch of k g and l,
+and the notch of m can't be filled.
+l satisfies 2z by pointing down.
+This is pattern α again.
+This can't continue forever, so let's just assume g points left.
+This could happen after several iterations, so we can't use the face of d hanging over e.
+f does not point right or point down or point left, for the same reasons as above.
+We are back to f standing up and facing right in the corner of α,
+or, to illustrate, in the notch of e.
+f begins a parade of pieces marching across e and g.
+Suppose this parade goes all the way to the face of g.
+Suppose k, the last piece, points down.
+We've seen this before.
+k has a gap of height y-z.
+The piece just above the face of g is horizontal, and we can't fill the space between this piece and the floor.
+k stands up.
+Well 2y could be an even multiple of h, a perfect parade of pairs.
+The right edge is g, with a height of h, and then the back of a piece rising w-z above the face of g.
+This is pattern β.
+Put m on the floor next to g.
+m is not vertical.
+Let m point right.
+This presents a 2z by z block.
+If we try to satisfy z, the piece that stands up in the gap of width h
+has a thin gap that can't be filled.
+Satisfy 2z by l pointing down, but this is pattern α again.
+Therefore m points left.
+The face of g is a z by z block.
+A piece can't hang over m,
+so satisfy z on the right by a piece standing up and facing left.
+Remember that y is an odd multiple of h.
+The first and last pieces on the tab of m face left.
+This is pattern β again.
+That pattern continues forever, or recreates α, which starts things over again.
+Let's just say the parade of pieces doesn't reach the end.
+It stops at some point because x lies down on top of f and g.
+Suppose x is all the way to the right, touching the face of g.
+The gap is y-z, an odd multiple of h, plus or minus z.
+The gap of z doesn't work, so try a set of pairs follorwed by a tab.
+In other words, a the tab of i points down and i faces right over x.
+x points right.
+This is a gap of y-h, an even number of pieces pplus or minus z.
+Pieces point right, with the first piece face down.
+The last is face up, and the gap in the notch of i can't be fills without making another thin gap just below.
+But we could have an odd number pointing right and then a piece pointing left.
+We already ruled out ff+ff+80, so at least two pair, starting with x, point right from the tab of i.
+This is pattern γ, which we dealt with before.
+So x is not all the way to the right, nor is a tab pointing down on either side of x.
+Suppose a piece facing right, call it i, is followed by x.
+x points left, and y lies down and wraps around x.
+Put m in the corner of g and x.
+m is not horizontal.
+In fact m stands up and faces right.
+The face of n fills the gap above x, between y and m.
+The z by 2z gap between i and n can't be filled.
+Pieces on either side of x face away from x.
+Pieces stand on the tab of x, just as they did when x was lying on c.
+An even number of pieces stand between e and x.
+Between x and the face of g is an odd multiple of h, plus or minus z.
+The gap of z doesn't work, so it is a set of pairs of pieces
+standing up, and then k pointing down into the notch of g.
+l, in the corner of g and k, is horizontal, and we can't fill the space between l and the floor.
+That's it for x, g, f, and d.
+Unwind all the way back to the face of c in the notch of a.
+
+With w-y < h-z, the tabs of c and d fill the notch of a.
+These are standard thinn tabs, z = 2h/3.
+Put e in the corner of b and d.
+e stands and interlocks with d.
+h-z + w-y = w-y + y.
+Since y > h, this is impossible.
+That completes the case of w-y < h-z.
+
+Let b face right, like a.
+c and d point down into the notch of a, as they did before.
+Put e on the floor next to b.
+We ruled out e pointing right or pointing left.
+e can't face right, like a and b, so e faces left.
+We can't fill the notch of b and e, without colliding with, or making gaps below, the face of d.
+
+Whenever a faces right, it is followed by b facing left.
+Let a and b point right from the left wall, with c in their notch.
+z = h/3, standard thick tabs.
+c is face up, and the tab of d slides under c.
+Put e in the corner of d and c.
+If e is horizontal it interlocks with d.
+y = 2(w-y).
+This makes y much less than h.
+Therefore e is vertical.
+If e faces left, nothing can fill the notch of e.
+A tab is too wide, and a face isn't long enough to reach e.
+So e faces right.
+Put f above c between b and e.
+With w-y < h-z, a tab won't fit.
+The face of f fills the gap.
+If f points left, the thin gap between f and the left wall can't be filled.
+f points right, and w <= 4h/3.
+If there is a gap between e and f, it is less than z high, and at least h-z wide.
+This can't be filled, hence w = 4h/3.
+Because of the face of d, e stands up.
+If e touches the face of d, w+h = 2y, and y = 7h/6.
+This is ffffffff8080, which fails.
+Put g in the notch of e, and g can only point right.
+The gap next to e, and below g, can't be filled.
+
+Except for f8f880, whose order has not been determined, a piece cannot have w-y < h-z.
 
 I'll continue this theorem as time permits, or you can continue my work.
 Please review this theorem and send along any corrections.
