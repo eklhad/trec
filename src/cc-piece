@@ -1,0 +1,33 @@
+	Compile a piece - experimental.
+
+trec can run on a piece for days or weeks, and I wonder if there is an advantage
+to compiling for that piece, and/or if there is a practical way to do so.
+Most of the cycles are spent testing whether a piece can be placed,
+or whether it would collide with other pieces on the board.
+See this from expandNode()
+
+x0 = i - o->x;
+b = b0 + x0;
+if(*b & (o->pattern[0]<<dy)) continue;
+if(b[1] & (o->pattern[1]<<dy)) continue;
+if(o->w > 2) {
+b_end = b + o->w;
+b += 2;
+pat = o->pattern + 2;
+do if(*b & (*pat<<dy)) goto nextOrient; while(++pat, ++b != b_end);
+}
+
+So a dozen lines of code. When compiled for a specific piece,
+this might be replaced with 3,000 lines of code.
+Try this, for example.
+trec -80 ^e0f080 >/tmp/switch
+That prints the code that would stand in for the above,
+for the piece e0f080.
+But, in my test run for this piece,
+it generates the same 3 solutions (as it should), in exactly the same time.
+I'm sure the computed goto is optimized, as it has been in fortran since
+the early 70s, but still that jump may be just enough overhead
+to offset the benefit of the unrolled loop,
+and the use of constants rather than dereferenced pointers.
+With no obvious benefit, I'm going to let this one lie.
+I just wanted to document it as an idea that I played with for a little bit.

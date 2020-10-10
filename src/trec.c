@@ -635,6 +635,7 @@ base[i-j] = swap;
 #define LOOKALLCHECK 0x10
 #define ALLCACHE 0x20
 #define SHOWTHREAD 0x40
+#define CCP 0x80
 
 static int checkBits = 0;
 
@@ -734,13 +735,15 @@ and writing down a bitmap for each one.
 struct ORIENT { // describe an orientation
 short x, y; // offset of bottom left square
 uchar h, w; // height and width
-schar breakLine; // the row with more than half the piece below it
+short breakLine; // the row with more than half the piece below it
 bool ambig; // ambiguous indicator
+uchar key;
 uchar pno; // piece number in the set
 // orientation number as per a convention that will be described later
 uchar ono;
 uchar rotsym;
 uchar maxUnder;
+short filler;
 shapebits pattern[REPDIAMETER];
 shapebits under[REPDIAMETER];
 };
@@ -891,6 +894,7 @@ char c;
 uchar bo, lo, ro;
 int nsqFirst = -1;
 
+if(!(checkBits&CCP))
 printf(";%s\n", hexrep);
 
 s = hexrep;
@@ -1103,6 +1107,7 @@ o->x = j;
 o->y = 0;
 o->pno = setSize;
 o->ono = convert_ono[ono];
+o->key = o_max*2;
 for(j=0; j<by; ++j)
 o->pattern[j] = reverseShort(new[j]);
 
@@ -1152,6 +1157,7 @@ q = o_leftlist + o_max;
 q->x = i;
 q->y = j;
 q->breakLine -= j;
+q->key = o_max*2;
 reflectCompiledPiece();
 }
 } /* compilePiece */
@@ -1168,6 +1174,7 @@ struct ORIENT *p = o_rightlist + o_max;
 p->h = o->h, p->w = o->w, p->ambig = o->ambig;
 p->pno = o->pno;
 p->ono = hrefOrient[o->ono];
+p->key = o->key + 1;
 p->x = o->w-1 - o->x;
 p->y = o->y, p->breakLine = o->breakLine;
 
@@ -1332,6 +1339,34 @@ exit(0);
 }
 } /* sortOrientations */
 
+static void demo_ccp(void)
+{
+struct ORIENT *o;
+int i, j, key, dy, lr;
+printf("switch((o->key<<4) + dy) {\n");
+for(i=0; i<o_max; ++i) {
+for(lr=0; lr<2; ++lr) {
+o = (!lr ? o_leftlist + i : o_rightlist + i);
+key = o->key;
+for(dy=0; dy<16; ++dy) {
+printf("case %d:\n", (key<<4)+dy);
+if(dy <= 12) {
+if(o->x) printf("b = b0 + i - %d;\n", o->x);
+else puts("b = b0 + i;");
+for(j=0; j<o->w; ++j) {
+printf("if(*b & 0x%x) continue;\n", (o->pattern[j]<<dy));
+if(j < o->w-1) puts("++b;");
+}
+}
+puts("break;");
+}
+}
+}
+puts("} // end switch");
+puts("x0 = i - o->x;");
+exit(0);
+}
+
 // We have the software to parse the piece string and compile the orientations,
 // so let's read the config file.
 
@@ -1341,6 +1376,7 @@ static int startMega;
 static int numThreads;
 static int lookahead; /* look ahead this many rows when tiling */
 static char r_shorts; // nodes must use shorts, rather than bytes
+static void demo_ccp(void);
 #define BADSPANCOUNT 10
 static struct BADSPAN { schar drop, span, up, filler; } badSpan[BADSPANCOUNT+1];
 
@@ -1379,6 +1415,7 @@ switch(lineno) {
 case 1:
 stringPiece(line);
 if(setMaxDimension > 9) r_shorts = 1;
+if(checkBits&CCP) demo_ccp();
 sortOrientations();
 break;
 
@@ -1609,6 +1646,7 @@ if(argc == 2 && argv[1][0] == '^') {
 /* polyomino on the command line, other values default. */
 stringPiece(argv[1]+1);
 if(setMaxDimension > 9) r_shorts = 1;
+if(checkBits&CCP) demo_ccp();
 sortOrientations();
 curWidth = setMinDimension;
 bestOrder = 4000;

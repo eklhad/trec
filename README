@@ -67,7 +67,7 @@ On some machines, ImageMagick generates a space saving 8 bit black&white image
 format, which most image programs do not recognize.
 png48: forces 16 bit RGB, which can be read by every program, and by every
 browser, if you wish to put images up on a web site.
-The picture that goes with the above matrix is in pictures.hex610.png.
+The picture that goes with the above matrix is in pictures/hex610.png.
 Take a moment and look at it, and compare with the above matrix.
 
 So which pentominoes, on their own, tile a rectangle?
