@@ -465,12 +465,29 @@ there are plenty of interesting patterns without them.
 
 The thre smallest spacial tetrominoes are formed by placing a cube on top of an L triomino.
 These all have order 2.
-Interestingly, the stair tetromino,
+Two of these are chiral, i.e. reflections.
+You might consider them the same piece or you might not.
+Interestingly, the flat stair tetromino,
 which could not tile a rectangle in the plane, has order 6 in 3 dimensions
 (Left as an exercise for the reader).
 The flat pentomino that looks like the letter C also has order 6.
 The spatial pentomino formed by placing a cube ontop of a 2×2 square has order 4.
-This is just the edge of a glorious, uncharted wilderness.
 My tiling software, in trec.c,
 would have to be completely restructured to handle 3 dimensions.
+
+Recall the hex puzzle, which attained some commercial success.
+The 12 distinct pentominoes tile a 6 by 10 board.
+Perhaps a 3 dimensional version would also attain commercial success.
+If we ignore chirality, there are 11 new pentominoes in 3 dimensions.
+As mentioned before, we humans can't reflect pieces in 3 space, so bring in
+the left and right handed versions, and there are 17 new pentominoes.
+combine this with the original 12, and there are 29, which is a prime number,
+and doesn't lead to a convenient rectangle.
+Omit the long pentomino, 5 in a row, and find 28 pieces,
+filling a box 7 by 5 by 4.
+I haven't explored this, but it seems interesting,
+and I rather wish I had the pieces in my hands to play with.
+
+john niss hansen has done considerable work in higher dimensions.
+Please explore his polyomino projects on github, ID johnniss
 
