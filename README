@@ -17,7 +17,7 @@ as illustrated by the domino.
 Thus it's order is 1 (not very interesting).
 A triomino, three squares pasted together, can assume only two distinct shapes.
 The straight line has order 1 and the L shape has order 2.
-Thus two L's join together to make a 2×3 rectangle.
+Two L's join together to make a 2×3 rectangle.
 The five tetrominoes are the line, the L, the triangle
 (three squares in a row with one above the middle), the square, and the stairs.
 These have orders 1, 2, 4, 1, and 0, respectively.
@@ -66,7 +66,7 @@ The prefix png48: on the output file is important!
 On some machines, ImageMagick generates a space saving 8 bit black&white image
 format, which most image programs do not recognize.
 png48: forces 16 bit RGB, which can be read by every program, and by every
-browser, if you wish to put images up on a web site.
+browser, if you wish to put images up on your web site.
 The picture that goes with the above matrix is in pictures/hex610.png.
 Take a moment and look at it, and compare with the above matrix.
 
@@ -266,6 +266,25 @@ We often know the order is divisible by something. More on this below.
 
 The eighth line is a factor on the dimension.
 Boundary conditions often force both diminsions to be divisible by something.
+
+The ninth line is optional. It presents a series of bad spans.
+A span consists of 3 numbers, the height of the wall, the length of the span,
+and the height of the opposite wall. 2,3,3 is a wall of height 2 or greater,
+then a floor of width 3, then a wall of height 3 or greater.
+2,3,3 is equivalent to 3,3,2. Due to some hard-coded searches,
+spans wider than 4 probably won't be discovered.
+Multiple spans are separated by pipes.
+For example, the hexomino pair e0b0_e070 has bad spans
+2,1,2|2,2,2|2,3,2|2,4,2
+Spans are assumed to have nothing between the walls and above the floor,
+i.e. there aren't any overhangs. Some polyominoes, like f08080_e070, have no
+(realistically attainable) bad spans, whence this technique is no help.
+You determine the bad spans by hand, and supply them to trec on this line.
+Some day trec will compute the bad spans for you, since a mistake here, a span
+that can actually be filled, could cause trec to miss a solution.
+These spans are particularly helpful for wide rectangles. In some cases
+the program runs nearly twice as fast. There may be other tricks,
+like this one, that could further optimise the program.
 
 A line with a single hyphen on it marks the end of data
 and the beginning of comments about this shape.

@@ -1482,8 +1482,7 @@ curNodeWidth = curWidth * (1+r_shorts);
 break;
 
 case 9:
-// This feature, forbidden spans, is suppose to make things faster,
-// but it actually slows things down, so don't use it.
+// Record the forbidden spans.
 sp = badSpan, s = line;
 while(*s) {
 if(sp - badSpan >= BADSPANCOUNT) bailout("too many bad spans, limit %d", BADSPANCOUNT);
@@ -1780,6 +1779,8 @@ if(b-holestart < pieceMinMax) return false;
 }
 
 #if 0
+// Checking for bad spans in the hole tests consumes more cycles
+// than it save; not a help.
 if(badSpan[0].drop && y0 == min_y) {
 // look for forbidden gaps on the floor
 const shapebits *g_start, *g_end;
@@ -1823,12 +1824,11 @@ lastlev = ly, drop = 0;
   return true;
 } /* holeTest */
 
-#if 0
 // check for forbiddne spans
-static inline bool spanTest(const shapebits *b0, const struct ORIENT *o, int x0, int y0)
+static inline bool spanTest(const shapebits *b0, const struct ORIENT *o, int x0)
 {
 const shapebits *g_start, *g_end, *b;
-int drop = 0, span, up, lastlev = -1, ly, j;
+int drop = 0, span, up, lastlev = -1, ly;
 const struct BADSPAN *sp;
 g_start = b0 + x0 - 5;
 if(g_start < b0) g_start = b0;
@@ -1837,30 +1837,29 @@ if(g_end > b0 + curWidth1) g_end = b0 + curWidth1;
 for(b=g_start; b<g_end; ++b) {
 ly = lowEmpty[*b];
 if(ly < lastlev) {
-drop = lastlev - ly, span = 1;
+// can't have anything hanging over above the gap
+if(*b >> ly) drop = 0;
+else drop = lastlev - ly, span = 1;
 lastlev = ly;
 continue;
 }
 if(ly == lastlev) {
+if(drop) {
 ++span;
+if(*b >> ly) drop = 0;
+}
 continue;
 }
 if(!drop) goto nospan;
 up = ly - lastlev;
 for(sp=badSpan; sp->drop; ++sp)
 if(sp->span == span && (drop >= sp->drop && up >= sp->up || drop >= sp->up && up >= sp->drop))
-break;
-if(!sp->drop) goto nospan;
-// can't have anything hanging over above the gap
-for(j=1; j<=span; ++j)
-if(b[-j]>>lastlev) goto nospan;
-return false;
+return false; // found a forbidden span
 nospan:
 lastlev = ly, drop = 0;
 }
 return true;
 }
-#endif
 
 // Here is the structure for the node.
 struct NODE {
@@ -2324,15 +2323,17 @@ printf("%x", b0[j]);
 printf("\n");
 }
 
-#if 0
-if(badSpan[0].drop && dy == min_y && !spanTest(b0, o, x0, dy)) {
+if(badSpan[0].drop && !spanTest(b0, o, x0)) {
 // oops, this was a mistake
-pat -= o->w; o->pattern;
+pat -= o->w;
 b -= o->w;
-do *b &= ~(*pat<<dy); while(++pat, ++b != b_end);
+do {
+shapebits t = (*pat<<dy);
+if(t&min_y_bit) ++min_y_count;
+*b &= ~t;
+} while(++pat, ++b != b_end);
 goto next;
 }
-#endif
 
 /* downgrade breakLine */
 j = o->breakLine + p->y;
