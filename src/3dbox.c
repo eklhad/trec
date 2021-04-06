@@ -24,6 +24,7 @@ static int cbflag; // checkerboard flag
 #define NSQ 80 // number of squares in largest polyomino
 #define SETSIZE 10 // number of pieces in the set
 #define MAXORDER 1000
+#define BOXWIDTH 32
 
 typedef unsigned char uchar;
 typedef signed char schar;
@@ -348,15 +349,42 @@ static int solve(void);
 
 int main(int argc, const char **argv)
 {
+if(argc != 3 && argc != 5)
+bailout("usage: 3dbox pieces width depth height | 3dbox pieces order", 0);
+lowEmptySet();
 stringPiece(argv[1]);
+if(argc == 5) {
 dim_x = atoi(argv[2]);
 dim_y = atoi(argv[3]);
 dim_z = atoi(argv[4]);
 boxVolume = dim_x * dim_y * dim_z;
 if(boxVolume % nsq) bailout("volume %d does not admit a whole number of pieces", boxVolume);
 boxOrder = boxVolume / nsq;
-lowEmptySet();
+printf("order %d\n", boxOrder);
+printf("box %d by %d by %d\n", dim_x, dim_y, dim_z);
 solve();
+return 0;
+}
+
+boxOrder = atoi(argv[2]);
+while(1) {
+if(cbflag && boxOrder&1) ++boxOrder;
+if(boxOrder > MAXORDER) bailout("order to large, limit %d", MAXORDER);
+printf("order %d\n", boxOrder);
+boxVolume = boxOrder * nsq;
+for(dim_y = 2; dim_y*dim_y*dim_y <= boxVolume; ++dim_y) {
+if(boxVolume % dim_y) continue;
+for(dim_x = dim_y; dim_y*dim_x*dim_x <= boxVolume; ++dim_x) {
+if((boxVolume/dim_y) % dim_x) continue;
+if(dim_x > BOXWIDTH) bailout("box too wide, limit %d", BOXWIDTH);
+dim_z = boxVolume / dim_y / dim_x;
+printf("box %d by %d by %d\n", dim_x, dim_y, dim_z);
+solve();
+}
+}
+++boxOrder;
+}
+
 return 0;
 }
 
@@ -367,7 +395,7 @@ schar increase;
 short onum;
 } stack[MAXORDER];
 
-static shapebits ws[REPDIAMETER][REPDIAMETER]; // our workspace
+static shapebits ws[BOXWIDTH][BOXWIDTH]; // our workspace
 
 static void print_ws(void)
 {
@@ -378,6 +406,44 @@ printf("%02x", ws[x][y]>>8);
 printf("|");
 }
 printf("\n");
+}
+
+static void print_solution(void)
+{
+char *b = malloc(boxVolume);
+const struct ORIENT *o;
+const struct SF *p;
+int lev, x, y, z;
+int x0, y0, z0;
+char c;
+
+for(lev=0; lev<boxOrder; ++lev) {
+p = stack + lev;
+o = o_list + p->onum;
+x0 = p->x0, y0 = p->y0, z0 = p->z;
+c = 'a' + lev%26;
+for(x=0; x<o->rng_x; ++x)
+for(y=0; y<o->rng_y; ++y)
+for(z=0; z<o->rng_z; ++z)
+if(o->pattern[x][y] & (HIGHBIT >> z))
+b[dim_x*dim_y*(z0+z) + dim_x*(y0+y) + x0+x] = c;
+}
+
+// not sure the bet way to prsetn this.
+// I'm going to go for the fewest layers.
+for(y=0; y<dim_y; ++y) {
+if(y) {
+for(z=0; z<dim_z; ++z)
+printf("-");
+printf("\n");
+}
+for(x=0; x<dim_x; ++x) {
+for(z=0; z<dim_z; ++z)
+printf("%c", b[dim_x*dim_y*z + dim_x*y + x]);
+printf("\n");
+}
+}
+free(b);
 }
 
 static int solve(void)
@@ -392,6 +458,7 @@ memset(ws, 0, sizeof(ws));
 advance:
 if(++lev == boxOrder) {
 puts("solution!");
+print_solution();
 exit(0);
 }
 if(lev == MAXORDER) bailout("placement stack overflow %d", lev);
@@ -463,7 +530,7 @@ puts("}");
 #endif
 if(--lev < 0) {
 puts("no solution");
-exit(0);
+return 0;
 }
 --p;
 o = o_list + p->onum;

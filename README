@@ -510,3 +510,21 @@ and I rather wish I had the pieces in my hands to play with.
 john niss hansen has done considerable work in higher dimensions.
 Please explore his polyomino projects on github, ID johnniss
 
+Just to play around, I wrote 3dbox.c, which fills a box with 3d polyominoes.
+John's work is more extensive than mine, including higher dimensions; I just
+wanted to see some puzzles that could be physically built, and perhaps marketed.
+This program is much simpler than trec.c.
+There is no config file:
+the piece is on the command line, having the same hex syntax.
+_ delimits multiple pieces in a set, as it did before.
+! describes a piece in 3 dimensions.
+e080!40 is an L tetromino with a cube pasted on the middle of the long leg,
+in the third dimension.
+After the piece, you can specify the dimensions of the box to fill,
+or an order to start your search.
+The solution is a sequence of matrices, one matrix per layer in the box.
+I don't have an easy way to turn this into an image.
+Some basic results are in theorems/3d-order.
+3dbox is brute-force and inefficient; you may want to rewrite it in the style of trec.c,
+with 2 dimensional nodes on disk and breakplanes etc.
+

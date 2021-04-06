@@ -1,0 +1,82 @@
+What is the order of some small 3d polyominoes?
+
+	Volume
+
+If you want to use all three dimensions, the volume has to have
+at least 3 prime factors.
+If it has exactly 3, p×q×r, then your box is p by q by r.
+If there are 4 prime factors, 2 of them join together to make 1 dimension,
+and the other prime factors establish the other dimensions.
+
+	Tetrominoes
+
+The line, L, triangle, square, have orders 1, 2, 4, 2,
+in the plane or in a flat box, i.e. a box of thickness 1.
+The stair tetrominoe has order 6, in a 3 by 2 by 4 box.
+The twisted tetromino, our first 3 dimensional piece, has order 2,
+and the corner piece has order 2.
+
+	Pentominoes
+
+Start with the 12 flat penominoes.
+They are, in my nomenclature: the line, the L, the Y
+(you have to tilt it a little to look like a Y), the C, the stairs, the faucet,
+the Utah, the lightning bolt, the zigzag, the T, the cross, and the chair.
+The line, the L, the Utah, and the Y, have orders 1, 2, 2, and 10.
+Can Y do better in a box?
+Its order can't be prime, for then the box would be flat.
+Order 4 or 6 builds a box that is too skinny.
+Even 9 implies 3 by 3, too skinny.
+Pieces all stand up against each other and that doesn't work.
+8 implies 2 by 4 by 5. Verify this doesn't work, so 10 it is.
+
+C has order 6.
+
+Cross has order 0; it still can't fit into a corner.
+
+When a piece lives in a 3 by 3 square, like the T or faucet or chair,
+it can't fill a box of thickness 2.
+It would have to tile one layer, then the next layer, so would tile a rectangle,
+and we can quickly determine these pentominoes don't tile a rectangle.
+Orders 4, 6, 8, and 10 won't work.
+At this point I had to resort to software, i.e. 3dbox.c
+The T pentomino has order 60, as follows.
+
+ammmexoufg
+bdmxxxooov
+cdmyfxovvv
+dddsfffwxv
+eeesfkkkxh
+fessszkxxx
+geizzzkyyy
+gggngzpqyz
+gnnngggqya
+hotngbqqqb
+----------
+aaayeeeufg
+bbbyhhhufg
+cccyuhlufg
+fpuuuhlwww
+fpppulllrh
+fpvvvmrrrh
+iiivammmrh
+hotvampzzz
+hotaaapaaa
+hotbbbpbbb
+----------
+aqqqecsufg
+bjqcccsssc
+cjqyicsccc
+jjjwiiiwdc
+kkkwinnndh
+fkwwwdnddd
+lkidddneee
+lllrjdptez
+lrrrjjjtea
+hotrjbtttb
+
+The stair pentomino has order 36,
+the chair has order 18,
+the lightning has order 8,
+and the faucet and zigzag are still undetermined.
+
