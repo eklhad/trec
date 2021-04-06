@@ -1,4 +1,4 @@
-all: hexsol hp1 hp2 hp3 hp4 hept chiral trec letterart drawit
+all : hexsol hp1 hp2 hp3 hp4 hept chiral trec 3dbox letterart drawit
 
 hexsol : hexsol.c
 	cc hexsol.c -o hexsol
@@ -23,6 +23,9 @@ chiral : chiral.c
 
 trec : trec.c
 	cc -O trec.c -o trec -lpthread
+
+3dbox : 3dbox.c
+	cc 3dbox.c -o 3dbox
 
 #  for the two programs that use ImageMagick
 IMFLAGS = -I/usr/include/ImageMagick-6 -I/usr/include/arm-linux-gnueabihf/ImageMagick-6 -DMAGICKCORE_QUANTUM_DEPTH=16 -DMAGICKCORE_HDRI_ENABLE=0
