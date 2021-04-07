@@ -37,10 +37,12 @@ Cross has order 0; it still can't fit into a corner.
 When a piece lives in a 3 by 3 square, like the T or faucet or chair,
 it can't fill a box of thickness 2.
 It would have to tile one layer, then the next layer, so would tile a rectangle,
-and we can quickly determine these pentominoes don't tile a rectangle.
+and we can quickly determine the remaining pentominoes don't tile a rectangle.
 Orders 4, 6, 8, and 10 won't work.
-At this point I had to resort to software, i.e. 3dbox.c
+At this point I had to resort to software, i.e. 3dbox.c.
 The T pentomino has order 60, as follows.
+This has a lovely 4-fold rotational symmetry,
+and a vertical symmetry through the three layers.
 
 ammmexoufg
 bdmxxxooov
@@ -78,5 +80,16 @@ hotrjbtttb
 The stair pentomino has order 36,
 the chair has order 18,
 the lightning has order 8,
-and the faucet and zigzag are still undetermined.
+the faucet has order 36,
+and the zigzag is undetermined, with order at least 81.
+
+As we move to the 3 dimensional pentominoes, chirality comes into play.
+For consistency, I allow a piece to be reflected, just as I do in the plane.
+If you build a physical model of the puzzle, you have to make left and right
+handed versions of the piece, perhaps the correct number of each reflection,
+which gives a hint on solving the puzzle.
+For example, start with the L tetromino, and place a cube on top
+of the end of the long leg, opposite to the short leg.
+This is e080!20 in our notation.
+It has order 18, using this piece in all its rotations and reflections.
 

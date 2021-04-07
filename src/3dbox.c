@@ -19,6 +19,7 @@ static int cbflag; // checkerboard flag
 #include <unistd.h>
 
 #define DEBUG 0
+#define DIAG 1
 
 #define REPDIAMETER 16 // represent pieces this large
 #define NSQ 80 // number of squares in largest polyomino
@@ -180,14 +181,34 @@ if(y > rng_y) rng_y = y;
 if(z > rng_z) rng_z = z;
 }
 
+#if DIAG
+// Scan in a diagonal pattern, rather than raster,
+// but this only increases speed a few percent,
+// so it might be more confusing than it's worth.
+x = y = 0;
+while(!orib2[x][y][0]) {
+++y, --x;
+if(y == dim_y) {
+x += dim_y, y = 0;
+++x; // next diagonal
+while(x >= dim_x) ++y, --x;
+if(y == dim_y) bailout("orientation %d has nothing on the floor", o_max);;
+continue;
+}
+if(x < 0) x += y+1, y = 0;
+}
+start_y = y, start_x = x;
+#else
+
 for(y=0; y<REPDIAMETER; ++y)
 for(x=0; x<REPDIAMETER; ++x)
 if(orib2[x][y][0]) {
 start_y = y, start_x = x;
 goto pack;
 }
-
 pack:
+#endif
+
 for(x=0; x<REPDIAMETER; ++x)
 for(y=0; y<REPDIAMETER; ++y) {
 orib3[x][y] = 0;
@@ -466,11 +487,29 @@ if(lev == MAXORDER) bailout("placement stack overflow %d", lev);
 if(!lev) x = y = z = 0;
 else {
 x = p->x, y = p->y, z = p->z;
+
+#if DIAG
+relocate:
+while(isHighbit(ws[x][y])) {
+++y, --x;
+if(y == dim_y) {
+x += dim_y, y = 0;
+++x; // next diagonal
+while(x >= dim_x) ++y, --x;
+if(y == dim_y) break;
+continue;
+}
+if(x < 0) x += y+1, y = 0;
+}
+#else
+
 while(isHighbit(ws[x][y])) {
 if(++x < dim_x) continue;
 x = 0;
 if(++y == dim_y) break;
 }
+#endif
+
 if(y == dim_y) { // have to push workspace down
 int r_x, r_y;
 j = REPDIAMETER;
@@ -488,7 +527,12 @@ printf("push %d\n", j);
 for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
 ws[x][y] <<= j;
+#if DIAG
+x = y = 0;
+goto relocate;
+#else
 x = r_x, y = r_y;
+#endif
 }
 }
 ++p;
