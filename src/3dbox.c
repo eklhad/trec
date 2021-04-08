@@ -337,6 +337,7 @@ i = 0;
 for(x=0; x<REPDIAMETER; ++x)
 for(y=0; y<REPDIAMETER; ++y)
 for(z=0; z<REPDIAMETER; ++z)
+if(orib1[x][y][z])
 if((x+y+z)&1) ++i; else --i;
 if(i < 0) i = -i;
 if(!setSize) cbflag = i;
