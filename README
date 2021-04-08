@@ -139,7 +139,7 @@ pull requests, or other forms of collaboration.
 The program is typically run with one argument, a config file.
 Each of the first eight lines must be present, and syntactically correct.
 
-The first line gives the polyomino in hex format.
+The first line gives the polyomino in hexadecimal format.
 A byte indicates the squares that are present on the first row of the shape,
 then the next byte describes the second row, and so on.
 Our Y hexomino, the only hexomino with a nontrivial order, is f840,
@@ -527,4 +527,9 @@ I don't have an easy way to turn this into an image.
 Some basic results are in theorems/3d-order.
 3dbox is brute-force and inefficient; you may want to rewrite it in the style of trec.c,
 with 2 dimensional nodes on disk and breakplanes etc.
+
+Recall the (still open) conjecture that no polyomino has odd order.
+This applies to the plane, however, in 3 dimensions the conjecture is false.
+The flat heptomino e0e080 has order 28 in the plane, but it has order 9 in 3d.
+It fills a box 3 by 3 by 7.
 
