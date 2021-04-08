@@ -2,7 +2,7 @@
 
 	Notation
 
-Across this project, a concise hexidecimal notation is used to represent
+Across this project, a concise hexadecimal notation is used to represent
 a polyomino. The hex digits are grouped into pairs as usual,
 each pair describing the bits of a byte. Each byte describes one row
 of the polyomino, starting at the bottom and going up.

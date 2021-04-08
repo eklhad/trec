@@ -262,7 +262,8 @@ which is why I don't allow 0.
 
 The seventh line is a factor on the order.
 Set this to 2 to force an even order.
-We often know the order is divisible by something. More on this below.
+Sometimes we know the order is divisible by something.
+See theorems/order-factor for more information.
 
 The eighth line is a factor on the dimension.
 Boundary conditions often force both diminsions to be divisible by something.

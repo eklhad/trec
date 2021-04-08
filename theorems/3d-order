@@ -81,7 +81,7 @@ The stair pentomino has order 36,
 the chair has order 18,
 the lightning has order 8,
 the faucet has order 36,
-and the zigzag is undetermined, with order at least 81.
+and the zigzag is undetermined, with order at least 84.
 
 As we move to the 3 dimensional pentominoes, chirality comes into play.
 For consistency, I allow a piece to be reflected, just as I do in the plane.
