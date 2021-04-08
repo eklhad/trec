@@ -1,0 +1,138 @@
+	Counting Polyominoes
+
+By counting, I mean approximating.
+Is there a function f(n, d) that approximates the number of distinct polyominoes
+comprising n cubes in dimension d?
+
+	Symmetry
+
+For large n, the odds of a polyomino having symmetry is near 0.
+Count all the polyominoes in situ, then divide by the size of the symmetric
+group to estimate the number of distinct polyominoes. In the plane, the group
+is dihedral, with 8 transformations, 4 rotations and their reflections.
+So in dimension 2, the number of oriented polyominoes in the plane
+is 8 times the number of distinct polyominoes.
+In 3-space, the factor is 48, and so on.
+
+	d = 1
+
+In one dimension, f(n,1) = 1.
+Put n intervals together in a line of length n; that's it.
+
+	d = 2
+
+Let's explore the plane, to get our feet wet.
+I'm going to establish an exponential function of n as a lower bound.
+f(n) could increase faster, but computational data suggests it it is exponential.
+
+Let k = n/2, and place k squares in a horizontal row.
+This is the spine of our polyomino.
+Arrange the other k squares in columns above the spine.
+We could put them all in one column above one of the squares,
+or we could spread them across in any pattern we wish.
+This is now a problem in combinatorics.
+Think of the k squares atop the spine as marbles, separated by dividers,
+where the edges of the squares in the horizontal spine are the dividers.
+Set k = 10, for example.
+We have 9 dividers, and 10 marbles, arranged in sequence.
+This is the binomial coefficient {19:10},
+which is 19! over (10! × 9!).
+In general, we have {2k-1:k}, or {n-1:n/2}.
+
+I sometimes get a little sloppy with the binomial coefficients.
+Multiply the above by n over n/2, which is simply 2, and get {n:n/2}.
+I'm not worried about a factor of 2; I'm trying to establish the base
+of the exponential. So let's call it {n:n/2}.
+
+I'm sure I had an approximation for this expression in terms of exponentials,
+but can't find it in my notes now. U. C. Berkeley was 30 years ago.
+I'll approximate, using n = 20 and k = 10 to illustrate.
+20!  over  (10! times 10!)
+The first 10! cuts off the tail of the 20!, leaving
+
+20/10 × 19/9 × 18/8 × 17/7 × 16/6 …
+
+Each of these is at least 2, so we have 2 to the n/2.
+This is 2 to the (½ × n), or sqrt(2) to the n.
+The base of the exponential is at least sqrt(2).
+1.414
+
+Well I'm sure it's larger than that, this is a pretty small base. So do this.
+Put columns above or below the spine.
+Because of the spine, there is no ambiguity.
+Except one case, where we put all k squares in a line above the spine,
+or below the spine, those two both produce a rectangle,
+but that's just one case, all others are distinct.
+So now I have the 9 dividers along the spine between the 10 squares,
+then each square implies another divider,
+separating the pieces that are in the column above, and below.
+That's 19 dividers.
+We still have 10 squares to place above or below the spine, 10 marbles.
+{29:10}
+{3n/2-1:n/2}
+approximately
+{3n/2:n/2}
+
+After cancelling top and bottom, our products are:
+
+30/10 × 29/9 × 28/8 × 27/7 × 26/6 …
+
+Each of these is at least 3.
+3 to the n/2 = 3^(½n) = sqrt(3) to the n.
+With a wave of my hand, I have advanced the base to sqrt(3).
+1.732
+
+I'm still wondering if I can improve / generalize the construction to find a higher base for the exponential. There's probably a way.
+
+Here is the table of 2D free polyominoes as given in oeis.org.
+The linear polyomino is not included, as it is 1 dimensional.
+Thus we need at least 3 squares to break out of a line.
+
+1  0
+2  0
+3  1
+4  4
+5  11
+6  34
+7  107
+8  368
+9  1284
+10 4654
+11 17072
+12 63599
+13 238590
+14 901970
+15 3426575
+16 13079254
+17 50107908
+18 192622051
+19 742624231
+20 2870671949
+21 11123060677
+22 43191857687
+23 168047007727
+24 654999700402
+25 2557227044763
+26 9999088822074
+27 39153010938486
+28 153511100594602
+29 602621953061977
+30 2368347037571251
+31 9317706529987949
+32 36695016991712878
+33 144648268175306701
+34 570694242129491411
+35 2253491528465905341
+36 8905339105809603404
+37 35218318816847951973
+38 139377733711832678647
+39 551961891896743223273
+40 2187263896664830239466
+41 8672737591212363420224
+42 34408176607279501779591
+43 136585913609703198598626
+44 542473001706357882732069
+45 2155600091107324229254414
+
+Successive ratios start at 3 and slowly approach 4.
+So I have quite a ways to go - to get from 1.732 to 3.95.
