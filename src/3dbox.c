@@ -39,7 +39,8 @@ typedef ushort shapebits;
 // orientation boards
 static uchar orib1[REPDIAMETER][REPDIAMETER][REPDIAMETER];
 static uchar orib2[REPDIAMETER][REPDIAMETER][REPDIAMETER];
-static shapebits orib3[REPDIAMETER][REPDIAMETER];
+static struct SLICE { uchar x, y; shapebits bits; } orib3[NSQ];
+static shapebits orib4[REPDIAMETER][REPDIAMETER];
 
 // Rotate and reflect a polyominoe in position.
 static void counterclockwise(void)
@@ -90,38 +91,39 @@ uchar pno; // piece number in the set
 uchar ono; // orientation number
 uchar x, y; // offset of lowest square
 uchar rng_x, rng_y, rng_z; // rnage of this piece in this orientation
-uchar filler;
-shapebits pattern[REPDIAMETER][REPDIAMETER];
+uchar slices;
+struct SLICE pattern[NSQ];
 };
 
-#define O_MAX 100
+#define O_MAX 500
 static struct ORIENT o_list[O_MAX];
 static int o_max; /* number of orientations */
 static int setSize; // for sets of polyominoes
 
 static void print_o(const struct ORIENT *o)
 {
-int x, y;
+int x, y, n = 0;
 for(y=0; y<o->rng_y; ++y) {
 if(y) printf("!");
 for(x=0; x<o->rng_x; ++x) {
-shapebits mask = o->pattern[x][y];
+if(n == o->slices || o->pattern[n].x != x || o->pattern[n].y != y) {
+printf("00");
+} else {
+shapebits mask = o->pattern[n++].bits;
 printf("%02x", (mask>>8));
 mask &= 0xff;
 if(mask == 0x80) printf("+");
 else if(mask) printf("{%02x}", mask);
 }
 }
-/*
-printf(" range %d,%d,%d start %d,%d", o->rng_x, o->rng_y, o->rng_z, o->x, o->y);
-*/
+}
 printf("\n");
 }
 
 // translate back to the origin
 static void pulldown(void)
 {
-int x, y, z, j;
+int x, y, z, j, n;
 int rng_x, rng_y, rng_z; // range of the piece
 int start_x, start_y; // start_z will be 0 once adjusted
 struct ORIENT *o;
@@ -209,23 +211,26 @@ goto pack;
 pack:
 #endif
 
-for(x=0; x<REPDIAMETER; ++x)
-for(y=0; y<REPDIAMETER; ++y) {
-orib3[x][y] = 0;
+n = 0;
+for(y=0; y<REPDIAMETER; ++y)
+for(x=0; x<REPDIAMETER; ++x) {
+shapebits mask = 0;
 for(z=0; z<REPDIAMETER; ++z)
 if(orib2[x][y][z])
-orib3[x][y] |= (0x8000>>z);
+mask |= (0x8000>>z);
+if(mask) orib3[n].x = x, orib3[n].y = y, orib3[n].bits = mask, ++n;
 }
 
 // Have we seen this one before?
 o = o_list;
 for(j=0; j<o_max; ++j, ++o)
-if(!memcmp(orib3, o->pattern, sizeof(orib3)))
+if( n == o->slices && !memcmp(orib3, o->pattern, sizeof(struct SLICE)*n))
 return;
 
 if(o_max == O_MAX)
 bailout("too many orientations, limit %d", O_MAX);
-memcpy(o->pattern, orib3, sizeof(orib3));
+memcpy(o->pattern, orib3, sizeof(struct SLICE)*n);
+o->slices = n;
 o->ono = o_max;
 o->pno = setSize;
 o->x = start_x, o->y = start_y;
@@ -311,7 +316,7 @@ nsq += nibbleCount[mask>>12];
 nsq += nibbleCount[(mask>>8)&0xf];
 nsq += nibbleCount[(mask>>4)&0xf];
 nsq += nibbleCount[(mask)&0xf];
-orib3[i][y] = mask;
+orib4[i][y] = mask;
 ++i;
 } /* loop gathering the rows in this piece */
 
@@ -324,7 +329,7 @@ nsqFirst = nsq;
 // unpack into orib1
 for(x=0; x<REPDIAMETER; ++x)
 for(y=0; y<REPDIAMETER; ++y) {
-mask = orib3[x][y];
+mask = orib4[x][y];
 for(z=0; z<REPDIAMETER; ++z) {
 orib1[x][y][z] = isHighbit(mask);
 mask <<= 1;
@@ -435,23 +440,28 @@ static void print_solution(void)
 char *b = malloc(boxVolume);
 const struct ORIENT *o;
 const struct SF *p;
-int lev, x, y, z;
+int lev, x, y, z, k;
 int x0, y0, z0;
 char c;
+
+memset(b, '?', boxVolume);
+// all the question marks should disappear
 
 for(lev=0; lev<boxOrder; ++lev) {
 p = stack + lev;
 o = o_list + p->onum;
 x0 = p->x0, y0 = p->y0, z0 = p->z;
 c = 'a' + lev%26;
-for(x=0; x<o->rng_x; ++x)
-for(y=0; y<o->rng_y; ++y)
+for(k=0; k<o->slices; ++k) {
+const struct SLICE *s = o->pattern + k;
+x = s->x, y = s->y;
 for(z=0; z<o->rng_z; ++z)
-if(o->pattern[x][y] & (HIGHBIT >> z))
+if(s->bits & (HIGHBIT >> z))
 b[dim_x*dim_y*(z0+z) + dim_x*(y0+y) + x0+x] = c;
 }
+}
 
-// not sure the bet way to prsetn this.
+// not sure the best way to present this.
 // I'm going to go for the fewest layers.
 for(y=0; y<dim_y; ++y) {
 if(y) {
@@ -472,7 +482,8 @@ static int solve(void)
 {
 int lev = -1;
 struct SF *p = stack - 1;
-struct ORIENT *o;
+const struct ORIENT *o;
+const struct SLICE *s;
 int x, y, z, j, k;
 
 memset(ws, 0, sizeof(ws));
@@ -557,16 +568,16 @@ if(p->y0 + o->rng_y > dim_y) goto next;
 if(p->z + o->rng_z > dim_z) goto next;
 // the piece fits in the box.
 // Look for collision.
-for(x=0; x<o->rng_x; ++x)
-for(y=0; y<o->rng_y; ++y)
-if(ws[p->x0+x][p->y0+y] & o->pattern[x][y]) goto next;
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s)
+if(ws[p->x0+s->x][p->y0+s->y] & s->bits) goto next;
 #if DEBUG
 printf("place{%d,%d,%d ", p->x, p->y, p->z);
 print_o(o);
 #endif
-for(x=0; x<o->rng_x; ++x)
-for(y=0; y<o->rng_y; ++y)
-ws[p->x0+x][p->y0+y] |= o->pattern[x][y];
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s)
+ws[p->x0+s->x][p->y0+s->y] |= s->bits;
 goto advance;
 
 backup:
@@ -590,9 +601,9 @@ printf("pop %d\n", j);
 //  print_ws();
 #endif
 }
-for(x=0; x<o->rng_x; ++x)
-for(y=0; y<o->rng_y; ++y)
-ws[p->x0+x][p->y0+y] ^=o->pattern[x][y];
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s)
+ws[p->x0+s->x][p->y0+s->y] ^= s->bits;
 goto next;
 
 return 0;
