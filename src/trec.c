@@ -816,7 +816,7 @@ static int setMinDimension, setMaxDimension;
 static int pieceLocalMax;
 // the minimum of the heights of the pieces in the set
 static int pieceMinMax;
-static bool cbflag; // checkerboard flag
+static int cbflag; // checkerboard flag
 
 static shapebits toHex(char c)
 {
@@ -888,7 +888,6 @@ shapebits mask;
 const char *s;
 int i, j;
 shapebits piece[REPDIAMETER];
-bool cbf;
 int bx, by; // bounding rectanghle x and y
 char c;
 uchar bo, lo, ro;
@@ -901,7 +900,6 @@ s = hexrep;
 o_max = 0;
 setMaxDimension = 0, setMinDimension = pieceMinMax = NSQ;
 setSize = 0;
-cbflag = true;
 
 while(*s) {
 if(setSize >= SETSIZE) bailout("too many pieces in the set, limit %d", SETSIZE);
@@ -950,7 +948,6 @@ compileRotations(piece, bx, by);
 if(pieceLocalMax < pieceMinMax) pieceMinMax = pieceLocalMax;
 
 /* see if the checkerboard argument applies */
-cbf = false;
 if(!(nsq&1)) {
 int total = 0;
 for(i=0; i<by; ++i) {
@@ -960,9 +957,10 @@ if(!isHighbit(mask)) continue;
 if((i^j)&1) ++total; else --total;
 }
 }
-if(total) cbf = true;
+if(total < 0) total = -total;
+if(!setSize) cbflag = total;
+else if(total != cbflag) cbflag = 0;
 } /* even squares */
-cbflag &= cbf;
 
 /* which orientations are excluded at the walls? */
 bo = lo = ro = 0xff;
@@ -1462,7 +1460,7 @@ case 7:
 ordFactor = strtol(line, &s, 10);
 if(*s || ordFactor < 1 || ordFactor > 1000)
 bailout("line %d, expected a factor between 1 and 1000", lineno);
-if(cbflag & ordFactor) {
+if(cbflag && ordFactor&1) {
 printf("checkerboard upgrade from %d to %d\n", ordFactor, ordFactor*2);
 ordFactor *= 2;
 }
@@ -1651,7 +1649,11 @@ curWidth = setMinDimension;
 bestOrder = 4000;
 startMega = 2;
 lookahead = 1;
-ordFactor = (cbflag ? 2 : 1);
+ordFactor = 1;
+if(cbflag) {
+ordFactor = 2;
+printf("checkerboard upgrade from 1 to 2\n");
+}
 dimFactor = 1;
 curWidth1 = curWidth + 1;
 curNodeWidth = curWidth * (1+r_shorts);
