@@ -2332,7 +2332,7 @@ b -= o->w;
 do {
 shapebits t = (*pat<<dy);
 if(t&min_y_bit) ++min_y_count;
-*b &= ~t;
+*b ^= t;
 } while(++pat, ++b != b_end);
 goto next;
 }
@@ -2378,7 +2378,7 @@ pat = o->pattern;
 b = b0 + p->x - o->x;
 b_end = b + o->w;
 dy = p->y - o->y;
-do *b &= ~(*pat<<dy); while(++pat, ++b != b_end);
+do *b ^= (*pat<<dy); while(++pat, ++b != b_end);
 
 if(reset >= 0) {
 if(p->y - o->y > reset) goto backup;
@@ -3090,7 +3090,7 @@ if(lev < 0) return 0;
 o = p->o;
 /* unplace piece */
 for(i=0; i<o->w; ++i)
-b[p->x-o->x+i] &= ~ (o->pattern[i]<<(p->y-o->y));
+b[p->x-o->x+i] ^=  (o->pattern[i]<<(p->y-o->y));
 goto next;
 } /* betweenNodes */
 
@@ -3518,9 +3518,9 @@ k = j - o->x;
 pat = o->pattern;
 for(i=0; i<o->w; ++i) {
 if(dy >= 0)
-b0[k+i] &= ~(pat[i]<<dy);
+b0[k+i] ^= (pat[i]<<dy);
 else
-b0[k+i] &= ~(pat[i]>>-dy);
+b0[k+i] ^= (pat[i]>>-dy);
 }
 if(reset && min_y) goto backup;
 reset = false;

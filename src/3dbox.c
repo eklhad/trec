@@ -592,7 +592,7 @@ printf("pop %d\n", j);
 }
 for(x=0; x<o->rng_x; ++x)
 for(y=0; y<o->rng_y; ++y)
-ws[p->x0+x][p->y0+y] &= ~o->pattern[x][y];
+ws[p->x0+x][p->y0+y] ^=o->pattern[x][y];
 goto next;
 
 return 0;
