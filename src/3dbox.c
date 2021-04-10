@@ -39,7 +39,7 @@ typedef ushort shapebits;
 // orientation boards
 static uchar orib1[REPDIAMETER][REPDIAMETER][REPDIAMETER];
 static uchar orib2[REPDIAMETER][REPDIAMETER][REPDIAMETER];
-static struct SLICE { uchar x, y; shapebits bits; } orib3[NSQ];
+static struct SLICE { short xy; shapebits bits; } orib3[NSQ];
 static shapebits orib4[REPDIAMETER][REPDIAMETER];
 
 // Rotate and reflect a polyominoe in position.
@@ -92,6 +92,9 @@ uchar ono; // orientation number
 uchar x, y; // offset of lowest square
 uchar rng_x, rng_y, rng_z; // rnage of this piece in this orientation
 uchar slices;
+short breakLine; // the row with more than half the piece below it
+uchar ambig; // ambiguous indicator
+uchar rotsym;
 struct SLICE pattern[NSQ];
 };
 
@@ -106,7 +109,8 @@ int x, y, n = 0;
 for(y=0; y<o->rng_y; ++y) {
 if(y) printf("!");
 for(x=0; x<o->rng_x; ++x) {
-if(n == o->slices || o->pattern[n].x != x || o->pattern[n].y != y) {
+int xy = x * BOXWIDTH + y;
+if(n == o->slices || o->pattern[n].xy != xy) {
 printf("00");
 } else {
 shapebits mask = o->pattern[n++].bits;
@@ -217,8 +221,8 @@ for(x=0; x<REPDIAMETER; ++x) {
 shapebits mask = 0;
 for(z=0; z<REPDIAMETER; ++z)
 if(orib2[x][y][z])
-mask |= (0x8000>>z);
-if(mask) orib3[n].x = x, orib3[n].y = y, orib3[n].bits = mask, ++n;
+mask |= (HIGHBIT>>z);
+if(mask) orib3[n].xy = x*BOXWIDTH + y, orib3[n].bits = mask, ++n;
 }
 
 // Have we seen this one before?
@@ -235,8 +239,48 @@ o->ono = o_max;
 o->pno = setSize;
 o->x = start_x, o->y = start_y;
 o->rng_x = rng_x + 1, o->rng_y = rng_y + 1, o->rng_z = rng_z + 1;
+o->ambig = o->rotsym = 0;
+
+// compute the break level. Include this piece if we have
+// tiled up through breakLine.
+o->breakLine = (o->rng_z-1)/2;
+if(!(o->rng_z&1)) { // even, requires further refinement
+// See which half is "heavier".
+// This is a center of mass calculation.
+// But simple moment makes e0b0 ambiguous, so give extra weight
+// to the squares near the outside of the piece.
+int bottom = 0, top = 0;
+for(x=0; x<o->rng_x; ++x)
+for(y=0; y<o->rng_y; ++y)
+for(z=0; z<o->rng_z; ++z)
+if(orib2[x][y][z]) {
+int subtotal, side;
+int k = z - o->breakLine;
+if(k <= 0) --k;
+// REPDIAMETER 16, k at most 8, k^2 at most 64
+// 80 squares: 80*64 = 4800
+subtotal = (k*k << 18);
+side = o->rng_y/2 - y;
+if(side <= 0 && !(o->rng_y&1)) --side;
+side = side * side;
+if(o->rng_y > o->rng_x)
+subtotal += (side << 9);
+else subtotal += side;
+side = o->rng_x/2 - x;
+if(side <= 0 && !(o->rng_x&1)) --side;
+side = side * side;
+if(o->rng_x > o->rng_y)
+subtotal += (side << 9);
+else subtotal += side;
+if(k < 0) bottom += subtotal; else top += subtotal;
+}
+if(bottom == top) o->ambig = 1;
+if(bottom < top) ++o->breakLine;
+}
+
 #if DEBUG
-printf("range %d,%d,%d ", o->rng_x, o->rng_y, o->rng_z);
+printf("range %d,%d,%d", o->rng_x, o->rng_y, o->rng_z);
+printf("_%d%s ", o->breakLine, (o->ambig ? "*" : ""));
 print_o(o);
 #endif
 ++o_max;
@@ -420,16 +464,17 @@ schar x, y, z; // where piece is placed
 schar x0, y0; // adjusted location of piece
 schar increase;
 short onum;
+short xy;
 } stack[MAXORDER];
 
-static shapebits ws[BOXWIDTH][BOXWIDTH]; // our workspace
+static shapebits ws[BOXWIDTH*BOXWIDTH]; // our workspace
 
 static void print_ws(void)
 {
 int x, y;
 for(y=0; y<dim_y; ++y) {
 for(x=0; x<dim_x; ++x)
-printf("%02x", ws[x][y]>>8);
+printf("%02x", ws[x*BOXWIDTH+y]>>8);
 printf("|");
 }
 printf("\n");
@@ -454,7 +499,7 @@ x0 = p->x0, y0 = p->y0, z0 = p->z;
 c = 'a' + lev%26;
 for(k=0; k<o->slices; ++k) {
 const struct SLICE *s = o->pattern + k;
-x = s->x, y = s->y;
+x = s->xy/BOXWIDTH, y = s->xy%BOXWIDTH;
 for(z=0; z<o->rng_z; ++z)
 if(s->bits & (HIGHBIT >> z))
 b[dim_x*dim_y*(z0+z) + dim_x*(y0+y) + x0+x] = c;
@@ -502,7 +547,7 @@ x = p->x, y = p->y, z = p->z;
 
 #if DIAG
 relocate:
-while(isHighbit(ws[x][y])) {
+while(isHighbit(ws[x*BOXWIDTH+y])) {
 ++y, --x;
 if(y == dim_y) {
 x += dim_y, y = 0;
@@ -515,7 +560,7 @@ if(x < 0) x += y+1, y = 0;
 }
 #else
 
-while(isHighbit(ws[x][y])) {
+while(isHighbit(ws[x*BOXWIDTH+y])) {
 if(++x < dim_x) continue;
 x = 0;
 if(++y == dim_y) break;
@@ -527,7 +572,7 @@ int r_x, r_y;
 j = REPDIAMETER;
 for(y=0; y<dim_y; ++y)
 for(x=0; x<dim_x; ++x) {
-k = lowEmpty[ws[x][y]];
+k = lowEmpty[ws[x*BOXWIDTH+y]];
 if(k < j) j = k, r_x = x, r_y = y;
 }
 if(!j) bailout("increase level is 0", 0);
@@ -538,7 +583,7 @@ printf("push %d\n", j);
 #endif
 for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-ws[x][y] <<= j;
+ws[x*BOXWIDTH+y] <<= j;
 #if DIAG
 x = y = 0;
 goto relocate;
@@ -566,18 +611,19 @@ if(p->y0 < 0) goto next;
 if(p->x0 + o->rng_x > dim_x) goto next;
 if(p->y0 + o->rng_y > dim_y) goto next;
 if(p->z + o->rng_z > dim_z) goto next;
+p->xy = (short)p->x0 * BOXWIDTH + p->y0;
 // the piece fits in the box.
 // Look for collision.
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s)
-if(ws[p->x0+s->x][p->y0+s->y] & s->bits) goto next;
+if(ws[p->xy+s->xy] & s->bits) goto next;
 #if DEBUG
 printf("place{%d,%d,%d ", p->x, p->y, p->z);
 print_o(o);
 #endif
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s)
-ws[p->x0+s->x][p->y0+s->y] |= s->bits;
+ws[p->xy+s->xy] |= s->bits;
 goto advance;
 
 backup:
@@ -594,7 +640,7 @@ if(j = p->increase) {
 shapebits m = ((short)HIGHBIT >> (j-1));
 for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-ws[x][y] = ( ws[x][y] >> j) | m;
+ws[x*BOXWIDTH+y] = ( ws[x*BOXWIDTH+y] >> j) | m;
 p->increase = 0;
 #if DEBUG
 printf("pop %d\n", j);
@@ -603,7 +649,7 @@ printf("pop %d\n", j);
 }
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s)
-ws[p->x0+s->x][p->y0+s->y] ^= s->bits;
+ws[p->xy+s->xy] ^= s->bits;
 goto next;
 
 return 0;
