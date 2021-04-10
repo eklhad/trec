@@ -92,8 +92,9 @@ uchar ono; // orientation number
 uchar x, y; // offset of lowest square
 uchar rng_x, rng_y, rng_z; // rnage of this piece in this orientation
 uchar slices;
-short breakLine; // the row with more than half the piece below it
+schar breakLine; // the row with more than half the piece below it
 uchar ambig; // ambiguous indicator
+uchar inspace; // nonchiral orientation
 uchar rotsym;
 struct SLICE pattern[NSQ];
 };
@@ -125,7 +126,7 @@ printf("\n");
 }
 
 // translate back to the origin
-static void pulldown(void)
+static void pulldown(int chiral)
 {
 int x, y, z, j, n;
 int rng_x, rng_y, rng_z; // range of the piece
@@ -228,8 +229,10 @@ if(mask) orib3[n].xy = x*BOXWIDTH + y, orib3[n].bits = mask, ++n;
 // Have we seen this one before?
 o = o_list;
 for(j=0; j<o_max; ++j, ++o)
-if( n == o->slices && !memcmp(orib3, o->pattern, sizeof(struct SLICE)*n))
+if( n == o->slices && !memcmp(orib3, o->pattern, sizeof(struct SLICE)*n)) {
+o->inspace |= !chiral;
 return;
+}
 
 if(o_max == O_MAX)
 bailout("too many orientations, limit %d", O_MAX);
@@ -240,6 +243,7 @@ o->pno = setSize;
 o->x = start_x, o->y = start_y;
 o->rng_x = rng_x + 1, o->rng_y = rng_y + 1, o->rng_z = rng_z + 1;
 o->ambig = o->rotsym = 0;
+o->inspace = !chiral;
 
 // compute the break level. Include this piece if we have
 // tiled up through breakLine.
@@ -298,23 +302,33 @@ static const uchar nibbleCount[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
 static void compileRotations(void)
 {
 int r1, r2, r3, r4;
+const struct ORIENT *o;
 memcpy(orib2, orib1, sizeof(orib1));
 for(r1=0; r1<3; ++r1) {
 for(r2=0; r2<2; ++r2) {
 for(r3=0; r3<2; ++r3) {
 for(r4=0; r4<4; ++r4) {
-pulldown();
-memcpy(orib1, orib2, sizeof(orib2));
+pulldown(r2^r3);
 counterclockwise();
+memcpy(orib1, orib2, sizeof(orib2));
 }
 y_mirror();
+memcpy(orib1, orib2, sizeof(orib2));
 }
 point_mirror();
+memcpy(orib1, orib2, sizeof(orib2));
 }
 xyz_spin();
+memcpy(orib1, orib2, sizeof(orib2));
 }
 #if DEBUG
-printf("%d orientations\n", o_max);
+r2 = 0;
+o = o_list;
+for(r1=0; r1<o_max; ++r1, ++o)
+r2 += !o->inspace;
+printf("%d orientations", o_max);
+if(r2) printf(" %d chiral", r2);
+printf("\n");
 #endif
 }
 
