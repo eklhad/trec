@@ -95,7 +95,7 @@ uchar slices;
 schar breakLine; // the row with more than half the piece below it
 uchar ambig; // ambiguous indicator
 uchar inspace; // nonchiral orientation
-uchar rotsym;
+uchar zflip;
 struct SLICE pattern[NSQ];
 };
 
@@ -126,12 +126,13 @@ printf("\n");
 }
 
 // translate back to the origin
-static void pulldown(int chiral)
+static void pulldown(int r1, int r2, int r3)
 {
 int x, y, z, j, n;
 int rng_x, rng_y, rng_z; // range of the piece
 int start_x, start_y; // start_z will be 0 once adjusted
 struct ORIENT *o;
+int chiral = r2 ^ r3;
 
 for(x=0; x<REPDIAMETER; ++x)
 for(y=0; y<REPDIAMETER; ++y)
@@ -231,6 +232,9 @@ o = o_list;
 for(j=0; j<o_max; ++j, ++o)
 if( n == o->slices && !memcmp(orib3, o->pattern, sizeof(struct SLICE)*n)) {
 o->inspace |= !chiral;
+if((o->zflip&3) == r1 &&
+(o->zflip&4) != (r2<<2))
+o->zflip |= 8;
 return;
 }
 
@@ -242,7 +246,9 @@ o->ono = o_max;
 o->pno = setSize;
 o->x = start_x, o->y = start_y;
 o->rng_x = rng_x + 1, o->rng_y = rng_y + 1, o->rng_z = rng_z + 1;
-o->ambig = o->rotsym = 0;
+o->ambig = 0;
+o->zflip = r1; // remember the spin
+o->zflip |= (r2<<2);
 o->inspace = !chiral;
 
 // compute the break level. Include this piece if we have
@@ -308,7 +314,7 @@ for(r1=0; r1<3; ++r1) {
 for(r2=0; r2<2; ++r2) {
 for(r3=0; r3<2; ++r3) {
 for(r4=0; r4<4; ++r4) {
-pulldown(r2^r3);
+pulldown(r1, r2, r3);
 counterclockwise();
 memcpy(orib1, orib2, sizeof(orib2));
 }
@@ -321,6 +327,14 @@ memcpy(orib1, orib2, sizeof(orib2));
 xyz_spin();
 memcpy(orib1, orib2, sizeof(orib2));
 }
+
+o = o_list;
+for(r1=0; r1<o_max; ++r1, ++o)
+if(o->ambig && !(o->zflip&8)) {
+printf("orientation %d is unexpectedly ambiguous ", o->ono);
+print_o(o);
+}
+
 #if DEBUG
 r2 = 0;
 o = o_list;
