@@ -6,6 +6,8 @@ or optimized the way trec.c is.
 
 static int nsq; // number of squares in the polyomino
 static int dim_x, dim_y, dim_z; // box being filled
+static int setMaxDimension;
+static char r_shorts; // nodes must use shorts, rather than bytes
 static int boxOrder, boxVolume;
 static int ordFactor; // order must be a multiple of this
 static int dimFactor; // each dimension must be a multiple of this
@@ -246,6 +248,8 @@ o->ono = o_max;
 o->pno = setSize;
 o->x = start_x, o->y = start_y;
 o->rng_x = rng_x + 1, o->rng_y = rng_y + 1, o->rng_z = rng_z + 1;
+if(o->rng_z > setMaxDimension) setMaxDimension = o->rng_z;
+if(setMaxDimension > 9) r_shorts = 1;
 o->ambig = 0;
 o->zflip = r1; // remember the spin
 o->zflip |= (r2<<2);
@@ -445,17 +449,21 @@ lowEmpty[j] = k;
 }
 
 static int solve(void);
+static uchar robin; // round robin on the colors
 
 int main(int argc, const char **argv)
 {
-if(argc != 3 && argc != 5)
-bailout("usage: 3dbox pieces width depth height | 3dbox pieces order", 0);
+++argv, --argc;
+if(argc && !strcmp(*argv, "-r"))
+++argv, --argc, robin = 1;
+if(argc != 2 && argc != 4)
+bailout("usage: 3dbox [-r] pieces width depth height | 3dbox pieces order", 0);
 lowEmptySet();
-stringPiece(argv[1]);
-if(argc == 5) {
-dim_x = atoi(argv[2]);
-dim_y = atoi(argv[3]);
-dim_z = atoi(argv[4]);
+stringPiece(argv[0]);
+if(argc == 4) {
+dim_x = atoi(argv[1]);
+dim_y = atoi(argv[2]);
+dim_z = atoi(argv[3]);
 boxVolume = dim_x * dim_y * dim_z;
 if(boxVolume % nsq) bailout("volume %d does not admit a whole number of pieces", boxVolume);
 boxOrder = boxVolume / nsq;
@@ -465,7 +473,7 @@ solve();
 return 0;
 }
 
-boxOrder = atoi(argv[2]);
+boxOrder = atoi(argv[1]);
 while(1) {
 if(cbflag && boxOrder&1) ++boxOrder;
 if(boxOrder > MAXORDER) bailout("order to large, limit %d", MAXORDER);
@@ -508,6 +516,8 @@ printf("|");
 printf("\n");
 }
 
+#define COLORS 20
+#define B_LOC(x,y,z) b[dim_x*dim_y*(z0+z) + dim_x*(y0+y) + (x0+x)]
 static void print_solution(void)
 {
 char *b = malloc(boxVolume);
@@ -516,6 +526,8 @@ const struct SF *p;
 int lev, x, y, z, k;
 int x0, y0, z0;
 char c;
+int last_k = COLORS - 1;
+uchar used[COLORS];
 
 memset(b, '?', boxVolume);
 // all the question marks should disappear
@@ -524,16 +536,42 @@ for(lev=0; lev<boxOrder; ++lev) {
 p = stack + lev;
 o = o_list + p->onum;
 x0 = p->x0, y0 = p->y0, z0 = p->z;
-c = 'a' + lev%26;
+
+// check for neighboring colors
+memset(used, 0, sizeof(used));
+for(k=0; k<o->slices; ++k) {
+const struct SLICE *s = o->pattern + k;
+x = s->xy/BOXWIDTH, y = s->xy%BOXWIDTH;
+for(z=0; z<o->rng_z; ++z)
+if(s->bits & (HIGHBIT >> z)) {
+if(x0+x >= 0 && (c = B_LOC(x-1,y,z))) used[c-'a'] = 1;
+if(y0+y >= 0 && (c = B_LOC(x,y-1,z))) used[c-'a'] = 1;
+if(z0+z >= 0 && (c = B_LOC(x,y,z-1))) used[c-'a'] = 1;
+}
+}
+
+if(robin) {
+k = last_k;
+c = '*';
+do { ++k;
+if(k == COLORS) k = 0;
+if(!used[k]) { c = k+'a'; last_k = k; break; }
+} while(k != last_k);
+} else {
+for(k=0; k<COLORS; ++k) if(!used[k]) break;
+c = k < COLORS ? 'a'+k : '*';
+}
+
 for(k=0; k<o->slices; ++k) {
 const struct SLICE *s = o->pattern + k;
 x = s->xy/BOXWIDTH, y = s->xy%BOXWIDTH;
 for(z=0; z<o->rng_z; ++z)
 if(s->bits & (HIGHBIT >> z))
-b[dim_x*dim_y*(z0+z) + dim_x*(y0+y) + x0+x] = c;
+B_LOC(x,y,z) = c;
 }
 }
 
+x0 = y0 = z0 = 0;
 // not sure the best way to present this.
 // I'm going to go for the fewest layers.
 for(y=0; y<dim_y; ++y) {
@@ -544,12 +582,14 @@ printf("\n");
 }
 for(x=0; x<dim_x; ++x) {
 for(z=0; z<dim_z; ++z)
-printf("%c", b[dim_x*dim_y*z + dim_x*y + x]);
+printf("%c", B_LOC(x,y,z));
 printf("\n");
 }
 }
 free(b);
 }
+#undef B_LOC
+#undef COLORS
 
 static int solve(void)
 {
