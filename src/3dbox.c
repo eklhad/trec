@@ -6,19 +6,32 @@ or optimized the way trec.c is.
 
 static int nsq; // number of squares in the polyomino
 static int dim_x, dim_y, dim_z; // box being filled
-static int setMaxDimension;
+static int curDepth; // when climbing through layers
+static int maxDepth, minDepth;
+static int reachup; /* greatest reach of node so far */
+static int setMaxDimension, setMinDimension;
+static int stopgap, forgetgap;
 static char r_shorts; // nodes must use shorts, rather than bytes
 static int boxOrder, boxVolume;
-static int ordFactor; // order must be a multiple of this
-static int dimFactor; // each dimension must be a multiple of this
 static int cbflag; // checkerboard flag
+
+// see the comments at the top of trec.c
+#define stopsearch (2*curDepth + stopgap > maxDepth)
+#define stopstore(x) (2*curDepth + stopgap == maxDepth || curDepth + x.depth + x.gap > maxDepth)
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <malloc.h>
 #include <ctype.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
 
 #define DEBUG 0
 #define DIAG 1
@@ -87,6 +100,57 @@ fprintf(stderr, msg, n);
 fprintf(stderr, "\n");
 exit(1);
 }
+
+static void *emalloc(unsigned int n)
+{
+void *s = malloc(n);
+if(!s) bailout("failure to allocate %d bytes", n);
+return s;
+} /* emalloc */
+
+static void *erealloc(void *p, unsigned int n)
+{
+void *s = realloc(p, n);
+if(!s) bailout("failure to reallocate %d bytes", n);
+return s;
+} /* erealloc */
+
+static void eread(int fd, void *buf, unsigned n)
+{
+if((unsigned)read(fd, buf, n) != n)
+bailout("disk read error, errno %d", errno);
+} /* eread */
+
+static void ewrite(int fd, const void *buf, unsigned n)
+{
+const char *s = buf;
+int rc;
+char hold[24];
+top:
+rc = write(fd, s, n);
+if(rc == (signed)n) return; // good write
+// Disk failure, disk is probably full,
+// you could save the situation by clearing space.
+if(rc > 0) n -= rc, s += rc;
+printf("\nDisk failure, errno %d.\n\
+If I stop now, all your work at this depth could be lost.\n\
+See if you can fix the problem, then hit return, and I will try again.\n\
+Or type x and I will exit, and it's game over.\n", errno);
+// Don't worry about other threads, all disk access is inside a mutex,
+// so the other threads will queue up behind this one, and not write,
+// and wait for you to hit return.
+if(!fgets(hold, sizeof(hold), stdin) ||
+hold[0] == 'x') exit(2);
+// Is the file offset still at the end of the file? Sure hope so.
+// lseek(fd, 0, SEEK_END);
+goto top;
+} /* ewrite */
+
+static void elseek(int fd, long offset)
+{
+if(lseek(fd, offset, SEEK_SET) < 0)
+bailout("disk seek error, errno %d", errno);
+} /* elseek */
 
 struct ORIENT { // describe an orientation
 uchar pno; // piece number in the set
@@ -250,6 +314,7 @@ o->x = start_x, o->y = start_y;
 o->rng_x = rng_x + 1, o->rng_y = rng_y + 1, o->rng_z = rng_z + 1;
 if(o->rng_z > setMaxDimension) setMaxDimension = o->rng_z;
 if(setMaxDimension > 9) r_shorts = 1;
+if(o->rng_z < setMinDimension) setMinDimension = o->rng_z;
 o->ambig = 0;
 o->zflip = r1; // remember the spin
 o->zflip |= (r2<<2);
@@ -352,6 +417,7 @@ printf("\n");
 
 // Convert a hex-format representation of a polyomino into its bitmap,
 // and derive all its rotations.
+static const char *piecename;
 static void stringPiece(const char *hexrep)
 {
 int i, x, y, z;
@@ -359,6 +425,9 @@ shapebits mask;
 const char *s = hexrep;
 char c;
 int nsqFirst = -1;
+
+piecename = hexrep;
+setMaxDimension = 0, setMinDimension = NSQ;
 
 while(*s) {
 if(setSize >= SETSIZE) bailout("too many pieces in the set, limit %d", SETSIZE);
@@ -432,10 +501,14 @@ if(*s) ++s;
 } /* loop over pieces in the set */
 
 if(cbflag) puts("checkerboard upgrade");
+
+stopgap = (setMinDimension&1) ? setMinDimension : setMinDimension - 1;
+forgetgap = stopgap/2 - setMaxDimension/2 - 1;
+if(forgetgap >= 0) bailout("forget gap should be negative, not %d", forgetgap);
 }
 
 // find the highest empty bit in a short
-// This is the opposite of the routine in trec.c
+// This is the opposite order of the routine in trec.c
 static char lowEmpty[65536];
 static void lowEmptySet(void)
 {
@@ -446,6 +519,20 @@ mask = j;
 for(k=0; isHighbit(mask); ++k, mask<<=1)  ;
 lowEmpty[j] = k;
 }
+}
+
+static const shapebits revNibble[] = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
+static shapebits reverseShort(shapebits v)
+{
+return revNibble[v>>12] |
+(revNibble[(v>>8)&0xf]<<4) |
+(revNibble[(v>>4)&0xf]<<8) |
+(revNibble[v&0xf]<<12);
+}
+static uchar reverseByte(uchar v)
+{
+return revNibble[v>>4] |
+(revNibble[v&0xf]<<4);
 }
 
 static int solve(void);
@@ -460,6 +547,7 @@ if(argc != 2 && argc != 4)
 bailout("usage: 3dbox [-r] pieces width depth height | 3dbox pieces order", 0);
 lowEmptySet();
 stringPiece(argv[0]);
+
 if(argc == 4) {
 dim_x = atoi(argv[1]);
 dim_y = atoi(argv[2]);
@@ -501,6 +589,8 @@ schar x0, y0; // adjusted location of piece
 schar increase;
 short onum;
 short xy;
+short breakLine;
+short mzc;
 } stack[MAXORDER];
 
 static shapebits ws[BOXWIDTH*BOXWIDTH]; // our workspace
@@ -688,6 +778,7 @@ if(ws[p->xy+s->xy] & s->bits) goto next;
 #if DEBUG
 printf("place{%d,%d,%d ", p->x, p->y, p->z);
 print_o(o);
+sleep(3);
 #endif
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s)
@@ -722,3 +813,364 @@ goto next;
 
 return 0;
 }
+
+// Here begins the node approach to finding solutions.
+// Here is the structure for the node.
+struct NODE {
+long parent; // where this node came from
+long hash; // hash value of this pattern
+short depth; // the depth of this node
+uchar gap; // the gap of this pattern
+uchar dead;
+union {
+uchar b[BOXWIDTH*BOXWIDTH]; // bytes
+ushort s[BOXWIDTH*BOXWIDTH]; // shorts
+} pattern;
+};
+
+static int nodeSize; // adjusted for the actual width
+
+/*********************************************************************
+I store nodes on disk, and a cache in memory.
+I support up to 60 data files, each 2 gig - that's 120 gig of data.
+This can hold as many as a billion nodes.
+*********************************************************************/
+
+static int fd[60] = // the file descriptors
+{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,};
+static char filename[120];
+static long nodesInFile;
+static long nodesDisk; // nodes stored on disk
+static long nodesCache; // nodes stored in cache
+static int megaNodes; // millions of nodes that can be cached
+static long maxNodes; // megaNodes times a million
+static long slopNodes; // maxNodes plus some slop for the randomness of the hash
+static int hwm; // high water mark on the cache
+static long nodesPending; // nodes yet to process
+static long lastDisk;
+static long mon_idx; // for markOldNodes()
+static long nodeStep;
+static int workStep;
+static long *workList; // the list of discovered nodes to expand
+static int workEnd, workAlloc;
+
+static void initFiles(void)
+{
+int flags;
+int i;
+static char *xptr;
+
+sprintf(filename, "dotile/%s", piecename);
+mkdir(filename, 0777);
+sprintf(filename, "dotile/%s/data-x", piecename);
+xptr = strchr(filename, 'x');
+
+for(i=0; i<60; ++i) {
+if(fd[i] > 0) close(fd[i]);
+flags = O_CREAT|O_TRUNC|O_RDWR|O_BINARY;
+*xptr = 'A' + i;
+fd[i] = open(filename, flags, 0666);
+if(fd[i] < 0) bailout("cannot create data file, errno %d", errno);
+} /* loop over files */
+
+if(workList) free(workList);
+workAlloc = 60;
+workList = emalloc(4*workAlloc);
+workEnd = 0;
+}
+
+static void readNode(long idx, struct NODE *buf)
+{
+int i = idx / nodesInFile;
+long offset = (idx%nodesInFile) * nodeSize;
+elseek(fd[i], offset);
+eread(fd[i], buf, nodeSize);
+} /* readNode */
+
+static void writeNode(long idx, const struct NODE *buf)
+{
+int i = idx / nodesInFile;
+long offset = (idx%nodesInFile) * nodeSize;
+elseek(fd[i], offset);
+ewrite(fd[i], buf, nodeSize);
+} /* writeNode */
+
+// stubs, for now
+static void markOldNode(long jdx, long hash){}
+static int findNode( struct NODE *look, int insert, struct NODE *dest) { return 0; }
+static void matchFound(const struct NODE *left, const struct NODE *right) {}
+
+static void expandNode(long this_idx, const uchar *base_b)
+{
+ushort *base_s = (ushort*)base_b;
+int lev; /* placement level */
+struct SF *p;
+const struct SF *q;
+const struct ORIENT *o;
+const struct SLICE *s;
+int min_z, min_z_count;
+shapebits min_z_bit, mask;
+int reset = -1;
+int breakLine = REPDIAMETER; // the first piece will ratchet it down
+int x, y, j, k;
+uchar ambinclude, ambnode;
+uchar children = 0;
+struct NODE newnode, compnode, looknode;
+shapebits b0[BOXWIDTH*BOXWIDTH];
+shapebits b1[BOXWIDTH*BOXWIDTH];
+
+min_z = 0;
+min_z_bit = HIGHBIT;
+min_z_count = 0;
+// copy the board to the board on-stack for manipulation
+if(r_shorts) {
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y) {
+b0[x*BOXWIDTH+y] = base_s[x*BOXWIDTH+y];
+if(!(b0[x*BOXWIDTH+y]&min_z_bit)) ++min_z_count;
+}
+} else {
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y) {
+b0[x*BOXWIDTH+y] = base_b[x*BOXWIDTH+y]<<8;
+if(!(b0[x*BOXWIDTH+y]&min_z_bit)) ++min_z_count;
+}
+}
+
+p = stack - 1, lev = -1;
+
+advance:
+if(++lev >= MAXORDER)
+bailout("placement stack overflow %d", MAXORDER);
+// trec.c had a lookahead parameter, to tile past breakLine, but it didn't
+// seem to help much, so just tile up through breakLine.
+if(min_z > breakLine) goto complete;
+
+// find location to place the piece
+if(!lev) x = y = 0;
+else {
+x = p->x, y = p->y;
+
+#if DIAG
+while(b0[x*BOXWIDTH+y] & min_z_bit) {
+++y, --x;
+if(y == dim_y) {
+x += dim_y, y = 0;
+++x; // next diagonal
+while(x >= dim_x) ++y, --x;
+if(y == dim_y) break;
+continue;
+}
+if(x < 0) x += y+1, y = 0;
+}
+#else
+
+while(b0[x*BOXWIDTH+y] & min_z_bit) {
+if(++x < dim_x) continue;
+x = 0;
+if(++y == dim_y) break;
+}
+#endif
+
+if(y == dim_y)
+bailout("no empty square found at level %d", min_z);
+}
+
+++p;
+p->x = x, p->y = y;
+// in in solve() above, x y and z are absolute;
+// here x and y are absolute, but z is relative to the node.
+p->z = min_z;
+p->mzc = min_z_count;
+#if DEBUG
+printf("locate %d,%d,%d\n", x, y, min_z);
+#endif
+p->breakLine = breakLine;
+p->onum = -1;
+o = o_list - 1;
+
+next:
+if(++p->onum == o_max) goto backup;
+++o;
+p->x0 = p->x - o->x;
+if(p->x0 < 0) goto next;
+p->y0 = p->y - o->y;
+if(p->y0 < 0) goto next;
+if(p->x0 + o->rng_x > dim_x) goto next;
+if(p->y0 + o->rng_y > dim_y) goto next;
+p->xy = (short)p->x0 * BOXWIDTH + p->y0;
+// the piece fits in the box.
+// Look for collision.
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s)
+if(b0[p->xy+s->xy] & (s->bits>>min_z)) goto next;
+#if DEBUG
+printf("place{%d,%d,%d ", p->x, p->y, min_z);
+print_o(o);
+sleep(3);
+#endif
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s) {
+shapebits t = (s->bits>>min_z);
+b0[p->xy+s->xy] |= t;
+if(t&min_z_bit) --min_z_count;
+}
+
+// downgrade breakLine
+j = o->breakLine + min_z;
+if(j < breakLine) breakLine = j;
+
+if(min_z_count) goto advance;
+// find lowest level
+mask = 0xffff;
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+mask &= b0[x*BOXWIDTH + y];
+min_z = lowEmpty[mask];
+min_z_bit = (HIGHBIT >> min_z);
+min_z_count = 0;
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+if(!(b0[x*BOXWIDTH + y] & min_z_bit)) ++min_z_count;
+goto advance;
+
+backup:
+#if DEBUG
+puts("}");
+#endif
+--lev, --p;
+if(lev < 0) {
+// If this node has no descendants, there's no strong reason to keep it
+// around in cache. This hardly ever happens.
+if(!children && this_idx) {
+readNode(this_idx, &compnode);
+compnode.dead = 1;
+writeNode(this_idx, &compnode);
+markOldNode(this_idx, compnode.hash);
+}
+--nodesPending; // this node has been processed
+return;
+}
+
+// restore
+breakLine = p->breakLine;
+min_z = p->z;
+min_z_bit = (HIGHBIT >> min_z);
+min_z_count = p->mzc;
+o = o_list + p->onum;
+// unplace piece
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s)
+b0[p->xy+s->xy] ^= (s->bits>>min_z);
+if(reset >= 0) {
+if(min_z > reset) goto backup;
+reset = -1;
+}
+goto next;
+
+complete:
+children = 1;
+ambinclude = ambnode = 0;
+reset = breakLine - (setMinDimension-1)/2;
+
+recomplete:
+// build a new instance of the board, with only those pieces
+// that would be included on the lower side of the breakLine.
+if(r_shorts)
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+b1[x*BOXWIDTH + y] = base_s[x*BOXWIDTH + y];
+else
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+b1[x*BOXWIDTH + y] = (base_b[x*BOXWIDTH + y]<<8);
+
+for(q=stack; q<p; ++q) {
+o = q->onum + o_list;
+j = o->breakLine + q->z - breakLine;
+if(j > 0) continue;
+if(j == 0 && o->ambig && !ambinclude) {
+ambnode = 1;
+continue;
+}
+
+// place piece
+j = q->z;
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s)
+b1[q->xy+s->xy] |= (s->bits>>j);
+}
+
+// compute depth and shift the patttern back down to the floor
+mask = 0xffff;
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+mask &= b1[x*BOXWIDTH + y];
+j = lowEmpty[mask];
+newnode.depth = curDepth + j;
+if(j) {
+if(j > 8*(1+r_shorts)) bailout("depth difference %d is too high", j);
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+b1[x*BOXWIDTH + y] <<= j;
+} else if(ambnode) {
+// did we make the same node again?
+if(r_shorts)
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+if(b1[x*BOXWIDTH + y] != base_s[x*BOXWIDTH + y]) goto notsame;
+else
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+if(b1[x*BOXWIDTH + y] != (base_b[x*BOXWIDTH + y] << 8)) goto notsame;
+// same node, skip ahead
+goto ambtest;
+}
+notsame:
+
+// build new node and compute gap
+mask = 0;
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y) {
+j = x*BOXWIDTH + y;
+mask |= b1[j];
+if(r_shorts)
+newnode.pattern.s[j] = b1[j];
+else
+newnode.pattern.b[j] = (b1[j] >> 8);
+}
+for(j=0; mask; ++j, mask<<=1)  ;
+newnode.gap = j;
+if(j > 8*(1+r_shorts)) bailout("gap %d is too high", j);
+if(j == 0) bailout("zero gap at depth %d", newnode.depth);
+newnode.dead = 0;
+newnode.parent = this_idx;
+
+if(!stopstore(newnode)) {
+int rc = findNode(&newnode, 1, &looknode);
+if(rc) goto ambtest;
+}
+
+if(newnode.depth + reachup >= minDepth) {
+// by inserting first, this complement check now tests whether
+// the node matches itself.
+// need a signed right shift here.
+mask = ((short)HIGHBIT >> (newnode.gap-1));
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y) {
+j = x*BOXWIDTH + y;
+if(r_shorts)
+compnode.pattern.s[j] = (reverseShort((newnode.pattern.s[j]^mask)) << (16-newnode.gap));
+compnode.pattern.b[j] = (reverseByte((uchar)(newnode.pattern.b[j]^mask)) << (8-newnode.gap));
+}
+if(findNode(&compnode, 0, &looknode))
+matchFound(&newnode, &looknode);
+}
+
+ambtest:
+if(ambnode && !ambinclude) { ambnode = 0; ambinclude = 1; goto recomplete; }
+goto backup;
+} /* expandNode */

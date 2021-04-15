@@ -2122,11 +2122,10 @@ if(++lev >= BOARDWIDTH)
 bailout("placement stack overflow", 0);
 ++p;
 j = breakLine;
-// If we tiled rows 0 through j-1, the first j rows, we're done.
-// But allow for some lookahead.
+// If we tiled rows 0 through j, we're done, but allow for some lookahead.
 // I tested a little bit at lookahead = 0, and things seem to work,
-// but everything seems better with lookahead at least 1,
-// so we always go one more row than we have to.
+// but they shouldn't! We must tile up through j, so idk.
+// To be safe, I force lookahead to be at least 1.
 j += lookahead;
 if(min_y >= j) goto complete;
 
