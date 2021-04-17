@@ -537,14 +537,18 @@ return revNibble[v>>4] |
 
 static int solve(void);
 static uchar robin; // round robin on the colors
+static int megaNodes = 80; // millions of nodes that can be cached
 
 int main(int argc, const char **argv)
 {
 ++argv, --argc;
 if(argc && !strcmp(*argv, "-r"))
 ++argv, --argc, robin = 1;
+if(argc && argv[0][0] == '-' && argv[0][1] == 'm' && isdigit(argv[0][2]))
+megaNodes = atoi(argv[0]+2), ++argv, --argc;
 if(argc != 2 && argc != 4)
-bailout("usage: 3dbox [-r] pieces width depth height | 3dbox pieces order", 0);
+bailout("usage: 3dbox [-r] [-mnnn] piece_set width depth height | 3dbox piece_set order", 0);
+
 lowEmptySet();
 stringPiece(argv[0]);
 
@@ -829,6 +833,7 @@ ushort s[BOXWIDTH*BOXWIDTH]; // shorts
 };
 
 static int nodeSize; // adjusted for the actual width
+static int curNodeWidth;
 
 /*********************************************************************
 I store nodes on disk, and a cache in memory.
@@ -845,6 +850,7 @@ static char filename[120];
 static long nodesInFile;
 static long nodesDisk; // nodes stored on disk
 static long nodesCache; // nodes stored in cache
+static long *hashIdx; // array of hashed indexes
 static int megaNodes; // millions of nodes that can be cached
 static long maxNodes; // megaNodes times a million
 static long slopNodes; // maxNodes plus some slop for the randomness of the hash
@@ -863,10 +869,12 @@ int flags;
 int i;
 static char *xptr;
 
+if(!xptr) {
 sprintf(filename, "dotile/%s", piecename);
 mkdir(filename, 0777);
 sprintf(filename, "dotile/%s/data-x", piecename);
 xptr = strchr(filename, 'x');
+}
 
 for(i=0; i<60; ++i) {
 if(fd[i] > 0) close(fd[i]);
@@ -880,6 +888,35 @@ if(workList) free(workList);
 workAlloc = 60;
 workList = emalloc(4*workAlloc);
 workEnd = 0;
+
+// assumes dim_x and dim_y are set
+curNodeWidth = BOXWIDTH * BOXWIDTH * (1+r_shorts);
+nodeSize = sizeof(struct NODE) - BOXWIDTH*BOXWIDTH*2 + curNodeWidth;
+nodeSize = (nodeSize + 3) & ~3;
+nodesInFile = 0x7fff0000 / nodeSize;
+maxNodes = megaNodes * 0x100000;
+slopNodes = maxNodes / 8 * 9;
+reachup = 0;
+
+if(!hashIdx) hashIdx = emalloc(slopNodes * sizeof(long));
+memset(hashIdx, 0, slopNodes*sizeof(long));
+nodesCache = 0;
+hwm = 0;
+nodesDisk = 1; /* the initial node of all zeros is at location 0 */
+mon_idx = 1;
+nodesPending = 1;
+curDepth = 0;
+}
+
+static void appendWorkList(long idx)
+{
+if(workEnd == workAlloc) {
+workAlloc = workAlloc/2 * 3;
+workList = erealloc(workList, sizeof(long)*workAlloc);
+}
+workList[workEnd++] = idx;
+printf("<");
+// This node was pending before and is still pending so nodesPending doesn't change.
 }
 
 static void readNode(long idx, struct NODE *buf)
@@ -898,9 +935,330 @@ elseek(fd[i], offset);
 ewrite(fd[i], buf, nodeSize);
 } /* writeNode */
 
+// I'm sure there are more efficient wayst to do this, but...
+// I just wanted to get er done.
+static const ulong hashprime = 2147483629;
+static const ulong m_factor = (ulong)0x80000000 - hashprime;
+// hash work areas
+static ushort hw1[BOXWIDTH*BOXWIDTH], hw2[BOXWIDTH*BOXWIDTH];
+static long computeHashShorts(ushort *p)
+{
+int x, y, r1, r2;
+ulong hash = 0;
+memcpy(hw1, p, curNodeWidth);
+for(r1=0; r1<2; ++r1) {
+if(dim_x == dim_y) {
+for(r2=0; r2<4; ++r2) {
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+hw2[(dim_y-1-y)*BOXWIDTH + dim_x] = hw1[x*BOXWIDTH + y];
+memcpy(hw1, hw2, curNodeWidth);
+if(r1 == 0 && r2 == 3) break;
+if(memcmp(p, hw1, curNodeWidth) < 0)
+memcpy(p, hw1, curNodeWidth);
+}
+} else {
+for(r2=0; r2<2; ++r2) {
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+hw2[(dim_x-1-x)*BOXWIDTH + dim_y-1-y] = hw1[x*BOXWIDTH + y];
+memcpy(hw1, hw2, curNodeWidth);
+if(r1 == 0 && r2 == 1) break;
+if(memcmp(p, hw1, curNodeWidth) < 0)
+memcpy(p, hw1, curNodeWidth);
+}
+}
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+hw2[x*BOXWIDTH + dim_y-1-y] = hw1[x*BOXWIDTH + y];
+memcpy(hw1, hw2, curNodeWidth);
+}
+
+for(x=0; x<dim_x*dim_y; ++x) {
+// hash = (hash * 65536 + p[x]) mod hashprime
+hash = ((hash&0x7fff)<<16) + ((hash>>15)*m_factor);
+hash += p[x];
+if(hash >= hashprime) hash -= hashprime;
+}
+
+if(hash >= hashprime) bailout("hash value too large", 0);
+// 0 hash value is not allowed
+if(!hash) hash = 1;
+return (long)hash;
+}
+
+static long computeHashBytes(uchar *p)
+{
+int x, y, r1, r2;
+ulong hash = 0;
+uchar *hb1 = (uchar*)hw1;
+uchar *hb2 = (uchar*)hw2;
+memcpy(hb1, p, curNodeWidth);
+for(r1=0; r1<2; ++r1) {
+if(dim_x == dim_y) {
+for(r2=0; r2<4; ++r2) {
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+hb2[(dim_y-1-y)*BOXWIDTH + dim_x] = hb1[x*BOXWIDTH + y];
+memcpy(hb1, hb2, curNodeWidth);
+if(r1 == 0 && r2 == 3) break;
+if(memcmp(p, hb1, curNodeWidth) < 0)
+memcpy(p, hb1, curNodeWidth);
+}
+} else {
+for(r2=0; r2<2; ++r2) {
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+hb2[(dim_x-1-x)*BOXWIDTH + dim_y-1-y] = hb1[x*BOXWIDTH + y];
+memcpy(hb1, hb2, curNodeWidth);
+if(r1 == 0 && r2 == 1) break;
+if(memcmp(p, hb1, curNodeWidth) < 0)
+memcpy(p, hb1, curNodeWidth);
+}
+}
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+hb2[x*BOXWIDTH + dim_y-1-y] = hb1[x*BOXWIDTH + y];
+memcpy(hb1, hb2, curNodeWidth);
+}
+
+for(x=0; x<dim_x*dim_y; ++x) {
+// hash = (hash * 65536 + p[x]) mod hashprime
+hash = ((hash&0x7fff)<<16) + ((hash>>15)*m_factor);
+hash += p[x];
+if(hash >= hashprime) hash -= hashprime;
+}
+
+if(hash >= hashprime) bailout("hash value too large", 0);
+// 0 hash value is not allowed
+if(!hash) hash = 1;
+return (long)hash;
+}
+
+static void markOldNode(long jdx, long hash)
+{
+long *hb;
+long n, idx;
+
+n = hash % slopNodes;
+hb = hashIdx + n;
+while(1) {
+idx = *hb;
+if(!idx) break;
+if((idx&0x7fffffff) == jdx) {
+*hb |= 0x80000000;
+--nodesCache;
+return; /* found it */
+}
+++n, ++hb;
+if(n == slopNodes) n = 0, hb = hashIdx;
+}
+
+/* Apparently it was already removed from the cache. */
+}
+
+/* Look for a node by hash value. */
+/* Return true if the node was found. */
+static int findNode( struct NODE *look, int insert, struct NODE *dest)
+{
+long *hb;
+long n, hash, idx;
+long empty = -1;
+int j;
+
+if(r_shorts)
+hash = computeHashShorts(look->pattern.s);
+else
+hash = computeHashBytes(look->pattern.b);
+n = hash % slopNodes;
+
+hb = hashIdx + n;
+while(1) {
+idx = *hb;
+if(!idx) break;
+if(idx < 0) {
+if(empty < 0) empty = n;
+if(!insert) goto nextnode;
+idx &= 0x7fffffff;
+}
+
+readNode(idx, dest);
+if(dest->hash != hash) goto nextnode;
+if(memcmp(dest->pattern.b, look->pattern.b, curNodeWidth)) goto nextnode;
+if(insert && look->depth < dest->depth) {
+dest->depth = look->depth;
+dest->parent = look->parent;
+writeNode(idx, dest);
+if(look->depth == curDepth && idx < look->parent)
+appendWorkList(idx);
+} /* downgrading the depth */
+return 1;
+nextnode:
+++n, ++hb;
+if(n == slopNodes) n = 0, hb = hashIdx;
+}
+
+if(!insert) return 0;
+j = look->depth + look->gap;
+if(j > reachup) reachup = j;
+
+if(nodesDisk >= 2140000000) bailout("too many nodes, limit 2 billion", 0);
+if(nodesDisk/60 >= nodesInFile)
+bailout("too many nodes for 60 data files on disk", 0);
+look->hash = hash;
+writeNode(nodesDisk, look);
+
+if(empty >= 0) n = empty;
+hb = hashIdx + n;
+*hb = nodesDisk;
+++nodesDisk;
+++nodesPending;
+if(++nodesCache >= maxNodes) {
+printf("\nCache overflow; you will have to restart with a higher cache.\n%d×%d@%d^%d\n",
+dim_x, dim_y, curDepth, megaNodes);
+//inTerm = 1;
+exit(1);
+}
+
+j = nodesCache / (maxNodes/10);
+if(j == 10) j = 9;
+if(j > hwm) { hwm = j; printf(" %%%d0", j); }
+
+return 0;
+}
+
+#define MAXACROSS 200
+static struct SF betweenstack[MAXACROSS];
+
+/* place pieces between two nodes */
+static int betweenNodes(const struct NODE *nb, const struct NODE *nt)
+{
+int lev = -1; // placement level
+struct SF *p = betweenstack - 1;
+const struct ORIENT *o;
+const struct SLICE *s;
+int x, y, z;
+shapebits mask;
+int diff = nt->depth - nb->depth;
+int j, k;
+shapebits b[BOXWIDTH*BOXWIDTH];
+
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+if(r_shorts) {
+mask = nt->pattern.s[x*BOXWIDTH + y];
+mask ^= 0xffff;
+mask >>= diff;
+if(mask & nb->pattern.s[x*BOXWIDTH + y]) return 0;
+mask |= nb->pattern.s[x*BOXWIDTH + y];
+b[x*BOXWIDTH + y] = mask;
+} else {
+mask = (nt->pattern.b[x*BOXWIDTH + y] << 8);
+mask ^= 0xffff;
+mask >>= diff;
+if(mask & (nb->pattern.b[x*BOXWIDTH + y] << 8)) return 0;
+mask |= (nb->pattern.b[x*BOXWIDTH + y] << 8);
+b[x*BOXWIDTH + y] = mask;
+}
+
+advance:
+if(++lev >= MAXACROSS)
+bailout("placement stack overflow %d", MAXACROSS);
+++p;
+
+// find location to place the piece
+if(!lev) x = y = z = 0;
+else {
+x = p->x, y = p->y, z = p->z;
+#if DIAG
+relocate:
+while(isHighbit(b[x*BOXWIDTH+y])) {
+++y, --x;
+if(y == dim_y) {
+x += dim_y, y = 0;
+++x; // next diagonal
+while(x >= dim_x) ++y, --x;
+if(y == dim_y) break;
+continue;
+}
+if(x < 0) x += y+1, y = 0;
+}
+#else
+while(isHighbit(b[x*BOXWIDTH+y])) {
+if(++x < dim_x) continue;
+x = 0;
+if(++y == dim_y) break;
+}
+#endif
+if(y == dim_y) { // have to push workspace down
+int r_x, r_y;
+j = REPDIAMETER;
+for(y=0; y<dim_y; ++y)
+for(x=0; x<dim_x; ++x) {
+k = lowEmpty[b[x*BOXWIDTH+y]];
+if(k < j) j = k, r_x = x, r_y = y;
+}
+if(!j) bailout("between increase level is 0", 0);
+if(j == REPDIAMETER) return lev;
+p->increase = j;
+z += j;
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y) {
+b[x*BOXWIDTH+y] <<= j;
+b[x*BOXWIDTH+y] |= ((1<<j)-1);
+}
+#if DIAG
+x = y = 0;
+goto relocate;
+#else
+x = r_x, y = r_y;
+#endif
+}
+}
+
+++p;
+p->x = x, p->y = y, p->z = z;
+p->onum = -1;
+o = o_list - 1;
+
+next:
+if(++p->onum == o_max) goto backup;
+++o;
+p->x0 = p->x - o->x;
+if(p->x0 < 0) goto next;
+p->y0 = p->y - o->y;
+if(p->y0 < 0) goto next;
+if(p->x0 + o->rng_x > dim_x) goto next;
+if(p->y0 + o->rng_y > dim_y) goto next;
+p->xy = (short)p->x0 * BOXWIDTH + p->y0;
+// the piece fits in the box.
+// Look for collision.
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s)
+if(b[p->xy+s->xy] & s->bits) goto next;
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s)
+b[p->xy+s->xy] |= s->bits;
+goto advance;
+
+backup:
+if(--lev < 0) return 0;
+--p;
+o = o_list + p->onum;
+if(j = p->increase) {
+shapebits m = ((short)HIGHBIT >> (j-1));
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+b[x*BOXWIDTH+y] = ( b[x*BOXWIDTH+y] >> j) | m;
+p->increase = 0;
+}
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s)
+b[p->xy+s->xy] ^= s->bits;
+goto next;
+}
+
 // stubs, for now
-static void markOldNode(long jdx, long hash){}
-static int findNode( struct NODE *look, int insert, struct NODE *dest) { return 0; }
 static void matchFound(const struct NODE *left, const struct NODE *right) {}
 
 static void expandNode(long this_idx, const uchar *base_b)
