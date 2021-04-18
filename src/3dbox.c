@@ -536,6 +536,7 @@ return revNibble[v>>4] |
 }
 
 static int solve(void);
+#define COLORS 20
 static uchar robin; // round robin on the colors
 static int megaNodes = 80; // millions of nodes that can be cached
 
@@ -610,7 +611,6 @@ printf("|");
 printf("\n");
 }
 
-#define COLORS 20
 #define B_LOC(x,y,z) b[dim_x*dim_y*(z0+z) + dim_x*(y0+y) + (x0+x)]
 static void print_solution(void)
 {
@@ -638,9 +638,18 @@ const struct SLICE *s = o->pattern + k;
 x = s->xy/BOXWIDTH, y = s->xy%BOXWIDTH;
 for(z=0; z<o->rng_z; ++z)
 if(s->bits & (HIGHBIT >> z)) {
-if(x0+x >= 0 && (c = B_LOC(x-1,y,z))) used[c-'a'] = 1;
-if(y0+y >= 0 && (c = B_LOC(x,y-1,z))) used[c-'a'] = 1;
-if(z0+z >= 0 && (c = B_LOC(x,y,z-1))) used[c-'a'] = 1;
+if(x0+x > 0 && (c = B_LOC(x-1,y,z)) != '?' && c != '*')
+used[c-'a'] = 1;
+if(y0+y > 0 && (c = B_LOC(x,y-1,z)) != '?' && c != '*')
+used[c-'a'] = 1;
+if(z0+z > 0 && (c = B_LOC(x,y,z-1)) != '?' && c != '*')
+used[c-'a'] = 1;
+if(x0+x < dim_x-1 && (c = B_LOC(x+1,y,z)) != '?' && c != '*')
+used[c-'a'] = 1;
+if(y0+y < dim_y-1 && (c = B_LOC(x,y+1,z)) != '?' && c != '*')
+used[c-'a'] = 1;
+if(z0+z < dim_z-1 && (c = B_LOC(x,y,z+1)) != '?' && c != '*')
+used[c-'a'] = 1;
 }
 }
 
@@ -683,7 +692,6 @@ printf("\n");
 free(b);
 }
 #undef B_LOC
-#undef COLORS
 
 static int solve(void)
 {
@@ -1257,6 +1265,129 @@ for(k=0; k<o->slices; ++k, ++s)
 b[p->xy+s->xy] ^= s->bits;
 goto next;
 }
+
+#define B_LOC(x, y, z) board[(z)*dim_x*dim_y + (y)*dim_x + (x)]
+static void downToFloor(char *board, const struct NODE *top)
+{
+long parent;
+int x, y, z, z0;
+int k, last_k = COLORS - 1;
+int added;
+int r1, r2; // rotations in the D4 group
+shapebits mask;
+char c;
+const struct SF *p;
+const struct ORIENT *o;
+const struct SLICE *s;
+struct NODE n1, n2;
+struct NODE n3; // just a work area
+static struct NODE floor;
+uchar used[COLORS];
+
+n2 = *top;
+
+do {
+parent = n2.parent;
+if(parent)
+readNode(parent, &n1);
+else
+n1 = floor;
+
+for(r1=0; r1<2; ++r1) {
+if(dim_x == dim_y) {
+for(r2=0; r2<4; ++r2) {
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+if(r_shorts)
+n3.pattern.s[(dim_y-1-y)*BOXWIDTH + dim_x] = n1.pattern.s[x*BOXWIDTH + y];
+else
+n3.pattern.b[(dim_y-1-y)*BOXWIDTH + dim_x] = n1.pattern.b[x*BOXWIDTH + y];
+memcpy(n1.pattern.s, n3.pattern.s, curNodeWidth);
+if((added = betweenNodes(&n1, &n2))) goto found;
+}
+} else {
+for(r2=0; r2<2; ++r2) {
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+if(r_shorts)
+n3.pattern.s[(dim_x-1-x)*BOXWIDTH + dim_y-1-y] = n1.pattern.s[x*BOXWIDTH + y];
+else
+n3.pattern.b[(dim_x-1-x)*BOXWIDTH + dim_y-1-y] = n1.pattern.b[x*BOXWIDTH + y];
+memcpy(n1.pattern.s, n3.pattern.s, curNodeWidth);
+if((added = betweenNodes(&n1, &n2))) goto found;
+}
+}
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+if(r_shorts)
+n3.pattern.s[x*BOXWIDTH + dim_y-1-y] = n1.pattern.s[x*BOXWIDTH + y];
+else
+n3.pattern.b[x*BOXWIDTH + dim_y-1-y] = n1.pattern.b[x*BOXWIDTH + y];
+memcpy(n1.pattern.s, n3.pattern.s, curNodeWidth);
+if((added = betweenNodes(&n1, &n2))) goto found;
+}
+found:
+
+if(!added) {
+printf("\nunfillable %d.%d:\n", n1.depth, n2.depth);
+bailout("cannot fill the space between two successive nodes.", 0);
+}
+
+for(p=betweenstack; added; --added, ++p) {
+z0 = n1.depth + p->z;
+o = p->onum + o_list;
+// find the colors that touch this piece.
+memset(used, 0, sizeof(used));
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s) {
+x = s->xy / BOXWIDTH + p->x0;
+y = s->xy % BOXWIDTH + p->y0;
+z = z0;
+for(mask = s->bits; mask; mask<<=1, ++z) {
+if(!(mask&HIGHBIT)) continue;
+if(x && (c = B_LOC(x-1, y, z)) != '?' && c != '*')
+used[c-'a'] = 1;
+if(x < dim_x-1 && (c = B_LOC(x+1, y, z)) != '?' && c != '*')
+used[c-'a'] = 1;
+if(y && (c = B_LOC(x, y-1, z)) != '?' && c != '*')
+used[c-'a'] = 1;
+if(y < dim_y-1 && (c = B_LOC(x, y+1, z)) != '?' && c != '*')
+used[c-'a'] = 1;
+if(z && (c = B_LOC(x, y, z-1)) != '?' && c != '*')
+used[c-'a'] = 1;
+if((c = B_LOC(x, y, z+1)) != '?' && c != '*')
+used[c-'a'] = 1;
+}
+} /* loop over slices in the piece */
+
+if(robin) {
+k = last_k;
+c = '*';
+do { ++k;
+if(k == COLORS) k = 0;
+if(!used[k]) { c = k+'a'; last_k = k; break; }
+} while(k != last_k);
+} else {
+for(k=0; k<COLORS; ++k) if(!used[k]) break;
+c = k < COLORS ? 'a'+k : '*';
+}
+
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s) {
+x = s->xy / BOXWIDTH + p->x0;
+y = s->xy % BOXWIDTH + p->y0;
+z = z0;
+for(mask = s->bits; mask; mask<<=1, ++z) {
+if(!(mask&HIGHBIT)) continue;
+B_LOC(x, y, z) = c;
+}
+} /* loop over slices in the piece */
+} /* loop over pieces between the two nodes */
+
+n2 = n1;
+} while(parent); /* loop down through the depths */
+}
+#undef B_LOC
 
 // stubs, for now
 static void matchFound(const struct NODE *left, const struct NODE *right) {}
