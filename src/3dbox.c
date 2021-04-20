@@ -13,6 +13,7 @@ static int stopgap, forgetgap;
 static char r_shorts; // nodes must use shorts, rather than bytes
 static int boxOrder, boxArea, boxVolume;
 static int cbflag; // checkerboard flag
+static int ordFactor = 1;
 
 // see the comments at the top of trec.c
 #define stopsearch (2*curDepth + stopgap > maxDepth)
@@ -502,7 +503,10 @@ if(*s) ++s;
 ++setSize;
 } /* loop over pieces in the set */
 
-if(cbflag) puts("checkerboard upgrade");
+if(cbflag) {
+puts("checkerboard upgrade");
+ordFactor = 2;
+}
 
 stopgap = (setMinDimension&1) ? setMinDimension : setMinDimension - 1;
 forgetgap = stopgap/2 - setMaxDimension/2 - 1;
@@ -538,19 +542,25 @@ return revNibble[v>>4] |
 }
 
 static int solve(void);
-#define COLORS 20
+#define COLORS 26
 static uchar robin; // round robin on the colors
+static uchar doNodes; // look by using nodes instead of filling the entire box
 static int megaNodes = 80; // millions of nodes that can be cached
 
 int main(int argc, const char **argv)
 {
 ++argv, --argc;
+while(argc && argv[0][0] == '-') {
 if(argc && !strcmp(*argv, "-r"))
 ++argv, --argc, robin = 1;
+if(argc && !strcmp(*argv, "-n"))
+++argv, --argc, doNodes = 1;
 if(argc && argv[0][0] == '-' && argv[0][1] == 'm' && isdigit(argv[0][2]))
 megaNodes = atoi(argv[0]+2), ++argv, --argc;
+}
+
 if(argc != 2 && argc != 4)
-bailout("usage: 3dbox [-r] [-mnnn] piece_set width depth height | 3dbox piece_set order", 0);
+bailout("usage: 3dbox [-r] [-n] [-mnnn] piece_set width depth height | 3dbox piece_set order", 0);
 
 lowEmptySet();
 stringPiece(argv[0]);
@@ -575,7 +585,7 @@ return 0;
 
 boxOrder = atoi(argv[1]);
 while(1) {
-if(cbflag && boxOrder&1) ++boxOrder;
+while(boxOrder % ordFactor) ++boxOrder;
 if(boxOrder > MAXORDER) bailout("order to large, limit %d", MAXORDER);
 printf("order %d\n", boxOrder);
 boxVolume = boxOrder * nsq;
@@ -1407,12 +1417,53 @@ n2 = n1;
 
 static char *leftBoard, *rightBoard, *workBoard;
 
-// stubs, for now
-static int boardsOverlap() { return 1; }
-static void mergeBoards() { }
-static void setBestZ() { }
-
 #define B_LOC(a, x, y, z) a[(z)*dim_x*dim_y + (y)*dim_x + (x)]
+static void mergeBoards(void)
+{
+int x, y, z;
+char c;
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+for(z=0; z<dim_z; ++z) {
+c = B_LOC(leftBoard, x, y, z);
+if(c != '?') continue;
+c = B_LOC(rightBoard, x, y, dim_z-1-z);
+if(c == '?') bailout("double ? at %d", x);
+B_LOC(leftBoard, x, y, z) = c;
+}
+}
+
+static void setBestZ(void)
+{
+int denom = nsq * ordFactor;
+maxDepth = boxOrder*nsq/boxArea;
+do {
+if(((long)maxDepth*boxArea) % denom) continue;
+break;
+} while(--maxDepth);
+// We have already covered rows below 2*curDepth + stopgap.
+minDepth = 2*curDepth + stopgap;
+// We already checked skinnier rectangles.
+if(dim_x > minDepth) minDepth = dim_x;
+do {
+if(((long)minDepth*boxArea) % denom) continue;
+break;
+} while(++minDepth);
+}
+
+static int boardsOverlap(void)
+{
+int x, y, z;
+char c;
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+for(z=0; z<dim_z; ++z)
+if(B_LOC(leftBoard, x, y, z) != '?' &&
+B_LOC(rightBoard, x, y, dim_z-1-z) != '?')
+return 1;
+return 0;
+}
+
 static void matchFound(const struct NODE *left, const struct NODE *right)
 {
 int newOrder;
@@ -1423,7 +1474,7 @@ FILE *sol;
 
 dim_z = left->depth + right->depth + left->gap;
 boxVolume = boxArea * dim_z;
-if(boxVolume % (nsq*(cbflag ? 2 : 1)))
+if(boxVolume % ordFactor)
 bailout("impossible dimensions, height %d", dim_z);
 newOrder = boxVolume/nsq;
 if(newOrder > boxOrder) return;
