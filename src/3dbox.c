@@ -1,9 +1,8 @@
 /*********************************************************************
 3dbox.c: fill a box with 3d polyominoes.
-This is brute force and not terribly efficient,
-or optimized the way trec.c is.
 *********************************************************************/
 
+#define NSQ 80 // number of squares in largest polyomino
 static int nsq; // number of squares in the polyomino
 static int dim_x, dim_y, dim_z; // box being filled
 static int curDepth; // when climbing through layers
@@ -12,7 +11,7 @@ static int reachup; /* greatest reach of node so far */
 static int setMaxDimension, setMinDimension;
 static int stopgap, forgetgap;
 static char r_shorts; // nodes must use shorts, rather than bytes
-static int boxOrder, boxVolume;
+static int boxOrder, boxArea, boxVolume;
 static int cbflag; // checkerboard flag
 
 // see the comments at the top of trec.c
@@ -37,8 +36,8 @@ static int cbflag; // checkerboard flag
 #define DIAG 1
 
 #define REPDIAMETER 16 // represent pieces this large
-#define NSQ 80 // number of squares in largest polyomino
 #define SETSIZE 10 // number of pieces in the set
+static int setSize; // for sets of polyominoes
 #define MAXORDER 1000
 #define BOXWIDTH 32
 
@@ -106,20 +105,20 @@ static void *emalloc(unsigned int n)
 void *s = malloc(n);
 if(!s) bailout("failure to allocate %d bytes", n);
 return s;
-} /* emalloc */
+}
 
 static void *erealloc(void *p, unsigned int n)
 {
 void *s = realloc(p, n);
 if(!s) bailout("failure to reallocate %d bytes", n);
 return s;
-} /* erealloc */
+}
 
 static void eread(int fd, void *buf, unsigned n)
 {
 if((unsigned)read(fd, buf, n) != n)
 bailout("disk read error, errno %d", errno);
-} /* eread */
+}
 
 static void ewrite(int fd, const void *buf, unsigned n)
 {
@@ -144,19 +143,19 @@ hold[0] == 'x') exit(2);
 // Is the file offset still at the end of the file? Sure hope so.
 // lseek(fd, 0, SEEK_END);
 goto top;
-} /* ewrite */
+}
 
 static void elseek(int fd, long offset)
 {
 if(lseek(fd, offset, SEEK_SET) < 0)
 bailout("disk seek error, errno %d", errno);
-} /* elseek */
+}
 
 struct ORIENT { // describe an orientation
 uchar pno; // piece number in the set
 uchar ono; // orientation number
 uchar x, y; // offset of lowest square
-uchar rng_x, rng_y, rng_z; // rnage of this piece in this orientation
+uchar rng_x, rng_y, rng_z; // range of this piece in this orientation
 uchar slices;
 schar breakLine; // the row with more than half the piece below it
 uchar ambig; // ambiguous indicator
@@ -166,9 +165,8 @@ struct SLICE pattern[NSQ];
 };
 
 #define O_MAX 500
-static struct ORIENT o_list[O_MAX];
 static int o_max; /* number of orientations */
-static int setSize; // for sets of polyominoes
+static struct ORIENT o_list[O_MAX];
 
 static void print_o(const struct ORIENT *o)
 {
@@ -176,7 +174,7 @@ int x, y, n = 0;
 for(y=0; y<o->rng_y; ++y) {
 if(y) printf("!");
 for(x=0; x<o->rng_x; ++x) {
-int xy = x * BOXWIDTH + y;
+int xy = y * BOXWIDTH + x;
 if(n == o->slices || o->pattern[n].xy != xy) {
 printf("00");
 } else {
@@ -259,6 +257,7 @@ if(z > rng_z) rng_z = z;
 // Scan in a diagonal pattern, rather than raster,
 // but this only increases speed a few percent,
 // so it might be more confusing than it's worth.
+// Assumes dim_x >= dim_y.
 x = y = 0;
 while(!orib2[x][y][0]) {
 ++y, --x;
@@ -266,7 +265,7 @@ if(y == dim_y) {
 x += dim_y, y = 0;
 ++x; // next diagonal
 while(x >= dim_x) ++y, --x;
-if(y == dim_y) bailout("orientation %d has nothing on the floor", o_max);;
+if(y == dim_y) bailout("orientation %d has nothing on the floor", o_max);
 continue;
 }
 if(x < 0) x += y+1, y = 0;
@@ -280,6 +279,7 @@ if(orib2[x][y][0]) {
 start_y = y, start_x = x;
 goto pack;
 }
+bailout("orientation %d has nothing on the floor", o_max);
 pack:
 #endif
 
@@ -290,7 +290,7 @@ shapebits mask = 0;
 for(z=0; z<REPDIAMETER; ++z)
 if(orib2[x][y][z])
 mask |= (HIGHBIT>>z);
-if(mask) orib3[n].xy = x*BOXWIDTH + y, orib3[n].bits = mask, ++n;
+if(mask) orib3[n].xy = y*BOXWIDTH + x, orib3[n].bits = mask, ++n;
 }
 
 // Have we seen this one before?
@@ -317,7 +317,7 @@ if(setMaxDimension > 9) r_shorts = 1;
 if(o->rng_z < setMinDimension) setMinDimension = o->rng_z;
 o->ambig = 0;
 o->zflip = r1; // remember the spin
-o->zflip |= (r2<<2);
+o->zflip |= (r2<<2); // remember point reflection
 o->inspace = !chiral;
 
 // compute the break level. Include this piece if we have
@@ -326,7 +326,7 @@ o->breakLine = (o->rng_z-1)/2;
 if(!(o->rng_z&1)) { // even, requires further refinement
 // See which half is "heavier".
 // This is a center of mass calculation.
-// But simple moment makes e0b0 ambiguous, so give extra weight
+// But simple moment makes horizontal e0b0 ambiguous, so give extra weight
 // to the squares near the outside of the piece.
 int bottom = 0, top = 0;
 for(x=0; x<o->rng_x; ++x)
@@ -431,14 +431,15 @@ setMaxDimension = 0, setMinDimension = NSQ;
 
 while(*s) {
 if(setSize >= SETSIZE) bailout("too many pieces in the set, limit %d", SETSIZE);
-memset(orib3, 0, sizeof(orib3));
+memset(orib4, 0, sizeof(orib4));
 nsq = 0;
 i = y = 0;
 
 while((c = *s) != 0 && c != '_') {
 if(c == '!') { ++s; ++y; i=0;
 if(y >= REPDIAMETER) bailout("polyomino is too wide, limit %d rows", REPDIAMETER);
-continue; }
+continue;
+}
 if(!isxdigit(c)) bailout("character %c unrecognized, hex digit expected", c);
 if(!isxdigit(s[1])) bailout("character %c unrecognized, hex digit expected", s[1]);
 if(i >= REPDIAMETER) bailout("polyomino is too wide, limit %d rows", REPDIAMETER);
@@ -472,6 +473,7 @@ bailout("too many squares in the given polyomino, limit %d", NSQ);
 nsqFirst = nsq;
 
 // unpack into orib1
+memset(orib1, 0, sizeof(orib1));
 for(x=0; x<REPDIAMETER; ++x)
 for(y=0; y<REPDIAMETER; ++y) {
 mask = orib4[x][y];
@@ -481,7 +483,7 @@ mask <<= 1;
 }
 }
 
-/* see if the checkerboard argument applies */
+// see if the checkerboard argument applies
 if(!(nsq&1)) {
 i = 0;
 for(x=0; x<REPDIAMETER; ++x)
@@ -560,6 +562,11 @@ dim_z = atoi(argv[3]);
 boxVolume = dim_x * dim_y * dim_z;
 if(boxVolume % nsq) bailout("volume %d does not admit a whole number of pieces", boxVolume);
 boxOrder = boxVolume / nsq;
+if(boxOrder > MAXORDER) bailout("order to large, limit %d", MAXORDER);
+if(dim_y > dim_x || dim_x > dim_z)
+bailout("dimensions must be y x z increasing", 0);
+if(dim_x > BOXWIDTH)
+bailout("x dimension too large, limit %d", BOXWIDTH);
 printf("order %d\n", boxOrder);
 printf("box %d by %d by %d\n", dim_x, dim_y, dim_z);
 solve();
@@ -593,19 +600,20 @@ schar x, y, z; // where piece is placed
 schar x0, y0; // adjusted location of piece
 schar increase;
 short onum;
-short xy;
+short xy; // y*BOXWIDTH + x
 short breakLine;
 short mzc;
 } stack[MAXORDER];
 
-static shapebits ws[BOXWIDTH*BOXWIDTH]; // our workspace
+static shapebits ws[BOXWIDTH*BOXWIDTH]; // workspace for specific box solve
 
+// This only prints bytes, not shorts
 static void print_ws(void)
 {
 int x, y;
 for(y=0; y<dim_y; ++y) {
 for(x=0; x<dim_x; ++x)
-printf("%02x", ws[x*BOXWIDTH+y]>>8);
+printf("%02x", ws[y*BOXWIDTH+x]>>8);
 printf("|");
 }
 printf("\n");
@@ -620,6 +628,7 @@ const struct SF *p;
 int lev, x, y, z, k;
 int x0, y0, z0;
 char c;
+uchar badchar = 0;
 int last_k = COLORS - 1;
 uchar used[COLORS];
 
@@ -635,7 +644,7 @@ x0 = p->x0, y0 = p->y0, z0 = p->z;
 memset(used, 0, sizeof(used));
 for(k=0; k<o->slices; ++k) {
 const struct SLICE *s = o->pattern + k;
-x = s->xy/BOXWIDTH, y = s->xy%BOXWIDTH;
+y = s->xy/BOXWIDTH, x = s->xy%BOXWIDTH;
 for(z=0; z<o->rng_z; ++z)
 if(s->bits & (HIGHBIT >> z)) {
 if(x0+x > 0 && (c = B_LOC(x-1,y,z)) != '?' && c != '*')
@@ -667,7 +676,7 @@ c = k < COLORS ? 'a'+k : '*';
 
 for(k=0; k<o->slices; ++k) {
 const struct SLICE *s = o->pattern + k;
-x = s->xy/BOXWIDTH, y = s->xy%BOXWIDTH;
+y = s->xy/BOXWIDTH, x = s->xy%BOXWIDTH;
 for(z=0; z<o->rng_z; ++z)
 if(s->bits & (HIGHBIT >> z))
 B_LOC(x,y,z) = c;
@@ -684,11 +693,15 @@ printf("-");
 printf("\n");
 }
 for(x=0; x<dim_x; ++x) {
-for(z=0; z<dim_z; ++z)
-printf("%c", B_LOC(x,y,z));
+for(z=0; z<dim_z; ++z) {
+c = B_LOC(x,y,z);
+printf("%c", c);
+if(c == '*' || c == '?') badchar = 1;
+}
 printf("\n");
 }
 }
+if(badchar) puts("bad characters in the box");
 free(b);
 }
 #undef B_LOC
@@ -717,7 +730,8 @@ x = p->x, y = p->y, z = p->z;
 
 #if DIAG
 relocate:
-while(isHighbit(ws[x*BOXWIDTH+y])) {
+// Assumes dim_x >= dim_y.
+while(isHighbit(ws[y*BOXWIDTH+x])) {
 ++y, --x;
 if(y == dim_y) {
 x += dim_y, y = 0;
@@ -730,7 +744,7 @@ if(x < 0) x += y+1, y = 0;
 }
 #else
 
-while(isHighbit(ws[x*BOXWIDTH+y])) {
+while(isHighbit(ws[y*BOXWIDTH+x])) {
 if(++x < dim_x) continue;
 x = 0;
 if(++y == dim_y) break;
@@ -742,18 +756,18 @@ int r_x, r_y;
 j = REPDIAMETER;
 for(y=0; y<dim_y; ++y)
 for(x=0; x<dim_x; ++x) {
-k = lowEmpty[ws[x*BOXWIDTH+y]];
+k = lowEmpty[ws[y*BOXWIDTH+x]];
 if(k < j) j = k, r_x = x, r_y = y;
 }
-if(!j) bailout("increase level is 0", 0);
+if(!j || j == REPDIAMETER) bailout("increase level is %d", j);
 p->increase = j;
 z += j;
 #if DEBUG
 printf("push %d\n", j);
 #endif
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-ws[x*BOXWIDTH+y] <<= j;
+for(x=0; x<dim_x; ++x)
+ws[y*BOXWIDTH+x] <<= j;
 #if DIAG
 x = y = 0;
 goto relocate;
@@ -781,9 +795,9 @@ if(p->y0 < 0) goto next;
 if(p->x0 + o->rng_x > dim_x) goto next;
 if(p->y0 + o->rng_y > dim_y) goto next;
 if(p->z + o->rng_z > dim_z) goto next;
-p->xy = (short)p->x0 * BOXWIDTH + p->y0;
 // the piece fits in the box.
 // Look for collision.
+p->xy = (short)p->y0 * BOXWIDTH + p->x0;
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s)
 if(ws[p->xy+s->xy] & s->bits) goto next;
@@ -809,21 +823,19 @@ return 0;
 o = o_list + p->onum;
 if(j = p->increase) {
 shapebits m = ((short)HIGHBIT >> (j-1));
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-ws[x*BOXWIDTH+y] = ( ws[x*BOXWIDTH+y] >> j) | m;
+for(x=0; x<dim_x; ++x)
+ws[y*BOXWIDTH+x] = ( ws[y*BOXWIDTH+x] >> j) | m;
 p->increase = 0;
 #if DEBUG
 printf("pop %d\n", j);
-//  print_ws();
 #endif
 }
+// unplace piece
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s)
 ws[p->xy+s->xy] ^= s->bits;
 goto next;
-
-return 0;
 }
 
 // Here begins the node approach to finding solutions.
@@ -840,7 +852,7 @@ ushort s[BOXWIDTH*BOXWIDTH]; // shorts
 } pattern;
 };
 
-static int nodeSize; // adjusted for the actual width
+static int nodeSize; // adjusted for dim_x and dim_y
 static int curNodeWidth;
 
 /*********************************************************************
@@ -854,7 +866,7 @@ static int fd[60] = // the file descriptors
 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,};
-static char filename[120];
+static char filename[200];
 static long nodesInFile;
 static long nodesDisk; // nodes stored on disk
 static long nodesCache; // nodes stored in cache
@@ -878,6 +890,8 @@ int i;
 static char *xptr;
 
 if(!xptr) {
+if(strlen(piecename) > sizeof(filename) - 24)
+bailout("piecename string is too long", 0);
 sprintf(filename, "dotile/%s", piecename);
 mkdir(filename, 0777);
 sprintf(filename, "dotile/%s/data-x", piecename);
@@ -933,7 +947,7 @@ int i = idx / nodesInFile;
 long offset = (idx%nodesInFile) * nodeSize;
 elseek(fd[i], offset);
 eread(fd[i], buf, nodeSize);
-} /* readNode */
+}
 
 static void writeNode(long idx, const struct NODE *buf)
 {
@@ -941,7 +955,7 @@ int i = idx / nodesInFile;
 long offset = (idx%nodesInFile) * nodeSize;
 elseek(fd[i], offset);
 ewrite(fd[i], buf, nodeSize);
-} /* writeNode */
+}
 
 // I'm sure there are more efficient wayst to do this, but...
 // I just wanted to get er done.
@@ -957,9 +971,9 @@ memcpy(hw1, p, curNodeWidth);
 for(r1=0; r1<2; ++r1) {
 if(dim_x == dim_y) {
 for(r2=0; r2<4; ++r2) {
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-hw2[(dim_y-1-y)*BOXWIDTH + dim_x] = hw1[x*BOXWIDTH + y];
+for(x=0; x<dim_x; ++x)
+hw2[x*dim_x + (dim_y-1-y)] = hw1[y*dim_x + x];
 memcpy(hw1, hw2, curNodeWidth);
 if(r1 == 0 && r2 == 3) break;
 if(memcmp(p, hw1, curNodeWidth) < 0)
@@ -967,18 +981,18 @@ memcpy(p, hw1, curNodeWidth);
 }
 } else {
 for(r2=0; r2<2; ++r2) {
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-hw2[(dim_x-1-x)*BOXWIDTH + dim_y-1-y] = hw1[x*BOXWIDTH + y];
+for(x=0; x<dim_x; ++x)
+hw2[(dim_y-1-y)*dim_x + dim_x-1-x] = hw1[y*dim_x + x];
 memcpy(hw1, hw2, curNodeWidth);
 if(r1 == 0 && r2 == 1) break;
 if(memcmp(p, hw1, curNodeWidth) < 0)
 memcpy(p, hw1, curNodeWidth);
 }
 }
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-hw2[x*BOXWIDTH + dim_y-1-y] = hw1[x*BOXWIDTH + y];
+for(x=0; x<dim_x; ++x)
+hw2[(dim_y-1-y)*dim_x + x] = hw1[y*dim_x + x];
 memcpy(hw1, hw2, curNodeWidth);
 }
 
@@ -1005,9 +1019,9 @@ memcpy(hb1, p, curNodeWidth);
 for(r1=0; r1<2; ++r1) {
 if(dim_x == dim_y) {
 for(r2=0; r2<4; ++r2) {
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-hb2[(dim_y-1-y)*BOXWIDTH + dim_x] = hb1[x*BOXWIDTH + y];
+for(x=0; x<dim_x; ++x)
+hb2[x*dim_x + (dim_y-1-y)] = hb1[y*dim_x + x];
 memcpy(hb1, hb2, curNodeWidth);
 if(r1 == 0 && r2 == 3) break;
 if(memcmp(p, hb1, curNodeWidth) < 0)
@@ -1015,18 +1029,18 @@ memcpy(p, hb1, curNodeWidth);
 }
 } else {
 for(r2=0; r2<2; ++r2) {
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-hb2[(dim_x-1-x)*BOXWIDTH + dim_y-1-y] = hb1[x*BOXWIDTH + y];
+for(x=0; x<dim_x; ++x)
+hb2[(dim_y-1-y)*dim_x + dim_x-1-x] = hb1[y*dim_x + x];
 memcpy(hb1, hb2, curNodeWidth);
 if(r1 == 0 && r2 == 1) break;
 if(memcmp(p, hb1, curNodeWidth) < 0)
 memcpy(p, hb1, curNodeWidth);
 }
 }
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-hb2[x*BOXWIDTH + dim_y-1-y] = hb1[x*BOXWIDTH + y];
+for(x=0; x<dim_x; ++x)
+hb2[(dim_y-1-y)*dim_x + x] = hb1[y*dim_x + x];
 memcpy(hb1, hb2, curNodeWidth);
 }
 
@@ -1065,9 +1079,10 @@ if(n == slopNodes) n = 0, hb = hashIdx;
 /* Apparently it was already removed from the cache. */
 }
 
-/* Look for a node by hash value. */
-/* Return true if the node was found. */
-static int findNode( struct NODE *look, int insert, struct NODE *dest)
+// Look for a node, vectoring through the cache.
+// If generated is false, this is a complementary node in search of a solution.
+// Return true if the node was found.
+static int findNode( struct NODE *look, int generated, struct NODE *dest)
 {
 long *hb;
 long n, hash, idx;
@@ -1086,14 +1101,14 @@ idx = *hb;
 if(!idx) break;
 if(idx < 0) {
 if(empty < 0) empty = n;
-if(!insert) goto nextnode;
+if(!generated) goto nextnode;
 idx &= 0x7fffffff;
 }
 
 readNode(idx, dest);
 if(dest->hash != hash) goto nextnode;
 if(memcmp(dest->pattern.b, look->pattern.b, curNodeWidth)) goto nextnode;
-if(insert && look->depth < dest->depth) {
+if(generated && look->depth < dest->depth) {
 dest->depth = look->depth;
 dest->parent = look->parent;
 writeNode(idx, dest);
@@ -1106,7 +1121,8 @@ nextnode:
 if(n == slopNodes) n = 0, hb = hashIdx;
 }
 
-if(!insert) return 0;
+if(!generated) return 0;
+
 j = look->depth + look->gap;
 if(j > reachup) reachup = j;
 
@@ -1122,7 +1138,7 @@ hb = hashIdx + n;
 ++nodesDisk;
 ++nodesPending;
 if(++nodesCache >= maxNodes) {
-printf("\nCache overflow; you will have to restart with a higher cache.\n%d×%d@%d^%d\n",
+printf("\nCache overflow; you will have to restart with a higher cache.\n%dx%d@%d^%d\n",
 dim_x, dim_y, curDepth, megaNodes);
 //inTerm = 1;
 exit(1);
@@ -1135,8 +1151,8 @@ if(j > hwm) { hwm = j; printf(" %%%d0", j); }
 return 0;
 }
 
-#define MAXACROSS 200
-static struct SF betweenstack[MAXACROSS];
+#define MAXLAYER 200
+static struct SF betweenstack[MAXLAYER];
 
 /* place pieces between two nodes */
 static int betweenNodes(const struct NODE *nb, const struct NODE *nt)
@@ -1151,27 +1167,27 @@ int diff = nt->depth - nb->depth;
 int j, k;
 shapebits b[BOXWIDTH*BOXWIDTH];
 
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
+for(x=0; x<dim_x; ++x)
 if(r_shorts) {
-mask = nt->pattern.s[x*BOXWIDTH + y];
+mask = nt->pattern.s[y*dim_x + x];
 mask ^= 0xffff;
 mask >>= diff;
-if(mask & nb->pattern.s[x*BOXWIDTH + y]) return 0;
-mask |= nb->pattern.s[x*BOXWIDTH + y];
-b[x*BOXWIDTH + y] = mask;
+if(mask & nb->pattern.s[y*dim_x + x]) return 0;
+mask |= nb->pattern.s[y*dim_x + x];
+b[y*BOXWIDTH + x] = mask;
 } else {
-mask = (nt->pattern.b[x*BOXWIDTH + y] << 8);
+mask = (nt->pattern.b[y*dim_x + x] << 8);
 mask ^= 0xffff;
 mask >>= diff;
-if(mask & (nb->pattern.b[x*BOXWIDTH + y] << 8)) return 0;
-mask |= (nb->pattern.b[x*BOXWIDTH + y] << 8);
-b[x*BOXWIDTH + y] = mask;
+if(mask & (nb->pattern.b[y*dim_x + x] << 8)) return 0;
+mask |= (nb->pattern.b[y*dim_x + x] << 8);
+b[y*BOXWIDTH + x] = mask;
 }
 
 advance:
-if(++lev >= MAXACROSS)
-bailout("placement stack overflow %d", MAXACROSS);
+if(++lev >= MAXLAYER)
+bailout("placement stack overflow %d", MAXLAYER);
 ++p;
 
 // find location to place the piece
@@ -1180,7 +1196,7 @@ else {
 x = p->x, y = p->y, z = p->z;
 #if DIAG
 relocate:
-while(isHighbit(b[x*BOXWIDTH+y])) {
+while(isHighbit(b[y*BOXWIDTH + x])) {
 ++y, --x;
 if(y == dim_y) {
 x += dim_y, y = 0;
@@ -1192,7 +1208,7 @@ continue;
 if(x < 0) x += y+1, y = 0;
 }
 #else
-while(isHighbit(b[x*BOXWIDTH+y])) {
+while(isHighbit(b[y*BOXWIDTH + x])) {
 if(++x < dim_x) continue;
 x = 0;
 if(++y == dim_y) break;
@@ -1203,17 +1219,17 @@ int r_x, r_y;
 j = REPDIAMETER;
 for(y=0; y<dim_y; ++y)
 for(x=0; x<dim_x; ++x) {
-k = lowEmpty[b[x*BOXWIDTH+y]];
+k = lowEmpty[b[y*BOXWIDTH + x]];
 if(k < j) j = k, r_x = x, r_y = y;
 }
-if(!j) bailout("between increase level is 0", 0);
+if(!j) bailout("between increase level is %d", j);
 if(j == REPDIAMETER) return lev;
 p->increase = j;
 z += j;
-for(x=0; x<dim_x; ++x)
-for(y=0; y<dim_y; ++y) {
-b[x*BOXWIDTH+y] <<= j;
-b[x*BOXWIDTH+y] |= ((1<<j)-1);
+for(y=0; y<dim_y; ++y)
+for(x=0; x<dim_x; ++x) {
+b[y*BOXWIDTH + x] <<= j;
+b[y*BOXWIDTH + x] |= ((1<<j)-1);
 }
 #if DIAG
 x = y = 0;
@@ -1238,9 +1254,9 @@ p->y0 = p->y - o->y;
 if(p->y0 < 0) goto next;
 if(p->x0 + o->rng_x > dim_x) goto next;
 if(p->y0 + o->rng_y > dim_y) goto next;
-p->xy = (short)p->x0 * BOXWIDTH + p->y0;
 // the piece fits in the box.
 // Look for collision.
+p->xy = (short)p->y0 * BOXWIDTH + p->x0;
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s)
 if(b[p->xy+s->xy] & s->bits) goto next;
@@ -1255,9 +1271,9 @@ if(--lev < 0) return 0;
 o = o_list + p->onum;
 if(j = p->increase) {
 shapebits m = ((short)HIGHBIT >> (j-1));
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-b[x*BOXWIDTH+y] = ( b[x*BOXWIDTH+y] >> j) | m;
+for(x=0; x<dim_x; ++x)
+b[y*BOXWIDTH+x] = ( b[y*BOXWIDTH+x] >> j) | m;
 p->increase = 0;
 }
 s = o->pattern;
@@ -1266,11 +1282,11 @@ b[p->xy+s->xy] ^= s->bits;
 goto next;
 }
 
-#define B_LOC(x, y, z) board[(z)*dim_x*dim_y + (y)*dim_x + (x)]
+#define B_LOC(x,y,z) board[dim_x*dim_y*(z0+z) + dim_x*(y0+y) + (x0+x)]
 static void downToFloor(char *board, const struct NODE *top)
 {
 long parent;
-int x, y, z, z0;
+int x, y, z, x0, y0, z0;
 int k, last_k = COLORS - 1;
 int added;
 int r1, r2; // rotations in the D4 group
@@ -1284,7 +1300,7 @@ struct NODE n3; // just a work area
 static struct NODE floor;
 uchar used[COLORS];
 
-n2 = *top;
+n2 = *top; // structure copy
 
 do {
 parent = n2.parent;
@@ -1296,35 +1312,34 @@ n1 = floor;
 for(r1=0; r1<2; ++r1) {
 if(dim_x == dim_y) {
 for(r2=0; r2<4; ++r2) {
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
+for(x=0; x<dim_x; ++x)
 if(r_shorts)
-n3.pattern.s[(dim_y-1-y)*BOXWIDTH + dim_x] = n1.pattern.s[x*BOXWIDTH + y];
+n3.pattern.s[x*dim_x + (dim_y-1-y)] = n1.pattern.s[y*dim_x + x];
 else
-n3.pattern.b[(dim_y-1-y)*BOXWIDTH + dim_x] = n1.pattern.b[x*BOXWIDTH + y];
+n3.pattern.b[x*dim_x + (dim_y-1-y)] = n1.pattern.b[y*dim_x + x];
 memcpy(n1.pattern.s, n3.pattern.s, curNodeWidth);
 if((added = betweenNodes(&n1, &n2))) goto found;
 }
 } else {
 for(r2=0; r2<2; ++r2) {
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
+for(x=0; x<dim_x; ++x)
 if(r_shorts)
-n3.pattern.s[(dim_x-1-x)*BOXWIDTH + dim_y-1-y] = n1.pattern.s[x*BOXWIDTH + y];
+n3.pattern.s[(dim_y-1-y)*dim_x + dim_x-1-x] = n1.pattern.s[y*dim_x + x];
 else
-n3.pattern.b[(dim_x-1-x)*BOXWIDTH + dim_y-1-y] = n1.pattern.b[x*BOXWIDTH + y];
+n3.pattern.b[(dim_y-1-y)*dim_x + dim_x-1-x] = n1.pattern.b[y*dim_x + x];
 memcpy(n1.pattern.s, n3.pattern.s, curNodeWidth);
 if((added = betweenNodes(&n1, &n2))) goto found;
 }
 }
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
+for(x=0; x<dim_x; ++x)
 if(r_shorts)
-n3.pattern.s[x*BOXWIDTH + dim_y-1-y] = n1.pattern.s[x*BOXWIDTH + y];
+n3.pattern.s[(dim_y-1-y)*dim_x + x] = n1.pattern.s[y*dim_x + x];
 else
-n3.pattern.b[x*BOXWIDTH + dim_y-1-y] = n1.pattern.b[x*BOXWIDTH + y];
+n3.pattern.b[(dim_y-1-y)*dim_x + x] = n1.pattern.b[y*dim_x + x];
 memcpy(n1.pattern.s, n3.pattern.s, curNodeWidth);
-if((added = betweenNodes(&n1, &n2))) goto found;
 }
 found:
 
@@ -1335,27 +1350,28 @@ bailout("cannot fill the space between two successive nodes.", 0);
 
 for(p=betweenstack; added; --added, ++p) {
 z0 = n1.depth + p->z;
+x0 = p->x0, y0 = p->y0;
 o = p->onum + o_list;
 // find the colors that touch this piece.
 memset(used, 0, sizeof(used));
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s) {
-x = s->xy / BOXWIDTH + p->x0;
-y = s->xy % BOXWIDTH + p->y0;
-z = z0;
+x = s->xy / BOXWIDTH;
+y = s->xy % BOXWIDTH;
+z = 0;
 for(mask = s->bits; mask; mask<<=1, ++z) {
-if(!(mask&HIGHBIT)) continue;
-if(x && (c = B_LOC(x-1, y, z)) != '?' && c != '*')
+if(isNotHighbit(mask)) continue;
+if(x0+x > 0 && (c = B_LOC(x-1,y,z)) != '?' && c != '*')
 used[c-'a'] = 1;
-if(x < dim_x-1 && (c = B_LOC(x+1, y, z)) != '?' && c != '*')
+if(y0+y > 0 && (c = B_LOC(x,y-1,z)) != '?' && c != '*')
 used[c-'a'] = 1;
-if(y && (c = B_LOC(x, y-1, z)) != '?' && c != '*')
+if(z0+z > 0 && (c = B_LOC(x,y,z-1)) != '?' && c != '*')
 used[c-'a'] = 1;
-if(y < dim_y-1 && (c = B_LOC(x, y+1, z)) != '?' && c != '*')
+if(x0+x < dim_x-1 && (c = B_LOC(x+1,y,z)) != '?' && c != '*')
 used[c-'a'] = 1;
-if(z && (c = B_LOC(x, y, z-1)) != '?' && c != '*')
+if(y0+y < dim_y-1 && (c = B_LOC(x,y+1,z)) != '?' && c != '*')
 used[c-'a'] = 1;
-if((c = B_LOC(x, y, z+1)) != '?' && c != '*')
+if((c = B_LOC(x,y,z+1)) != '?' && c != '*')
 used[c-'a'] = 1;
 }
 } /* loop over slices in the piece */
@@ -1374,11 +1390,11 @@ c = k < COLORS ? 'a'+k : '*';
 
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s) {
-x = s->xy / BOXWIDTH + p->x0;
-y = s->xy % BOXWIDTH + p->y0;
-z = z0;
+x = s->xy / BOXWIDTH;
+y = s->xy % BOXWIDTH;
+z = 0;
 for(mask = s->bits; mask; mask<<=1, ++z) {
-if(!(mask&HIGHBIT)) continue;
+if(isNotHighbit(mask)) continue;
 B_LOC(x, y, z) = c;
 }
 } /* loop over slices in the piece */
@@ -1389,8 +1405,100 @@ n2 = n1;
 }
 #undef B_LOC
 
+static char *leftBoard, *rightBoard, *workBoard;
+
 // stubs, for now
-static void matchFound(const struct NODE *left, const struct NODE *right) {}
+static int boardsOverlap() { return 1; }
+static void mergeBoards() { }
+static void setBestZ() { }
+
+#define B_LOC(a, x, y, z) a[(z)*dim_x*dim_y + (y)*dim_x + (x)]
+static void matchFound(const struct NODE *left, const struct NODE *right)
+{
+int newOrder;
+int r1, r2; // rotations in the D4 group
+char solname[120];
+int x, y, z;
+FILE *sol;
+
+dim_z = left->depth + right->depth + left->gap;
+boxVolume = boxArea * dim_z;
+if(boxVolume % (nsq*(cbflag ? 2 : 1)))
+bailout("impossible dimensions, height %d", dim_z);
+newOrder = boxVolume/nsq;
+if(newOrder > boxOrder) return;
+
+// found something boxOrder or better!
+printf(" *%d[%dx%dx%d", newOrder, dim_x, dim_y, dim_z);
+
+leftBoard = emalloc(boxVolume);
+rightBoard = emalloc(boxVolume);
+workBoard = emalloc(boxVolume);
+memset(leftBoard, '?', boxVolume);
+downToFloor(leftBoard, left);
+memset(rightBoard, '?', boxVolume);
+downToFloor(rightBoard, right);
+printf("]");
+
+for(r1=0; r1<2; ++r1) {
+if(dim_x == dim_y) {
+for(r2=0; r2<4; ++r2) {
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+for(z=0; z<dim_z; ++z)
+B_LOC(workBoard, dim_y-1-y, x, z) = B_LOC(rightBoard, x, y, z);
+memcpy(rightBoard, workBoard, boxVolume);
+if(!boardsOverlap()) goto found;
+}
+} else {
+for(r2=0; r2<2; ++r2) {
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+for(z=0; z<dim_z; ++z)
+B_LOC(workBoard, dim_x-1-x, dim_y-1-y, z) = B_LOC(rightBoard, x, y, z);
+memcpy(rightBoard, workBoard, boxVolume);
+if(!boardsOverlap()) goto found;
+}
+}
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+for(z=0; z<dim_z; ++z)
+B_LOC(workBoard, x, dim_y-1-y, z) = B_LOC(rightBoard, x, y, z);
+memcpy(rightBoard, workBoard, boxVolume);
+}
+
+bailout("cannot put the two halves of the solution together", 0);
+
+found:
+mergeBoards();
+
+sprintf(solname, "dotile/%s/sol%dx%dx%d",
+piecename, dim_x, dim_y, dim_z);
+sol = fopen(solname, "w");
+if(!sol) bailout("cannot create solution file %s", (int)solname);
+
+for(y=0; y<dim_y; ++y) {
+if(y) {
+for(z=0; z<dim_z; ++z)
+fprintf(sol, "-");
+fprintf(sol, "\n");
+}
+for(x=0; x<dim_x; ++x) {
+for(z=0; z<dim_z; ++z)
+fprintf(sol, "%c", B_LOC(leftBoard, x,y,z));
+fprintf(sol, "\n");
+}
+}
+fclose(sol);
+
+free(leftBoard);
+free(rightBoard);
+free(workBoard);
+
+boxOrder = newOrder - 1;
+setBestZ();
+}
+#undef B_LOC
 
 static void expandNode(long this_idx, const uchar *base_b)
 {
@@ -1416,16 +1524,16 @@ min_z_bit = HIGHBIT;
 min_z_count = 0;
 // copy the board to the board on-stack for manipulation
 if(r_shorts) {
-for(x=0; x<dim_x; ++x)
-for(y=0; y<dim_y; ++y) {
-b0[x*BOXWIDTH+y] = base_s[x*BOXWIDTH+y];
-if(!(b0[x*BOXWIDTH+y]&min_z_bit)) ++min_z_count;
+for(y=0; y<dim_y; ++y)
+for(x=0; x<dim_x; ++x) {
+b0[y*BOXWIDTH + x] = base_s[y*dim_x + x];
+if(!(b0[y*BOXWIDTH+x]&min_z_bit)) ++min_z_count;
 }
 } else {
-for(x=0; x<dim_x; ++x)
-for(y=0; y<dim_y; ++y) {
-b0[x*BOXWIDTH+y] = base_b[x*BOXWIDTH+y]<<8;
-if(!(b0[x*BOXWIDTH+y]&min_z_bit)) ++min_z_count;
+for(y=0; y<dim_y; ++y)
+for(x=0; x<dim_x; ++x) {
+b0[y*BOXWIDTH + x] = (base_b[y*dim_x + x]<<8);
+if(!(b0[y*BOXWIDTH+x]&min_z_bit)) ++min_z_count;
 }
 }
 
@@ -1444,7 +1552,7 @@ else {
 x = p->x, y = p->y;
 
 #if DIAG
-while(b0[x*BOXWIDTH+y] & min_z_bit) {
+while(b0[y*BOXWIDTH+x] & min_z_bit) {
 ++y, --x;
 if(y == dim_y) {
 x += dim_y, y = 0;
@@ -1457,7 +1565,7 @@ if(x < 0) x += y+1, y = 0;
 }
 #else
 
-while(b0[x*BOXWIDTH+y] & min_z_bit) {
+while(b0[y*BOXWIDTH+x] & min_z_bit) {
 if(++x < dim_x) continue;
 x = 0;
 if(++y == dim_y) break;
@@ -1490,9 +1598,9 @@ p->y0 = p->y - o->y;
 if(p->y0 < 0) goto next;
 if(p->x0 + o->rng_x > dim_x) goto next;
 if(p->y0 + o->rng_y > dim_y) goto next;
-p->xy = (short)p->x0 * BOXWIDTH + p->y0;
 // the piece fits in the box.
 // Look for collision.
+p->xy = (short)p->y0 * BOXWIDTH + p->x0;
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s)
 if(b0[p->xy+s->xy] & (s->bits>>min_z)) goto next;
@@ -1515,15 +1623,15 @@ if(j < breakLine) breakLine = j;
 if(min_z_count) goto advance;
 // find lowest level
 mask = 0xffff;
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-mask &= b0[x*BOXWIDTH + y];
+for(x=0; x<dim_x; ++x)
+mask &= b0[y*BOXWIDTH + x];
 min_z = lowEmpty[mask];
 min_z_bit = (HIGHBIT >> min_z);
 min_z_count = 0;
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-if(!(b0[x*BOXWIDTH + y] & min_z_bit)) ++min_z_count;
+for(x=0; x<dim_x; ++x)
+if(!(b0[y*BOXWIDTH + x] & min_z_bit)) ++min_z_count;
 goto advance;
 
 backup:
@@ -1569,13 +1677,13 @@ recomplete:
 // build a new instance of the board, with only those pieces
 // that would be included on the lower side of the breakLine.
 if(r_shorts)
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-b1[x*BOXWIDTH + y] = base_s[x*BOXWIDTH + y];
+for(x=0; x<dim_x; ++x)
+b1[y*BOXWIDTH + x] = base_s[y*dim_x + x];
 else
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-b1[x*BOXWIDTH + y] = (base_b[x*BOXWIDTH + y]<<8);
+for(x=0; x<dim_x; ++x)
+b1[y*BOXWIDTH + x] = (base_b[y*dim_x + x]<<8);
 
 for(q=stack; q<p; ++q) {
 o = q->onum + o_list;
@@ -1595,26 +1703,26 @@ b1[q->xy+s->xy] |= (s->bits>>j);
 
 // compute depth and shift the patttern back down to the floor
 mask = 0xffff;
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-mask &= b1[x*BOXWIDTH + y];
+for(x=0; x<dim_x; ++x)
+mask &= b1[y*BOXWIDTH + x];
 j = lowEmpty[mask];
 newnode.depth = curDepth + j;
 if(j) {
 if(j > 8*(1+r_shorts)) bailout("depth difference %d is too high", j);
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-b1[x*BOXWIDTH + y] <<= j;
+for(x=0; x<dim_x; ++x)
+b1[y*BOXWIDTH + x] <<= j;
 } else if(ambnode) {
 // did we make the same node again?
 if(r_shorts)
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-if(b1[x*BOXWIDTH + y] != base_s[x*BOXWIDTH + y]) goto notsame;
+for(x=0; x<dim_x; ++x)
+if(b1[y*BOXWIDTH + x] != base_s[y*dim_x + x]) goto notsame;
 else
-for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
-if(b1[x*BOXWIDTH + y] != (base_b[x*BOXWIDTH + y] << 8)) goto notsame;
+for(x=0; x<dim_x; ++x)
+if(b1[y*BOXWIDTH + x] != (base_b[y*dim_x + x] << 8)) goto notsame;
 // same node, skip ahead
 goto ambtest;
 }
@@ -1622,14 +1730,14 @@ notsame:
 
 // build new node and compute gap
 mask = 0;
-for(x=0; x<dim_x; ++x)
-for(y=0; y<dim_y; ++y) {
-j = x*BOXWIDTH + y;
+for(y=0; y<dim_y; ++y)
+for(x=0; x<dim_x; ++x) {
+j = y*BOXWIDTH + x;
 mask |= b1[j];
 if(r_shorts)
-newnode.pattern.s[j] = b1[j];
+newnode.pattern.s[y*dim_x + x] = b1[j];
 else
-newnode.pattern.b[j] = (b1[j] >> 8);
+newnode.pattern.b[y*dim_x + x] = (b1[j] >> 8);
 }
 for(j=0; mask; ++j, mask<<=1)  ;
 newnode.gap = j;
@@ -1648,11 +1756,12 @@ if(newnode.depth + reachup >= minDepth) {
 // the node matches itself.
 // need a signed right shift here.
 mask = ((short)HIGHBIT >> (newnode.gap-1));
-for(x=0; x<dim_x; ++x)
-for(y=0; y<dim_y; ++y) {
-j = x*BOXWIDTH + y;
+for(y=0; y<dim_y; ++y)
+for(x=0; x<dim_x; ++x) {
+j = y*dim_x + x;
 if(r_shorts)
 compnode.pattern.s[j] = (reverseShort((newnode.pattern.s[j]^mask)) << (16-newnode.gap));
+else
 compnode.pattern.b[j] = (reverseByte((uchar)(newnode.pattern.b[j]^mask)) << (8-newnode.gap));
 }
 if(findNode(&compnode, 0, &looknode))
@@ -1662,4 +1771,4 @@ matchFound(&newnode, &looknode);
 ambtest:
 if(ambnode && !ambinclude) { ambnode = 0; ambinclude = 1; goto recomplete; }
 goto backup;
-} /* expandNode */
+}

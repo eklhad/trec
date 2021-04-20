@@ -609,7 +609,7 @@ base[i] = x << min_x;
 
 // zero fill the rest of the bitmap
 for(; i<REPDIAMETER; ++i) base[i] = 0;
-} /* clockwise */
+}
 
 static void vertReflect(shapebits *base)
 {
@@ -625,7 +625,7 @@ shapebits swap = base[j];
 base[j] = base[i-j];
 base[i-j] = swap;
 }
-} /*vertReflect */
+}
 
 /* debugging modes for this program */
 #define PERFORMCHECK 0x1
@@ -654,27 +654,27 @@ if(config) fprintf(stderr, "%s: ", config);
 fprintf(stderr, msg, arg);
 fprintf(stderr, "\n");
 exit(1);
-} /* bailout */
+}
 
 static void *emalloc(unsigned int n)
 {
 void *s = malloc(n);
 if(!s) bailout("failure to allocate %d bytes", n);
 return s;
-} /* emalloc */
+}
 
 static void *erealloc(void *p, unsigned int n)
 {
 void *s = realloc(p, n);
 if(!s) bailout("failure to reallocate %d bytes", n);
 return s;
-} /* erealloc */
+}
 
 static void eread(int fd, void *buf, unsigned n)
 {
 if((unsigned)read(fd, buf, n) != n)
 bailout("disk read error, errno %d", errno);
-} /* eread */
+}
 
 static void ewrite(int fd, const void *buf, unsigned n)
 {
@@ -699,13 +699,13 @@ hold[0] == 'x') exit(2);
 // Is the file offset still at the end of the file? Sure hope so.
 // lseek(fd, 0, SEEK_END);
 goto top;
-} /* ewrite */
+}
 
 static void elseek(int fd, long offset)
 {
 if(lseek(fd, offset, SEEK_SET) < 0)
 bailout("disk seek error, errno %d", errno);
-} /* elseek */
+}
 
 /* for debugging */
 static void showPattern(const shapebits *p)
@@ -715,7 +715,7 @@ for(j=0; j<curWidth; ++j) {
 printf("%x", p[j]);
 if(j < curWidth-1) printf(".");
 }
-} /* showPattern */
+}
 
 /* for debugging */
 static void showSmallPattern(const uchar *p)
@@ -723,7 +723,7 @@ static void showSmallPattern(const uchar *p)
 int j;
 for(j=0; j<curWidth; ++j)
 printf("%x", p[j]);
-} /* showSmallPattern */
+}
 
 /*********************************************************************
 In order to tile a rectangle with a given polyominoe,
@@ -823,7 +823,7 @@ static shapebits toHex(char c)
 c = tolower(c);
 if(c >= 'a') c -= ('a'-'9'-1);
 return c-'0';
-} /* toHex */
+}
 
 static const uchar nibbleCount[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
 static const shapebits revNibble[] = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
@@ -833,13 +833,13 @@ return revNibble[v>>12] |
 (revNibble[(v>>8)&0xf]<<4) |
 (revNibble[(v>>4)&0xf]<<8) |
 (revNibble[v&0xf]<<12);
-} /* reverseShort */
+}
 
 static uchar reverseByte(uchar v)
 {
 return revNibble[v>>4] |
 (revNibble[v&0xf]<<4);
-} /* reverseByte */
+}
 
 /*********************************************************************
 which orientations are ok on the bottom, left wall, and right wall?
@@ -1021,7 +1021,7 @@ setSize, setMinDimension, setMaxDimension, pieceMinMax);
 stopgap = (setMinDimension&1) ? setMinDimension : setMinDimension - 1;
 forgetgap = stopgap/2 - setMaxDimension/2 - 1;
 if(forgetgap >= 0) bailout("forget gap should be negative, not %d", forgetgap);
-} /* stringPiece */
+}
 
 /* find all the orientations of a piece */
 static void compileRotations(shapebits *new, int bx, int by)
@@ -1065,7 +1065,7 @@ swap = bx, bx = by, by = swap;
 vertReflect(new);
 } /* loop over reflections */
 if(npat == 2) bailout("too much symmetry on piece %d", setSize);
-} /* compileRotations */
+}
 
 /*********************************************************************
 Rotation established, compile the piece.
@@ -1158,7 +1158,7 @@ q->breakLine -= j;
 q->key = o_max*2;
 reflectCompiledPiece();
 }
-} /* compilePiece */
+}
 
 /* reflect a compiled piece, left to right */
 static void reflectCompiledPiece(void)
@@ -1217,7 +1217,7 @@ p->under[o->w-1-i] = o->under[i];
 }
 
 ++o_max; // on to the next orientation
-} /* reflectCompiledPiece */
+}
 
 // Sort orientations on y, then width-x, the stuff to the right of the corner.
 // Also populate o_midlist and the other lists.
@@ -1335,7 +1335,7 @@ printf("sorted %d %d %d %d %d %d\n",
 o_sizes[0], o_sizes[2], o_sizes[9], o_sizes[3], o_sizes[5], o_sizes[7]);
 exit(0);
 }
-} /* sortOrientations */
+}
 
 static void demo_ccp(void)
 {
@@ -1502,7 +1502,7 @@ fclose(f);
 
 if(!lineno) bailout("file is empty", 0);
 if(lineno < 7) bailout("file does not contain enough lines of configuration data, 7 lines expected", 0);
-} /* readConfig */
+}
 
 /* find the lowest empty bit in a short */
 static char lowEmpty[65536];
@@ -1515,7 +1515,7 @@ mask = j;
 for(k=0; mask&1; ++k, mask>>=1)  ;
 lowEmpty[j] = k;
 }
-} /* lowEmptySet */
+}
 
 // signal handlers
 static uchar inPause = 0, inTerm = 0;
@@ -1527,7 +1527,7 @@ if(n != SIGINT) inTerm = 1; // should never happen
 // recatch the signal from within the foreground thread
 signal(SIGINT, catchInt);
 printf(" pause");
-} /* catchInt */
+}
 
 static void catchTerm(int n)
 {
@@ -1595,7 +1595,7 @@ workList = erealloc(workList, sizeof(long)*workAlloc);
 workList[workEnd++] = idx;
 printf("<");
 // This node was pending before and is still pending so nodesPending doesn't change.
-} /* appendWorkList */
+}
 
 /*********************************************************************
 Entry point.
@@ -1726,7 +1726,7 @@ curNodeWidth = curWidth * (1+r_shorts);
 }
 
 return 0;
-} /* main */
+}
 
 // special code to keep certain pieces and/or orientations away from the walls
 static inline bool wallTest(const struct ORIENT *o, int x0, int y0)
@@ -1740,7 +1740,7 @@ if(x0+o->w == curWidth1 &&
 return true;
 fail:
 return false;
-} /* wallTest */
+}
 
 // See if there is a small unfillable hole beneath the piece you want to place
 static inline bool holeTest(const shapebits *b0, const struct ORIENT *o, int x0, int y0)
@@ -1824,7 +1824,7 @@ lastlev = ly, drop = 0;
 #endif
 
   return true;
-} /* holeTest */
+}
 
 // check for forbiddne spans
 static inline bool spanTest(const shapebits *b0, const struct ORIENT *o, int x0)
@@ -1884,7 +1884,7 @@ int i = idx / nodesInFile;
 long offset = (idx%nodesInFile) * nodeSize;
 elseek(fd[i], offset);
 eread(fd[i], buf, nodeSize);
-} /* readNode */
+}
 
 static void writeNode(long idx, const struct NODE *buf)
 {
@@ -1892,7 +1892,7 @@ int i = idx / nodesInFile;
 long offset = (idx%nodesInFile) * nodeSize;
 elseek(fd[i], offset);
 ewrite(fd[i], buf, nodeSize);
-} /* writeNode */
+}
 
 // Get the next node to expand
 static void interactive(void);
@@ -2042,7 +2042,7 @@ ulong orients[3]; // bitmap of viable orientations
 };
 
 static void markOldNode(long jdx, long hash);
-static bool findNode( struct NODE *look, bool insert, struct NODE *dest);
+static bool findNode( struct NODE *look, bool generated, struct NODE *dest);
 static void matchFound(const struct NODE *left, const struct NODE *right) ;
 static int reachup; /* greatest reach of node so far */
 
@@ -2508,7 +2508,7 @@ ambtest:
 if(ambnode && !ambinclude) { ambnode = false; ambinclude = true; goto recomplete; }
 goto backup;
 #undef b0
-} /* expandNode */
+}
 
 // One of these workers per worker thread
 static void *expandWorker(void *notused)
@@ -2572,7 +2572,7 @@ if(bestRow < curWidth && !(checkBits&LOOKALLCHECK)) continue;
 if(nodeStep >= nodesDisk && workStep >= workEnd) continue;
 goto create;
 }
-} /* expandNodes */
+}
 
 /*********************************************************************
 When a node is generated, we want to  determine, quickly,
@@ -2770,7 +2770,7 @@ flags = O_CREAT|O_TRUNC|O_RDWR|O_BINARY;
 fd[i] = open(filename, flags, 0666);
 if(fd[i] < 0) bailout("cannot create data file, errno %d", errno);
 } /* loop over files */
-} /* initFiles */
+}
 
 static void showPoly(const shapebits *p)
 {
@@ -2785,9 +2785,7 @@ x &= 0xff;
 if(x == 0x80) printf("+");
 else if(x) printf("<%02x>", x);
 }
-} /* showPoly */
-
-
+}
 
 /*********************************************************************
 Read and write nodes by index.
@@ -2840,11 +2838,12 @@ bailout("cannot recache at level %d", megaNodes);
 
 nextDisk: ;
 } /* loop recaching nodes on disk */
-} /* recache */
+}
 
-/* Look for a node by hash value. */
-/* Return true if the node was found. */
-static bool findNode( struct NODE *look, bool insert, struct NODE *dest)
+// Look for a node, vectoring through the cache.
+// If generated is false, this is a complementary node in search of a solution.
+// Return true if the node was found.
+static bool findNode( struct NODE *look, bool generated, struct NODE *dest)
 {
 long *hb;
 long n, hash, idx;
@@ -2863,14 +2862,14 @@ idx = *hb;
 if(!idx) break;
 if(idx < 0) {
 if(empty < 0) empty = n;
-if(!insert) goto nextnode;
+if(!generated) goto nextnode;
 idx &= 0x7fffffff;
 }
 
 readNode(idx, dest);
 if(dest->hash != hash) goto nextnode;
 if(memcmp(dest->pattern.b, look->pattern.b, curNodeWidth)) goto nextnode;
-if(insert && look->depth < dest->depth) {
+if(generated && look->depth < dest->depth) {
 dest->depth = look->depth;
 dest->parent = look->parent;
 writeNode(idx, dest);
@@ -2883,7 +2882,7 @@ nextnode:
 if(n == slopNodes) n = 0, hb = hashIdx;
 }
 
-if(!insert) return false;
+if(!generated) return false;
 j = look->depth + look->gap;
 if(j > reachup) reachup = j;
 
@@ -2911,7 +2910,7 @@ if(j == 10) j = 9;
 if(j > hwm) { hwm = j; printf(" %%%d0", j); }
 
 return false;
-} /* findNode */
+}
 
 static void markOldNode(long jdx, long hash)
 {
@@ -2933,7 +2932,7 @@ if(n == slopNodes) n = 0, hb = hashIdx;
 }
 
 /* Apparently it was already removed from the cache. */
-} /* markOldNode */
+}
 
 static void markOldNodes(void)
 {
@@ -2951,15 +2950,14 @@ if(buf.dead) continue;
 if(buf.depth > cutoff && firstBigger) { firstBigger = false; mon_idx = idx; }
 if(buf.depth == cutoff) markOldNode(idx, buf.hash);
 } /* loop scanning all nodes on disk */
-} /* markOldNodes */
+}
 
 
 static void expandFirstNode(void)
 {
 static struct NODE floor;
 expandNode(0, floor.pattern.b);
-} /* expandFirstNode */
-
+}
 
 /*********************************************************************
 We found a match.
@@ -3091,7 +3089,7 @@ o = p->o;
 for(i=0; i<o->w; ++i)
 b[p->x-o->x+i] ^=  (o->pattern[i]<<(p->y-o->y));
 goto next;
-} /* betweenNodes */
+}
 
 /* do the two half boards overlap? */
 static bool boardsOverlap(void)
@@ -3112,7 +3110,7 @@ k = curWidth-1;
 for(j=0; j+j<curWidth; ++j, --k)
 swap = b[curWidth*i+j], b[curWidth*i+j] = b[curWidth*i+k], b[curWidth*i+k] = swap;
 }
-} /* flipBoard */
+}
 
 static void mergeBoards(void)
 {
@@ -3125,7 +3123,7 @@ c = rightBoard[better_area-1-i];
 if(c == '?') bailout("double ? at %d", i);
 leftBoard[i] = c;
 }
-} /* mergeBoards */
+}
 
 static void downToFloor(char *board, const struct NODE *top)
 {
@@ -3228,7 +3226,7 @@ board[j*curWidth + k] = pno + 'a';
 
 n2 = n1;
 } while(parent); /* loop down through the depths */
-} /* downToFloor */
+}
 
 static void matchFound(const struct NODE *left, const struct NODE *right)
 {
@@ -3281,7 +3279,7 @@ free(rightBoard);
 
 bestOrder = newOrder - 1;
 setBestRow();
-} /* matchFound */
+}
 
 
 /*********************************************************************
@@ -3342,7 +3340,7 @@ qori[o_idx][k++] = (j-o->y)*QBWIDTH + i-o->x;
 qori[o_idx][k++] = 0;
 if(k != nsq) bailout("quad convert found %d squares in a piece", k);
 } /* loop over orientations */
-} /* quadConvert */
+}
 
 static bool testQori(int loc, int o)
 {
