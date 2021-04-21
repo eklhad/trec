@@ -541,11 +541,53 @@ return revNibble[v>>4] |
 (revNibble[v&0xf]<<4);
 }
 
-static int solve(void);
+// Here is the structure for the node.
+struct NODE {
+long parent; // where this node came from
+long hash; // hash value of this pattern
+short depth; // the depth of this node
+uchar gap; // the gap of this pattern
+uchar dead;
+union {
+uchar b[BOXWIDTH*BOXWIDTH]; // bytes
+ushort s[BOXWIDTH*BOXWIDTH]; // shorts
+} pattern;
+};
+static long nodesPending; // nodes yet to process
+static long nodesCache; // nodes stored in cache
+static int hwm; // high water mark on the cache
+
+static void setBestZ(void)
+{
+int denom = nsq * ordFactor;
+maxDepth = boxOrder*nsq/boxArea;
+do {
+if(((long)maxDepth*boxArea) % denom) continue;
+break;
+} while(--maxDepth);
+
+// We have already covered rows below 2*curDepth + stopgap.
+minDepth = 2*curDepth + stopgap;
+// We already checked skinnier rectangles.
+if(dim_x > minDepth) minDepth = dim_x;
+do {
+if(((long)minDepth*boxArea) % denom) continue;
+break;
+} while(++minDepth);
+}
+
 #define COLORS 26
 static uchar robin; // round robin on the colors
 static uchar doNodes; // look by using nodes instead of filling the entire box
 static int megaNodes = 80; // millions of nodes that can be cached
+static long maxNodes; // megaNodes times a million
+static long slopNodes; // maxNodes plus some slop for the randomness of the hash
+static struct NODE floor;
+static void initFiles(void);
+static int solve(void);
+static void expandNode(long this_idx, const uchar *base_b);
+static void expandNodes(void);
+static void markOldNodes(void);
 
 int main(int argc, const char **argv)
 {
@@ -569,7 +611,8 @@ if(argc == 4) {
 dim_x = atoi(argv[1]);
 dim_y = atoi(argv[2]);
 dim_z = atoi(argv[3]);
-boxVolume = dim_x * dim_y * dim_z;
+boxArea = dim_x * dim_y;
+boxVolume = boxArea * dim_z;
 if(boxVolume % nsq) bailout("volume %d does not admit a whole number of pieces", boxVolume);
 boxOrder = boxVolume / nsq;
 if(boxOrder > MAXORDER) bailout("order to large, limit %d", MAXORDER);
@@ -577,11 +620,41 @@ if(dim_y > dim_x || dim_x > dim_z)
 bailout("dimensions must be y x z increasing", 0);
 if(dim_x > BOXWIDTH)
 bailout("x dimension too large, limit %d", BOXWIDTH);
+if(!doNodes) {
 printf("order %d\n", boxOrder);
 printf("box %d by %d by %d\n", dim_x, dim_y, dim_z);
 solve();
 return 0;
 }
+
+// At this point dim_z doesn't mean anything - until we find a solution.
+// Search up through the levels, with dim_x and dim_y as footprint,
+// up to boxOrder.
+curDepth = 0;
+setBestZ();
+if(maxDepth < dim_x) return 0;
+initFiles();
+setbuf(stdout, 0);
+printf("?%dx%d", dim_x, dim_y);
+expandNode(0, floor.pattern.b);
+while(nodesPending) {
+int j;
+printf(" @");
+markOldNodes();
+printf("%d", curDepth);
+j = nodesCache / (maxNodes/10);
+if(j != hwm) { hwm = j; printf(" %%%d0", j); }
+expandNodes();
+++curDepth;
+setBestZ(); /* also resets minDepth */
+if(stopsearch) break;
+if(maxDepth < dim_x) break;
+}
+printf(" :%ld\n", nodesCache);
+return 0;
+}
+
+if(doNodes) bailout("order search using nodes is not yet implemented", 0);
 
 boxOrder = atoi(argv[1]);
 while(1) {
@@ -624,6 +697,22 @@ int x, y;
 for(y=0; y<dim_y; ++y) {
 for(x=0; x<dim_x; ++x)
 printf("%02x", ws[y*BOXWIDTH+x]>>8);
+printf("|");
+}
+printf("\n");
+}
+
+static void print_node(const struct NODE *n)
+{
+int x, y;
+shapebits mask;
+for(y=0; y<dim_y; ++y) {
+for(x=0; x<dim_x; ++x) {
+// my compiler upgrades unsigned char to int, as in c << 8, but let's cast, to be sure.
+mask = r_shorts ? n->pattern.s[y*dim_x+x] : ((ushort)n->pattern.b[y*dim_x+x]<<8);
+// only print the first byte.
+printf("%02x", (mask>>8));
+}
 printf("|");
 }
 printf("\n");
@@ -814,7 +903,7 @@ if(ws[p->xy+s->xy] & s->bits) goto next;
 #if DEBUG
 printf("place{%d,%d,%d ", p->x, p->y, p->z);
 print_o(o);
-sleep(3);
+sleep(1);
 #endif
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s)
@@ -848,20 +937,6 @@ ws[p->xy+s->xy] ^= s->bits;
 goto next;
 }
 
-// Here begins the node approach to finding solutions.
-// Here is the structure for the node.
-struct NODE {
-long parent; // where this node came from
-long hash; // hash value of this pattern
-short depth; // the depth of this node
-uchar gap; // the gap of this pattern
-uchar dead;
-union {
-uchar b[BOXWIDTH*BOXWIDTH]; // bytes
-ushort s[BOXWIDTH*BOXWIDTH]; // shorts
-} pattern;
-};
-
 static int nodeSize; // adjusted for dim_x and dim_y
 static int curNodeWidth;
 
@@ -879,13 +954,7 @@ static int fd[60] = // the file descriptors
 static char filename[200];
 static long nodesInFile;
 static long nodesDisk; // nodes stored on disk
-static long nodesCache; // nodes stored in cache
 static long *hashIdx; // array of hashed indexes
-static int megaNodes; // millions of nodes that can be cached
-static long maxNodes; // megaNodes times a million
-static long slopNodes; // maxNodes plus some slop for the randomness of the hash
-static int hwm; // high water mark on the cache
-static long nodesPending; // nodes yet to process
 static long lastDisk;
 static long mon_idx; // for markOldNodes()
 static long nodeStep;
@@ -922,9 +991,12 @@ workList = emalloc(4*workAlloc);
 workEnd = 0;
 
 // assumes dim_x and dim_y are set
-curNodeWidth = BOXWIDTH * BOXWIDTH * (1+r_shorts);
+curNodeWidth = dim_x * dim_y * (1+r_shorts);
 nodeSize = sizeof(struct NODE) - BOXWIDTH*BOXWIDTH*2 + curNodeWidth;
 nodeSize = (nodeSize + 3) & ~3;
+#if DEBUG
+printf("node size %d\n", nodeSize);
+#endif
 nodesInFile = 0x7fff0000 / nodeSize;
 maxNodes = megaNodes * 0x100000;
 slopNodes = maxNodes / 8 * 9;
@@ -1089,6 +1161,22 @@ if(n == slopNodes) n = 0, hb = hashIdx;
 /* Apparently it was already removed from the cache. */
 }
 
+static void markOldNodes(void)
+{
+long idx;
+static struct NODE buf;
+int cutoff = curDepth + forgetgap;
+uchar firstBigger = 1;
+if(cutoff < 0) return;
+for(idx=mon_idx; idx<nodesDisk; ++idx) {
+readNode(idx, &buf);
+if(buf.dead) continue;
+if(buf.depth > cutoff && firstBigger) { firstBigger = 0; mon_idx = idx; }
+// This is == in trec.c. Not sure which is right.
+if(buf.depth <= cutoff) markOldNode(idx, buf.hash);
+} /* loop scanning all nodes on disk */
+}
+
 // Look for a node, vectoring through the cache.
 // If generated is false, this is a complementary node in search of a solution.
 // Return true if the node was found.
@@ -1187,23 +1275,22 @@ if(mask & nb->pattern.s[y*dim_x + x]) return 0;
 mask |= nb->pattern.s[y*dim_x + x];
 b[y*BOXWIDTH + x] = mask;
 } else {
-mask = (nt->pattern.b[y*dim_x + x] << 8);
+mask = ((ushort)nt->pattern.b[y*dim_x + x] << 8);
 mask ^= 0xffff;
 mask >>= diff;
-if(mask & (nb->pattern.b[y*dim_x + x] << 8)) return 0;
-mask |= (nb->pattern.b[y*dim_x + x] << 8);
+if(mask & ((ushort)nb->pattern.b[y*dim_x + x] << 8)) return 0;
+mask |= ((ushort)nb->pattern.b[y*dim_x + x] << 8);
 b[y*BOXWIDTH + x] = mask;
 }
 
 advance:
 if(++lev >= MAXLAYER)
 bailout("placement stack overflow %d", MAXLAYER);
-++p;
 
 // find location to place the piece
-if(!lev) x = y = z = 0;
-else {
-x = p->x, y = p->y, z = p->z;
+x = y = 0;
+if(!lev) z = 0; else z = p->z;
+
 #if DIAG
 relocate:
 while(isHighbit(b[y*BOXWIDTH + x])) {
@@ -1247,7 +1334,6 @@ goto relocate;
 #else
 x = r_x, y = r_y;
 #endif
-}
 }
 
 ++p;
@@ -1293,11 +1379,12 @@ goto next;
 }
 
 #define B_LOC(x,y,z) board[dim_x*dim_y*(z0+z) + dim_x*(y0+y) + (x0+x)]
+static int last_sc; // last solution color
 static void downToFloor(char *board, const struct NODE *top)
 {
 long parent;
 int x, y, z, x0, y0, z0;
-int k, last_k = COLORS - 1;
+int k;
 int added;
 int r1, r2; // rotations in the D4 group
 shapebits mask;
@@ -1307,7 +1394,6 @@ const struct ORIENT *o;
 const struct SLICE *s;
 struct NODE n1, n2;
 struct NODE n3; // just a work area
-static struct NODE floor;
 uchar used[COLORS];
 
 n2 = *top; // structure copy
@@ -1355,6 +1441,8 @@ found:
 
 if(!added) {
 printf("\nunfillable %d.%d:\n", n1.depth, n2.depth);
+print_node(&n1);
+print_node(&n2);
 bailout("cannot fill the space between two successive nodes.", 0);
 }
 
@@ -1366,8 +1454,8 @@ o = p->onum + o_list;
 memset(used, 0, sizeof(used));
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s) {
-x = s->xy / BOXWIDTH;
-y = s->xy % BOXWIDTH;
+y = s->xy / BOXWIDTH;
+x = s->xy % BOXWIDTH;
 z = 0;
 for(mask = s->bits; mask; mask<<=1, ++z) {
 if(isNotHighbit(mask)) continue;
@@ -1387,12 +1475,12 @@ used[c-'a'] = 1;
 } /* loop over slices in the piece */
 
 if(robin) {
-k = last_k;
+k = last_sc;
 c = '*';
 do { ++k;
 if(k == COLORS) k = 0;
-if(!used[k]) { c = k+'a'; last_k = k; break; }
-} while(k != last_k);
+if(!used[k]) { c = k+'a'; last_sc = k; break; }
+} while(k != last_sc);
 } else {
 for(k=0; k<COLORS; ++k) if(!used[k]) break;
 c = k < COLORS ? 'a'+k : '*';
@@ -1400,8 +1488,8 @@ c = k < COLORS ? 'a'+k : '*';
 
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s) {
-x = s->xy / BOXWIDTH;
-y = s->xy % BOXWIDTH;
+y = s->xy / BOXWIDTH;
+x = s->xy % BOXWIDTH;
 z = 0;
 for(mask = s->bits; mask; mask<<=1, ++z) {
 if(isNotHighbit(mask)) continue;
@@ -1431,24 +1519,6 @@ c = B_LOC(rightBoard, x, y, dim_z-1-z);
 if(c == '?') bailout("double ? at %d", x);
 B_LOC(leftBoard, x, y, z) = c;
 }
-}
-
-static void setBestZ(void)
-{
-int denom = nsq * ordFactor;
-maxDepth = boxOrder*nsq/boxArea;
-do {
-if(((long)maxDepth*boxArea) % denom) continue;
-break;
-} while(--maxDepth);
-// We have already covered rows below 2*curDepth + stopgap.
-minDepth = 2*curDepth + stopgap;
-// We already checked skinnier rectangles.
-if(dim_x > minDepth) minDepth = dim_x;
-do {
-if(((long)minDepth*boxArea) % denom) continue;
-break;
-} while(++minDepth);
 }
 
 static int boardsOverlap(void)
@@ -1486,8 +1556,9 @@ leftBoard = emalloc(boxVolume);
 rightBoard = emalloc(boxVolume);
 workBoard = emalloc(boxVolume);
 memset(leftBoard, '?', boxVolume);
-downToFloor(leftBoard, left);
 memset(rightBoard, '?', boxVolume);
+last_sc = COLORS - 1;
+downToFloor(leftBoard, left);
 downToFloor(rightBoard, right);
 printf("]");
 
@@ -1583,7 +1654,7 @@ if(!(b0[y*BOXWIDTH+x]&min_z_bit)) ++min_z_count;
 } else {
 for(y=0; y<dim_y; ++y)
 for(x=0; x<dim_x; ++x) {
-b0[y*BOXWIDTH + x] = (base_b[y*dim_x + x]<<8);
+b0[y*BOXWIDTH + x] = ((ushort)base_b[y*dim_x + x]<<8);
 if(!(b0[y*BOXWIDTH+x]&min_z_bit)) ++min_z_count;
 }
 }
@@ -1598,9 +1669,9 @@ bailout("placement stack overflow %d", MAXORDER);
 if(min_z > breakLine) goto complete;
 
 // find location to place the piece
-if(!lev) x = y = 0;
-else {
+if(lev && min_z == p->z)
 x = p->x, y = p->y;
+else x = y = 0;
 
 #if DIAG
 while(b0[y*BOXWIDTH+x] & min_z_bit) {
@@ -1625,7 +1696,6 @@ if(++y == dim_y) break;
 
 if(y == dim_y)
 bailout("no empty square found at level %d", min_z);
-}
 
 ++p;
 p->x = x, p->y = y;
@@ -1658,7 +1728,7 @@ if(b0[p->xy+s->xy] & (s->bits>>min_z)) goto next;
 #if DEBUG
 printf("place{%d,%d,%d ", p->x, p->y, min_z);
 print_o(o);
-sleep(3);
+sleep(1);
 #endif
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s) {
@@ -1683,6 +1753,9 @@ min_z_count = 0;
 for(y=0; y<dim_y; ++y)
 for(x=0; x<dim_x; ++x)
 if(!(b0[y*BOXWIDTH + x] & min_z_bit)) ++min_z_count;
+#if DEBUG
+printf("min_z now %d count %d\n", min_z, min_z_count);
+#endif
 goto advance;
 
 backup:
@@ -1705,6 +1778,10 @@ return;
 
 // restore
 breakLine = p->breakLine;
+#if DEBUG
+if(min_z != p->z)
+printf("min_z back %d count %d\n", p->z, p->mzc);
+#endif
 min_z = p->z;
 min_z_bit = (HIGHBIT >> min_z);
 min_z_count = p->mzc;
@@ -1734,9 +1811,9 @@ b1[y*BOXWIDTH + x] = base_s[y*dim_x + x];
 else
 for(y=0; y<dim_y; ++y)
 for(x=0; x<dim_x; ++x)
-b1[y*BOXWIDTH + x] = (base_b[y*dim_x + x]<<8);
+b1[y*BOXWIDTH + x] = ((ushort)base_b[y*dim_x + x]<<8);
 
-for(q=stack; q<p; ++q) {
+for(q=stack; q<=p; ++q) {
 o = q->onum + o_list;
 j = o->breakLine + q->z - breakLine;
 if(j > 0) continue;
@@ -1773,7 +1850,7 @@ if(b1[y*BOXWIDTH + x] != base_s[y*dim_x + x]) goto notsame;
 else
 for(y=0; y<dim_y; ++y)
 for(x=0; x<dim_x; ++x)
-if(b1[y*BOXWIDTH + x] != (base_b[y*dim_x + x] << 8)) goto notsame;
+if(b1[y*BOXWIDTH + x] != ((ushort)base_b[y*dim_x + x] << 8)) goto notsame;
 // same node, skip ahead
 goto ambtest;
 }
@@ -1797,6 +1874,11 @@ if(j == 0) bailout("zero gap at depth %d", newnode.depth);
 newnode.dead = 0;
 newnode.parent = this_idx;
 
+#if DEBUG
+printf("new node depth %d gap %d ", newnode.depth, newnode.gap);
+print_node(&newnode);
+#endif
+
 if(!stopstore(newnode)) {
 int rc = findNode(&newnode, 1, &looknode);
 if(rc) goto ambtest;
@@ -1805,21 +1887,78 @@ if(rc) goto ambtest;
 if(newnode.depth + reachup >= minDepth) {
 // by inserting first, this complement check now tests whether
 // the node matches itself.
+if(r_shorts) {
 // need a signed right shift here.
 mask = ((short)HIGHBIT >> (newnode.gap-1));
-for(y=0; y<dim_y; ++y)
-for(x=0; x<dim_x; ++x) {
-j = y*dim_x + x;
-if(r_shorts)
+for(j=0; j<boxArea; ++j)
 compnode.pattern.s[j] = (reverseShort((newnode.pattern.s[j]^mask)) << (16-newnode.gap));
-else
+} else {
+mask = ((schar)0x80 >> (newnode.gap-1));
+for(j=0; j<boxArea; ++j)
 compnode.pattern.b[j] = (reverseByte((uchar)(newnode.pattern.b[j]^mask)) << (8-newnode.gap));
 }
+#if DEBUG
+printf("complement ");
+print_node(&compnode);
+#endif
 if(findNode(&compnode, 0, &looknode))
 matchFound(&newnode, &looknode);
 }
 
 ambtest:
 if(ambnode && !ambinclude) { ambnode = 0; ambinclude = 1; goto recomplete; }
+++p;
 goto backup;
+}
+
+// Get the next node to expand
+static long getNode(struct NODE *buf)
+{
+int n;
+while(nodeStep < nodesDisk || workStep < workEnd) {
+if(workStep < workEnd) {
+n = workList[workStep++];
+printf(">");
+} else n = nodeStep++;
+readNode(n, buf);
+if(buf->dead) continue;
+if(buf->depth != curDepth) continue;
+// Sanity check, but these things should never happen.
+if(nodesPending < 0)
+bailout("pending negative %d", nodesDisk - nodeStep);
+if(nodesCache < 0)
+bailout("nodesCache negative %d", nodesCache);
+if(!nodesCache && curDepth)
+bailout("nothing in cache, %d pending", nodesPending);
+return n;
+}
+return 0;
+}
+
+// One of these workers per worker thread,
+// except we don't have threads here; only in trec.c.
+static void *expandWorker(void *notused)
+{
+long n; /* index of node being expanded */
+struct NODE buf; /* node buffer */
+while(n = getNode(&buf)) {
+#if DEBUG
+printf("get node %ld depth %d ", n, buf.depth);
+print_node(&buf);
+#endif
+expandNode(n, buf.pattern.b);
+// Wait a minute - we might have found a better solution.
+// Can we stop searching?
+if(stopsearch) break;
+if(maxDepth < dim_x) break;
+}
+return NULL;
+}
+
+// Expand all the nodes in the pending list at the current depth.
+static void expandNodes(void)
+{
+workEnd = workStep = 0;
+nodeStep = mon_idx;
+expandWorker(NULL);
 }
