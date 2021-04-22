@@ -2923,8 +2923,10 @@ while(true) {
 idx = *hb;
 if(!idx) break;
 if((idx&0x7fffffff) == jdx) {
+if(idx == jdx) {
 *hb |= 0x80000000;
 --nodesCache;
+}
 return; /* found it */
 }
 ++n, ++hb;
