@@ -576,8 +576,7 @@ break;
 } while(++minDepth);
 }
 
-#define COLORS 26
-static uchar robin; // round robin on the colors
+static uchar robin = 1; // round robin on the colors
 static uchar doNodes; // look by using nodes instead of filling the entire box
 static int megaNodes = 80; // millions of nodes that can be cached
 static long maxNodes; // megaNodes times a million
@@ -593,8 +592,11 @@ int main(int argc, const char **argv)
 {
 ++argv, --argc;
 while(argc && argv[0][0] == '-') {
+#if 0
+// robin is on by default
 if(argc && !strcmp(*argv, "-r"))
 ++argv, --argc, robin = 1;
+#endif
 if(argc && !strcmp(*argv, "-n"))
 ++argv, --argc, doNodes = 1;
 if(argc && argv[0][0] == '-' && argv[0][1] == 'm' && isdigit(argv[0][2]))
@@ -602,7 +604,7 @@ megaNodes = atoi(argv[0]+2), ++argv, --argc;
 }
 
 if(argc != 2 && argc != 4)
-bailout("usage: 3dbox [-r] [-n] [-mnnn] piece_set width depth height | 3dbox piece_set order", 0);
+bailout("usage: 3dbox [-n] [-mnnn] piece_set width depth height | 3dbox piece_set order", 0);
 
 lowEmptySet();
 stringPiece(argv[0]);
@@ -708,14 +710,34 @@ int x, y;
 shapebits mask;
 for(y=0; y<dim_y; ++y) {
 for(x=0; x<dim_x; ++x) {
-// my compiler upgrades unsigned char to int, as in c << 8, but let's cast, to be sure.
-mask = r_shorts ? n->pattern.s[y*dim_x+x] : ((ushort)n->pattern.b[y*dim_x+x]<<8);
+// I believe c upgrades unsigned char to int, as in c << 8, but let's cast to be sure.
+mask = r_shorts ? n->pattern.s[y*dim_x+x] : ((int)n->pattern.b[y*dim_x+x]<<8);
 // only print the first byte.
 printf("%02x", (mask>>8));
 }
 printf("|");
 }
 printf("\n");
+}
+
+#define COLORS 26
+static uchar used[COLORS];
+static int last_ci; // last color index
+static char assignColor(void)
+{
+int k;
+char c = '*';
+if(robin) {
+k = last_ci;
+do { ++k;
+if(k == COLORS) k = 0;
+if(!used[k]) { c = k+'a'; last_ci = k; break; }
+} while(k != last_ci);
+} else {
+for(k=0; k<COLORS; ++k) if(!used[k]) break;
+if(k < COLORS) c = 'a'+k;
+}
+return c;
 }
 
 #define B_LOC(x,y,z) b[dim_x*dim_y*(z0+z) + dim_x*(y0+y) + (x0+x)]
@@ -728,11 +750,10 @@ int lev, x, y, z, k;
 int x0, y0, z0;
 char c;
 uchar badchar = 0;
-int last_k = COLORS - 1;
-uchar used[COLORS];
 
 memset(b, '?', boxVolume);
 // all the question marks should disappear
+last_ci = COLORS - 1;
 
 for(lev=0; lev<boxOrder; ++lev) {
 p = stack + lev;
@@ -761,17 +782,7 @@ used[c-'a'] = 1;
 }
 }
 
-if(robin) {
-k = last_k;
-c = '*';
-do { ++k;
-if(k == COLORS) k = 0;
-if(!used[k]) { c = k+'a'; last_k = k; break; }
-} while(k != last_k);
-} else {
-for(k=0; k<COLORS; ++k) if(!used[k]) break;
-c = k < COLORS ? 'a'+k : '*';
-}
+c = assignColor();
 
 for(k=0; k<o->slices; ++k) {
 const struct SLICE *s = o->pattern + k;
@@ -1275,11 +1286,11 @@ if(mask & nb->pattern.s[y*dim_x + x]) return 0;
 mask |= nb->pattern.s[y*dim_x + x];
 b[y*BOXWIDTH + x] = mask;
 } else {
-mask = ((ushort)nt->pattern.b[y*dim_x + x] << 8);
+mask = ((int)nt->pattern.b[y*dim_x + x] << 8);
 mask ^= 0xffff;
 mask >>= diff;
-if(mask & ((ushort)nb->pattern.b[y*dim_x + x] << 8)) return 0;
-mask |= ((ushort)nb->pattern.b[y*dim_x + x] << 8);
+if(mask & ((int)nb->pattern.b[y*dim_x + x] << 8)) return 0;
+mask |= ((int)nb->pattern.b[y*dim_x + x] << 8);
 b[y*BOXWIDTH + x] = mask;
 }
 
@@ -1379,7 +1390,6 @@ goto next;
 }
 
 #define B_LOC(x,y,z) board[dim_x*dim_y*(z0+z) + dim_x*(y0+y) + (x0+x)]
-static int last_sc; // last solution color
 static void downToFloor(char *board, const struct NODE *top)
 {
 long parent;
@@ -1474,17 +1484,7 @@ used[c-'a'] = 1;
 }
 } /* loop over slices in the piece */
 
-if(robin) {
-k = last_sc;
-c = '*';
-do { ++k;
-if(k == COLORS) k = 0;
-if(!used[k]) { c = k+'a'; last_sc = k; break; }
-} while(k != last_sc);
-} else {
-for(k=0; k<COLORS; ++k) if(!used[k]) break;
-c = k < COLORS ? 'a'+k : '*';
-}
+c = assignColor();
 
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s) {
@@ -1557,7 +1557,7 @@ rightBoard = emalloc(boxVolume);
 workBoard = emalloc(boxVolume);
 memset(leftBoard, '?', boxVolume);
 memset(rightBoard, '?', boxVolume);
-last_sc = COLORS - 1;
+last_ci = COLORS - 1;
 downToFloor(leftBoard, left);
 downToFloor(rightBoard, right);
 printf("]");
@@ -1654,7 +1654,7 @@ if(!(b0[y*BOXWIDTH+x]&min_z_bit)) ++min_z_count;
 } else {
 for(y=0; y<dim_y; ++y)
 for(x=0; x<dim_x; ++x) {
-b0[y*BOXWIDTH + x] = ((ushort)base_b[y*dim_x + x]<<8);
+b0[y*BOXWIDTH + x] = ((int)base_b[y*dim_x + x]<<8);
 if(!(b0[y*BOXWIDTH+x]&min_z_bit)) ++min_z_count;
 }
 }
@@ -1811,7 +1811,7 @@ b1[y*BOXWIDTH + x] = base_s[y*dim_x + x];
 else
 for(y=0; y<dim_y; ++y)
 for(x=0; x<dim_x; ++x)
-b1[y*BOXWIDTH + x] = ((ushort)base_b[y*dim_x + x]<<8);
+b1[y*BOXWIDTH + x] = ((int)base_b[y*dim_x + x]<<8);
 
 for(q=stack; q<=p; ++q) {
 o = q->onum + o_list;
@@ -1850,7 +1850,7 @@ if(b1[y*BOXWIDTH + x] != base_s[y*dim_x + x]) goto notsame;
 else
 for(y=0; y<dim_y; ++y)
 for(x=0; x<dim_x; ++x)
-if(b1[y*BOXWIDTH + x] != ((ushort)base_b[y*dim_x + x] << 8)) goto notsame;
+if(b1[y*BOXWIDTH + x] != ((int)base_b[y*dim_x + x] << 8)) goto notsame;
 // same node, skip ahead
 goto ambtest;
 }
