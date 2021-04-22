@@ -1584,7 +1584,7 @@ if(j == nsq2)
 qx[j] = x0+1, qy[j] = y0, qz[j] = z0, ++nsq2;
 } else {
 if(d == '?') // grab color from the other board
-d = B_LOC(rightBoard, x0+1, y0, dim_z+1-(z0));
+d = B_LOC(rightBoard, x0+1, y0, dim_z-1-(z0));
 if(d != '?' && d != '*')
 used[d-'a'] = 1;
 }
@@ -1598,7 +1598,7 @@ if(j == nsq2)
 qx[j] = x0, qy[j] = y0+1, qz[j] = z0, ++nsq2;
 } else {
 if(d == '?') // grab color from the other board
-d = B_LOC(rightBoard, x0, y0+1, dim_z+1-(z0));
+d = B_LOC(rightBoard, x0, y0+1, dim_z-1-(z0));
 if(d != '?' && d != '*')
 used[d-'a'] = 1;
 }
@@ -1612,7 +1612,7 @@ if(j == nsq2)
 qx[j] = x0, qy[j] = y0, qz[j] = z0+1, ++nsq2;
 } else {
 if(d == '?') // grab color from the other board
-d = B_LOC(rightBoard, x0, y0, dim_z+1-(z0+1));
+d = B_LOC(rightBoard, x0, y0, dim_z-1-(z0+1));
 if(d != '?' && d != '*')
 used[d-'a'] = 1;
 }
