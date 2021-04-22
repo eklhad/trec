@@ -1510,6 +1510,127 @@ static void mergeBoards(void)
 {
 int x, y, z;
 char c;
+
+// where the half boards meet, colors may collide.
+// Look for pieces in the left board that are on the border.
+for(x=0; x<dim_x; ++x)
+for(y=0; y<dim_y; ++y)
+for(z=0; z<dim_z; ++z) {
+int nsq1, nsq2, j;
+int qx[NSQ], qy[NSQ], qz[NSQ];
+c = B_LOC(leftBoard, x, y, z);
+if(c == '?') continue;
+// it's a real piece.
+// This doesn't have to be efficient; it's the solution.
+nsq1 = 0, nsq2 = 1;
+qx[0] = x, qy[0] = y, qz[0] = z;
+memset(used, 0, sizeof(used));
+while(nsq1 < nsq2) {
+int x0 = qx[nsq1], y0 = qy[nsq1], z0 = qz[nsq1];
+char d = B_LOC(leftBoard, x0, y0, z0);
+++nsq1;
+if(d != c) continue;
+// this is part of the same piece; look at the 6 neighbors
+if(x0 > 0) {
+d = B_LOC(leftBoard, x0-1, y0, z0);
+if(d == c) { // part of the same piece
+// have we seen it before?
+for(j=0; j<nsq2; ++j)
+if(qx[j] == x0-1 && qy[j] == y0 && qz[j] == z0) break;
+if(j == nsq2)
+qx[j] = x0-1, qy[j] = y0, qz[j] = z0, ++nsq2;
+} else {
+if(d == '?') // grab color from the other board
+d = B_LOC(rightBoard, x0-1, y0, dim_z-1-(z0));
+if(d != '?' && d != '*')
+used[d-'a'] = 1;
+}
+}
+if(y0 > 0) {
+d = B_LOC(leftBoard, x0, y0-1, z0);
+if(d == c) { // part of the same piece
+for(j=0; j<nsq2; ++j)
+if(qx[j] == x0 && qy[j] == y0-1 && qz[j] == z0) break;
+if(j == nsq2)
+qx[j] = x0, qy[j] = y0-1, qz[j] = z0, ++nsq2;
+} else {
+if(d == '?') // grab color from the other board
+d = B_LOC(rightBoard, x0, y0-1, dim_z-1-(z0));
+if(d != '?' && d != '*')
+used[d-'a'] = 1;
+}
+}
+if(z0 > 0) {
+d = B_LOC(leftBoard, x0, y0, z0-1);
+if(d == c) { // part of the same piece
+for(j=0; j<nsq2; ++j)
+if(qx[j] == x0 && qy[j] == y0 && qz[j] == z0-1) break;
+if(j == nsq2)
+qx[j] = x0, qy[j] = y0, qz[j] = z0-1, ++nsq2;
+} else {
+if(d == '?') // grab color from the other board
+d = B_LOC(rightBoard, x0, y0, dim_z-1-(z0-1));
+if(d != '?' && d != '*')
+used[d-'a'] = 1;
+}
+}
+if(x0 < dim_x-1) {
+d = B_LOC(leftBoard, x0+1, y0, z0);
+if(d == c) { // part of the same piece
+for(j=0; j<nsq2; ++j)
+if(qx[j] == x0+1 && qy[j] == y0 && qz[j] == z0) break;
+if(j == nsq2)
+qx[j] = x0+1, qy[j] = y0, qz[j] = z0, ++nsq2;
+} else {
+if(d == '?') // grab color from the other board
+d = B_LOC(rightBoard, x0+1, y0, dim_z+1-(z0));
+if(d != '?' && d != '*')
+used[d-'a'] = 1;
+}
+}
+if(y0 < dim_y-1) {
+d = B_LOC(leftBoard, x0, y0+1, z0);
+if(d == c) { // part of the same piece
+for(j=0; j<nsq2; ++j)
+if(qx[j] == x0 && qy[j] == y0+1 && qz[j] == z0) break;
+if(j == nsq2)
+qx[j] = x0, qy[j] = y0+1, qz[j] = z0, ++nsq2;
+} else {
+if(d == '?') // grab color from the other board
+d = B_LOC(rightBoard, x0, y0+1, dim_z+1-(z0));
+if(d != '?' && d != '*')
+used[d-'a'] = 1;
+}
+}
+if(z0 < dim_z-1) {
+d = B_LOC(leftBoard, x0, y0, z0+1);
+if(d == c) { // part of the same piece
+for(j=0; j<nsq2; ++j)
+if(qx[j] == x0 && qy[j] == y0 && qz[j] == z0+1) break;
+if(j == nsq2)
+qx[j] = x0, qy[j] = y0, qz[j] = z0+1, ++nsq2;
+} else {
+if(d == '?') // grab color from the other board
+d = B_LOC(rightBoard, x0, y0, dim_z+1-(z0+1));
+if(d != '?' && d != '*')
+used[d-'a'] = 1;
+}
+}
+}
+if(nsq2 != nsq) bailout("mergeBoard piece has size %d", nsq2);
+
+// if c is still good then leave it alone
+if(!used[c-'a']) continue;
+
+// Oops, need a new color
+last_ci = c - 'a';
+c = assignColor();
+for(j=0; j<nsq2; ++j)
+B_LOC(leftBoard, qx[j], qy[j], qz[j]) = c;
+}
+
+// colors do not collied; let's merge
+
 for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
 for(z=0; z<dim_z; ++z) {
