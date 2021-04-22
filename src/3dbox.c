@@ -1406,7 +1406,6 @@ const struct ORIENT *o;
 const struct SLICE *s;
 struct NODE n1, n2;
 struct NODE n3; // just a work area
-uchar used[COLORS];
 
 n2 = *top; // structure copy
 
@@ -1511,7 +1510,7 @@ static char *leftBoard, *rightBoard, *workBoard;
 static void mergeBoards(void)
 {
 int x, y, z;
-char c;
+char c, d;
 
 // where the half boards meet, colors may collide.
 // Look for pieces in the left board that are on the border.
@@ -1529,7 +1528,7 @@ qx[0] = x, qy[0] = y, qz[0] = z;
 memset(used, 0, sizeof(used));
 while(nsq1 < nsq2) {
 int x0 = qx[nsq1], y0 = qy[nsq1], z0 = qz[nsq1];
-char d = B_LOC(leftBoard, x0, y0, z0);
+d = B_LOC(leftBoard, x0, y0, z0);
 ++nsq1;
 if(d != c) continue;
 // this is part of the same piece; look at the 6 neighbors
@@ -1619,16 +1618,21 @@ used[d-'a'] = 1;
 }
 }
 }
-if(nsq2 != nsq) bailout("mergeBoard piece has size %d", nsq2);
+
+if(nsq2 != nsq) // should never happen
+printf("mergeBoard piece at %d,%d,%d color %c has size %d\n", x, y, z, c, nsq2);
 
 // if c is still good then leave it alone
 if(!used[c-'a']) continue;
 
 // Oops, need a new color
 last_ci = c - 'a';
-c = assignColor();
+d = assignColor();
 for(j=0; j<nsq2; ++j)
-B_LOC(leftBoard, qx[j], qy[j], qz[j]) = c;
+B_LOC(leftBoard, qx[j], qy[j], qz[j]) = d;
+#if DEBUG
+printf("recolor %d,%d,%d from %c to %c\n", x, y, z, c, d);
+#endif
 }
 
 // colors do not collied; let's merge
