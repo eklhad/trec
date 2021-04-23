@@ -1384,6 +1384,7 @@ for(y=0; y<dim_y; ++y)
 for(x=0; x<dim_x; ++x)
 b[y*BOXWIDTH+x] = ( b[y*BOXWIDTH+x] >> j) | m;
 p->increase = 0;
+z -= j;
 }
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s)
@@ -1631,6 +1632,11 @@ d = assignColor();
 for(j=0; j<nsq2; ++j)
 B_LOC(leftBoard, qx[j], qy[j], qz[j]) = d;
 #if DEBUG
+// 3dbox -n -m1 e04040 10 3 10
+// recolor 2,1,4 from g to l
+// recolor 3,0,3 from h to j
+// recolor 6,1,4 from e to g
+// recolor 9,0,5 from f to h
 printf("recolor %d,%d,%d from %c to %c\n", x, y, z, c, d);
 #endif
 }
