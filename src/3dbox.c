@@ -1351,6 +1351,7 @@ x = r_x, y = r_y;
 
 ++p;
 p->x = x, p->y = y, p->z = z;
+p->increase = 0;
 p->onum = -1;
 o = o_list - 1;
 
@@ -1383,8 +1384,8 @@ shapebits m = ((short)HIGHBIT >> (j-1));
 for(y=0; y<dim_y; ++y)
 for(x=0; x<dim_x; ++x)
 b[y*BOXWIDTH+x] = ( b[y*BOXWIDTH+x] >> j) | m;
-p->increase = 0;
 z -= j;
+p->increase = 0;
 }
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s)
