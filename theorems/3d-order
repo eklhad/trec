@@ -42,7 +42,7 @@ Orders 4, 6, 8, and 10 won't work.
 At this point I had to resort to software, i.e. 3dbox.c.
 The T pentomino has order 60, as follows.
 This has a lovely 4-fold rotational symmetry,
-and a vertical symmetry through the three layers.
+plus a vertical symmetry through the three layers.
 
 ammmexoufg
 bdmxxxooov
@@ -81,7 +81,7 @@ The stair pentomino has order 36,
 the chair has order 18,
 the lightning has order 8,
 the faucet has order 36,
-and the zigzag is undetermined, with order at least 84.
+and the zigzag is undetermined, with order between 84 and 135.
 
 As we move to the 3 dimensional pentominoes, chirality comes into play.
 For consistency, I allow a piece to be reflected, just as I do in the plane.
@@ -92,4 +92,27 @@ For example, start with the L tetromino, and place a cube on top
 of the end of the long leg, opposite to the short leg.
 This is e080!20 in our notation.
 It has order 18, using this piece in all its rotations and reflections.
+We can place a cube on top of the L tetromino in 3 more ways, giving:
+e080!40 order 4, e080!80 order 18, and e080!0080 order 6.
+Put a cube atop the triangle tetromino, and e040!0040 has order 10, and e040!40 has order x.
+Put a cube atop the stair tetromino, and c060!80 has order 4, and c060!40 has order 28.
+Putting a cube atop a 2 by 2 square gives c0c0!80 with order 4.
+There are only two penominoes left, the two that do not have 4 cubes in a plane.
+These are c080!00c0 and c040!0060.
+Their order is undetermined.
+
+I already discussed the heptomino e0e080 in the README file,
+having an odd order of 9.
+
+aaaehhh
+aaafhhh
+adddhgi
+-------
+bbbeeei
+bbbfffi
+bddgggi
+-------
+ccceeei
+cccfffi
+cddgggi
 

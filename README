@@ -528,9 +528,10 @@ but John has programs to present the packing in a 3 dimensional animation.
 Some basic results are in theorems/3d-order.
 
 If you want to search by nodes, the way trec.c does,
-rather than brute force, use the -n option.
+rather than brute force, use the -m option.
+-m20 creates a cache of 20 megabytes, and uses nodes.
 3dbox e04040 10 3 10
-3dbox -n e04040 10 3 10
+3dbox -m2 e04040 10 3 10
 Both produce the same solution, 60 T pentominoes packing a 10 by 3 by 10 box.
 As the size of the box increases, you will want to search by nodes,
 or the program will take forever.
@@ -539,6 +540,20 @@ Recall the (still open) conjecture that no polyomino has odd order.
 This applies to the plane, but in 3 dimensions the conjecture is false.
 The flat heptomino e0e080 has order 28 in the plane, but it has order 9 in 3d.
 It fills a box 3 by 3 by 7.
+This suggests, to me anyways, that the conjecture might be false in the plane,
+we just haven't found a counterexample.
 
-3dbox e0e080 2
+3dbox e0e080 9
+
+aaaehhh
+aaafhhh
+adddhgi
+-------
+bbbeeei
+bbbfffi
+bddgggi
+-------
+ccceeei
+cccfffi
+cddgggi
 

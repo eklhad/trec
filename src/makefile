@@ -25,7 +25,7 @@ trec : trec.c
 	cc -O trec.c -o trec -lpthread
 
 3dbox : 3dbox.c
-	cc 3dbox.c -o 3dbox
+	cc -O 3dbox.c -o 3dbox
 
 #  for the two programs that use ImageMagick
 IMFLAGS = -I/usr/include/ImageMagick-6 -I/usr/include/arm-linux-gnueabihf/ImageMagick-6 -DMAGICKCORE_QUANTUM_DEPTH=16 -DMAGICKCORE_HDRI_ENABLE=0

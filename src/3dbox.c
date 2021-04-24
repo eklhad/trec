@@ -592,19 +592,15 @@ int main(int argc, const char **argv)
 {
 ++argv, --argc;
 while(argc && argv[0][0] == '-') {
-#if 0
-// robin is on by default
-if(argc && !strcmp(*argv, "-r"))
-++argv, --argc, robin = 1;
-#endif
-if(argc && !strcmp(*argv, "-n"))
-++argv, --argc, doNodes = 1;
+// -l is least colors, within reason
+if(argc && !strcmp(*argv, "-l"))
+++argv, --argc, robin = 0;
 if(argc && argv[0][0] == '-' && argv[0][1] == 'm' && isdigit(argv[0][2]))
-megaNodes = atoi(argv[0]+2), ++argv, --argc;
+megaNodes = atoi(argv[0]+2), doNodes = 1, ++argv, --argc;
 }
 
 if(argc != 2 && argc != 4)
-bailout("usage: 3dbox [-n] [-mnnn] piece_set width depth height | 3dbox piece_set order", 0);
+bailout("usage: 3dbox [-l] [-mnnn] piece_set width depth height | 3dbox piece_set order", 0);
 
 lowEmptySet();
 stringPiece(argv[0]);
@@ -1633,7 +1629,7 @@ d = assignColor();
 for(j=0; j<nsq2; ++j)
 B_LOC(leftBoard, qx[j], qy[j], qz[j]) = d;
 #if DEBUG
-// 3dbox -n -m1 e04040 10 3 10
+// 3dbox -m1 e04040 10 3 10
 // recolor 2,1,4 from g to l
 // recolor 3,0,3 from h to j
 // recolor 6,1,4 from e to g
