@@ -81,7 +81,8 @@ The stair pentomino has order 36,
 the chair has order 18,
 the lightning has order 8,
 the faucet has order 36,
-and the zigzag is undetermined, with order between 84 and 135.
+and the zigzag has order <= 135.
+That takes care of the flat penominoes.
 
 As we move to the 3 dimensional pentominoes, chirality comes into play.
 For consistency, I allow a piece to be reflected, just as I do in the plane.
@@ -98,11 +99,22 @@ Put a cube atop the triangle tetromino, and e040!0040 has order 10, and e040!40 
 Put a cube atop the stair tetromino, and c060!80 has order 4, and c060!40 has order 28.
 Putting a cube atop a 2 by 2 square gives c0c0!80 with order 4.
 There are only two penominoes left, the two that do not have 4 cubes in a plane.
-These are c080!00c0 and c040!0060.
-Their order is undetermined.
+These are c080!00c0, with order <= 108,
+and c040!0060, which, I believe, has order 0.
+My software can't tile the first layer of the box, of any size.
+In other words, it can't get off the floor.
+Perhaps you can help me develop a formal proof of untilability.
 
-I already discussed the heptomino e0e080 in the README file,
-having an odd order of 9.
+We obviously aren't going to evaluate all the hexominoes, however, the one that
+started it all for me in 1987, the Y hexomino, f840, has order 92 in the plane,
+and it has order 28 in 3 dimensions, filling a box that is 2 by 7 by 12.
+
+Recall the (still open) conjecture that no polyomino has odd order.
+This applies to the plane, but in 3 dimensions the conjecture is false.
+The flat heptomino e0e080 has order 28 in the plane, but it has order 9 in 3d.
+It fills a box 3 by 3 by 7.
+This suggests, to me anyways, that the conjecture might be false in the plane,
+we just haven't found a counterexample.
 
 aaaehhh
 aaafhhh

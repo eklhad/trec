@@ -426,6 +426,9 @@ shapebits mask;
 const char *s = hexrep;
 char c;
 int nsqFirst = -1;
+// for the connection test
+int nsq1, nsq2;
+uchar qx[NSQ], qy[NSQ], qz[NSQ];
 
 piecename = hexrep;
 setMaxDimension = 0, setMinDimension = NSQ;
@@ -475,14 +478,60 @@ nsqFirst = nsq;
 
 // unpack into orib1
 memset(orib1, 0, sizeof(orib1));
+nsq1 = nsq2 = 0;
 for(x=0; x<REPDIAMETER; ++x)
 for(y=0; y<REPDIAMETER; ++y) {
 mask = orib4[x][y];
 for(z=0; z<REPDIAMETER; ++z) {
-orib1[x][y][z] = isHighbit(mask);
+if((orib1[x][y][z] = isHighbit(mask)) && !nsq2)
+nsq2 = 1, qx[0] = x, qy[0] = y, qz[0] = z;
 mask <<= 1;
 }
 }
+
+// connection test, which is more important here in 3 dimensions,
+// where it is easier to make a mistake.
+while(nsq1 < nsq2) {
+x = qx[nsq1], y = qy[nsq1], z = qz[nsq1];
+++nsq1;
+if(x > 0 && orib1[x-1][y][z]) {
+for(i=0; i<nsq2; ++i)
+if(qx[i] == x-1 && qy[i] == y && qz[i] == z) break;
+if(i == nsq2)
+qx[i] = x-1, qy[i] = y, qz[i] = z, ++nsq2;
+}
+if(y > 0 && orib1[x][y-1][z]) {
+for(i=0; i<nsq2; ++i)
+if(qx[i] == x && qy[i] == y-1 && qz[i] == z) break;
+if(i == nsq2)
+qx[i] = x, qy[i] = y-1, qz[i] = z, ++nsq2;
+}
+if(z > 0 && orib1[x][y][z-1]) {
+for(i=0; i<nsq2; ++i)
+if(qx[i] == x && qy[i] == y && qz[i] == z-1) break;
+if(i == nsq2)
+qx[i] = x, qy[i] = y, qz[i] = z-1, ++nsq2;
+}
+if(x < REPDIAMETER-1 && orib1[x+1][y][z]) {
+for(i=0; i<nsq2; ++i)
+if(qx[i] == x+1 && qy[i] == y && qz[i] == z) break;
+if(i == nsq2)
+qx[i] = x+1, qy[i] = y, qz[i] = z, ++nsq2;
+}
+if(y < REPDIAMETER-1 && orib1[x][y+1][z]) {
+for(i=0; i<nsq2; ++i)
+if(qx[i] == x && qy[i] == y+1 && qz[i] == z) break;
+if(i == nsq2)
+qx[i] = x, qy[i] = y+1, qz[i] = z, ++nsq2;
+}
+if(z < REPDIAMETER-1 && orib1[x][y][z+1]) {
+for(i=0; i<nsq2; ++i)
+if(qx[i] == x && qy[i] == y && qz[i] == z+1) break;
+if(i == nsq2)
+qx[i] = x, qy[i] = y, qz[i] = z+1, ++nsq2;
+}
+}
+if(nsq2 != nsq) bailout("piece is not connected, %d squares", nsq2);
 
 // see if the checkerboard argument applies
 if(!(nsq&1)) {
@@ -1516,7 +1565,7 @@ for(x=0; x<dim_x; ++x)
 for(y=0; y<dim_y; ++y)
 for(z=0; z<dim_z; ++z) {
 int nsq1, nsq2, j;
-int qx[NSQ], qy[NSQ], qz[NSQ];
+uchar qx[NSQ], qy[NSQ], qz[NSQ];
 c = B_LOC(leftBoard, x, y, z);
 if(c == '?') continue;
 // it's a real piece.
