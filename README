@@ -66,7 +66,7 @@ The prefix png48: on the output file is important!
 On some machines, ImageMagick generates a space saving 8 bit black&white image
 format, which most image programs do not recognize.
 png48: forces 16 bit RGB, which can be read by every program, and by every
-browser, if you wish to put images up on your web site.
+browser, if you wish to put images on your web site.
 The picture that goes with the above matrix is in pictures/hex610.png.
 Take a moment and look at it, and compare with the above matrix.
 
@@ -420,13 +420,13 @@ we can all agree to run code through indent before commit, and that works fine.
 So let me know if you want me to start doing that.
 So far, I have been the only programmer on this project.
 
-A solution file at top level holds tilings in matrix format
+A solution-2d file at top level holds tilings in matrix format
 for most of the nontrivial polyominoes and pairs of polyominoes.
 This will be updated as new patterns are discovered.
 Any matrix can be turned into an image via letterart,
 but I have created some of the pictures for you.
 Again, the file name is the same as the piece, thus f0e040,
-an octomino with order 246[41x48], has its matrix in the solution file,
+an octomino with order 246[41x48], has its matrix in the solution-2d file,
 and its picture in pictures/f0e040.png.
 
 At this point it seems my software can only prove a positive -
@@ -515,7 +515,7 @@ and I rather wish I had the pieces in my hands to play with.
 My tiling software, in trec.c,
 would have to be restructured to find the order of a 3 dimensional polyomino,
 that is, the smallest box that could be filled with this polyomino.
-This has partly been done in 3dbox.c.
+This has been done in 3dbox.c.
 This program is simpler: no interactive features (^c kills the program),
 no multithreading, no config file.
 Everything is on the command line.
@@ -529,7 +529,8 @@ or an order to start your search.
 The solution is a sequence of matrices, one matrix per layer in the box.
 I don't have an easy way to turn this into an image,
 but John has programs to present the packing in a 3 dimensional animation.
-Some basic results are in theorems/3d-order.
+Some basic results are in theorems/3d-order,
+and some matrix solutionss are in solution-3d.
 
 If you want to search by nodes, the way trec.c does,
 rather than brute force, use the -m option.
@@ -544,20 +545,7 @@ Recall the (still open) conjecture that no polyomino has odd order.
 This applies to the plane, but in 3 dimensions the conjecture is false.
 The flat heptomino e0e080 has order 28 in the plane, but it has order 9 in 3d.
 It fills a box 3 by 3 by 7.
+(See solution-3d).
 This suggests, to me anyways, that the conjecture might be false in the plane,
 we just haven't found a counterexample.
-
-3dbox e0e080 9
-
-aaaehhh
-aaafhhh
-adddhgi
--------
-bbbeeei
-bbbfffi
-bddgggi
--------
-ccceeei
-cccfffi
-cddgggi
 

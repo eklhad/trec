@@ -40,48 +40,13 @@ It would have to tile one layer, then the next layer, so would tile a rectangle,
 and we can quickly determine these pentominoes don't tile a rectangle.
 Orders 4, 6, 8, and 10 won't work.
 At this point I had to resort to software, i.e. 3dbox.c.
-The T pentomino has order 60, as follows.
-This has a lovely 4-fold rotational symmetry,
-plus a vertical symmetry through the three layers.
-
-ammmexoufg
-bdmxxxooov
-cdmyfxovvv
-dddsfffwxv
-eeesfkkkxh
-fessszkxxx
-geizzzkyyy
-gggngzpqyz
-gnnngggqya
-hotngbqqqb
-----------
-aaayeeeufg
-bbbyhhhufg
-cccyuhlufg
-fpuuuhlwww
-fpppulllrh
-fpvvvmrrrh
-iiivammmrh
-hotvampzzz
-hotaaapaaa
-hotbbbpbbb
-----------
-aqqqecsufg
-bjqcccsssc
-cjqyicsccc
-jjjwiiiwdc
-kkkwinnndh
-fkwwwdnddd
-lkidddneee
-lllrjdptez
-lrrrjjjtea
-hotrjbtttb
-
 The stair pentomino has order 36,
 the chair has order 18,
 the lightning has order 8,
 the faucet has order 36,
+the T has order 60,
 and the zigzag has order <= 135.
+See solution-3d for the matrix representation of these packings.
 That takes care of the flat penominoes.
 
 As we move to the 3 dimensional pentominoes, chirality comes into play.
@@ -113,18 +78,7 @@ Recall the (still open) conjecture that no polyomino has odd order.
 This applies to the plane, but in 3 dimensions the conjecture is false.
 The flat heptomino e0e080 has order 28 in the plane, but it has order 9 in 3d.
 It fills a box 3 by 3 by 7.
+(See solution-3d).
 This suggests, to me anyways, that the conjecture might be false in the plane,
 we just haven't found a counterexample.
-
-aaaehhh
-aaafhhh
-adddhgi
--------
-bbbeeei
-bbbfffi
-bddgggi
--------
-ccceeei
-cccfffi
-cddgggi
 
