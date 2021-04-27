@@ -35,6 +35,7 @@ static int ordFactor = 1;
 
 #define DEBUG 0
 #define DIAG 1
+#define NEAR 1
 
 #define REPDIAMETER 16 // represent pieces this large
 #define SETSIZE 10 // number of pieces in the set
@@ -162,6 +163,7 @@ schar breakLine; // the row with more than half the piece below it
 uchar ambig; // ambiguous indicator
 uchar inspace; // nonchiral orientation
 uchar zflip;
+int near;
 struct SLICE pattern[NSQ];
 };
 
@@ -195,7 +197,7 @@ static void pulldown(int r1, int r2, int r3)
 {
 int x, y, z, j, n;
 int rng_x, rng_y, rng_z; // range of the piece
-int start_x, start_y; // start_z will be 0 once adjusted
+int start_x, start_y, near;
 struct ORIENT *o;
 int chiral = r2 ^ r3;
 
@@ -358,8 +360,27 @@ if(bottom == top) o->ambig = 1;
 if(bottom < top) ++o->breakLine;
 }
 
+// near calculation
+x = start_x, y = start_y; // shorthand
+near = 0;
+if(y < o->rng_y-1) {
+if(orib2[x][y+1][0]) near |= 1;
+if(x && orib2[x-1][y+1][0]) near |= 2;
+if(o->rng_z >= 2) {
+if(orib2[x][y+1][1]) near |= 4;
+if(x && orib2[x-1][y+1][1]) near |= 8;
+}
+}
+if(o->rng_z >= 2) {
+if(y && orib2[x][y-1][1]) near |= 0x10;
+if(x && y && orib2[x-1][y-1][1]) near |= 0x20;
+if(x && orib2[x-1][y][1]) near |= 0x40;
+if(orib2[x][y][1]) near |= 0x80;
+}
+o->near = near;
+
 #if DEBUG
-printf("range %d,%d,%d", o->rng_x, o->rng_y, o->rng_z);
+printf("range %d,%d,%d near %x", o->rng_x, o->rng_y, o->rng_z, o->near);
 printf("_%d%s ", o->breakLine, (o->ambig ? "*" : ""));
 print_o(o);
 #endif
@@ -733,6 +754,7 @@ short onum;
 short xy; // y*BOXWIDTH + x
 short breakLine;
 short mzc;
+int near;
 } stack[MAXORDER];
 
 static shapebits ws[BOXWIDTH*BOXWIDTH]; // workspace for specific box solve
@@ -867,7 +889,7 @@ int lev = -1;
 struct SF *p = stack - 1;
 const struct ORIENT *o;
 const struct SLICE *s;
-int x, y, z, j, k;
+int x, y, z, j, k, near = 0;
 
 memset(ws, 0, sizeof(ws));
 
@@ -933,9 +955,27 @@ x = r_x, y = r_y;
 }
 ++p;
 p->x = x, p->y = y, p->z = z;
-#if DEBUG
-printf("locate %d,%d,%d\n", x, y, z);
+
+#if NEAR
+// Improves efficiency about 15%
+near = 0;
+if(y < dim_y-1) {
+if(ws[x+BOXWIDTH*(y+1)]&(HIGHBIT>>0)) near |= 1;
+if(x && ws[x-1+BOXWIDTH*(y+1)]&(HIGHBIT>>0)) near |= 2;
+if(ws[x+BOXWIDTH*(y+1)]&(HIGHBIT>>1)) near |= 4;
+if(x && ws[x-1+BOXWIDTH*(y+1)]&(HIGHBIT>>1)) near |= 8;
+}
+if(y && ws[x+BOXWIDTH*(y-1)]&(HIGHBIT>>1)) near |= 0x10;
+if(x && y && ws[x-1+BOXWIDTH*(y-1)]&(HIGHBIT>>1)) near |= 0x20;
+if(x && ws[x-1+BOXWIDTH*(y)]&(HIGHBIT>>1)) near |= 0x40;
+if(ws[x+BOXWIDTH*(y)]&(HIGHBIT>>1)) near |= 0x80;
+p->near = near;
 #endif
+
+#if DEBUG
+printf("locate %d,%d,%d near %x\n", x, y, z, near);
+#endif
+
 p->increase = 0;
 p->onum = -1;
 o = o_list - 1;
@@ -943,6 +983,9 @@ o = o_list - 1;
 next:
 if(++p->onum == o_max) goto backup;
 ++o;
+#if NEAR
+if(p->near & o->near) goto next;
+#endif
 p->x0 = p->x - o->x;
 if(p->x0 < 0) goto next;
 p->y0 = p->y - o->y;
@@ -1811,7 +1854,7 @@ const struct ORIENT *o;
 const struct SLICE *s;
 int min_z, min_z_count;
 shapebits min_z_bit, mask;
-int reset = -1;
+int reset = -1, near = 0;
 int breakLine = REPDIAMETER; // the first piece will ratchet it down
 int x, y, j, k;
 uchar ambinclude, ambnode;
@@ -1882,9 +1925,26 @@ p->x = x, p->y = y;
 // here x and y are absolute, but z is relative to the node.
 p->z = min_z;
 p->mzc = min_z_count;
-#if DEBUG
-printf("locate %d,%d,%d\n", x, y, min_z);
+
+#if NEAR
+near = 0;
+if(y < dim_y-1) {
+if(b0[x+BOXWIDTH*(y+1)]&(HIGHBIT>>min_z)) near |= 1;
+if(x && b0[x-1+BOXWIDTH*(y+1)]&(HIGHBIT>>min_z)) near |= 2;
+if(b0[x+BOXWIDTH*(y+1)]&(HIGHBIT>>(min_z+1))) near |= 4;
+if(x && b0[x-1+BOXWIDTH*(y+1)]&(HIGHBIT>>(min_z+1))) near |= 8;
+}
+if(y && b0[x+BOXWIDTH*(y-1)]&(HIGHBIT>>(min_z+1))) near |= 0x10;
+if(x && y && b0[x-1+BOXWIDTH*(y-1)]&(HIGHBIT>>(min_z+1))) near |= 0x20;
+if(x && b0[x-1+BOXWIDTH*(y)]&(HIGHBIT>>(min_z+1))) near |= 0x40;
+if(b0[x+BOXWIDTH*(y)]&(HIGHBIT>>(min_z+1))) near |= 0x80;
+p->near = near;
 #endif
+
+#if DEBUG
+printf("locate %d,%d,%d near %x\n", x, y, min_z, near);
+#endif
+
 p->breakLine = breakLine;
 p->onum = -1;
 o = o_list - 1;
@@ -1892,6 +1952,9 @@ o = o_list - 1;
 next:
 if(++p->onum == o_max) goto backup;
 ++o;
+#if NEAR
+if(p->near & o->near) goto next;
+#endif
 p->x0 = p->x - o->x;
 if(p->x0 < 0) goto next;
 p->y0 = p->y - o->y;
