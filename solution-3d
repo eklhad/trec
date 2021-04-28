@@ -449,7 +449,141 @@ dddddnrvxyab
 eeeeejrvxyab
 ------------
 
-Here is the heptomino that proves polyominoes can have odd order in 3d.
+There are two more with 5 in a row: the line, the L, and the one below.
+
+f820: order 25[5x5x6]
+------
+acjlrt
+bcjmru
+ccjjrr
+dcjqry
+fcjprx
+------
+aeklst
+bekmsu
+eekkss
+dekqsy
+fekpsx
+------
+aalltt
+bbmmuu
+gggggy
+ddgqqy
+ffppxx
+------
+ahnlvt
+bhnmvu
+hhnnvv
+dhnqvy
+fhnpvx
+------
+aiolwt
+biomwu
+iiooww
+dioqwy
+fiopwx
+------
+
+Four in a row, still in the plane, allows for a couple of trivial shapes
+(such as f0a0 and f0c0 and f060), two crosses that can't fit into a corner,
+wider L, of order 14, C, of order 8, T, of order 32,
+shifted L, order 48, and still others.
+
+f08080: order 14[3x4x7]
+-------
+aaaafhn
+addddhn
+adhhhhn
+cdiiiin
+-------
+bbbbfjn
+beeeejl
+bejjjjl
+ceillll
+-------
+cffffkn
+cggggkm
+cgkkkkm
+cgimmmm
+-------
+
+e0404040: order 32 [3x8x8]
+--------
+aaacsbet
+bajptttt
+dajppppt
+fajpuuuf
+gjjjkucw
+hkkkkucy
+hhhhkuca
+hlorzccc
+--------
+ccccsbef
+bbbbsbef
+ddddsbef
+ffffsbef
+glorwwww
+gloryyyy
+gloraaaa
+glorzzzz
+--------
+eeecsbev
+bemqvvvv
+demqqqqv
+femqxxxf
+gmmmnxdw
+innnnxdy
+iiiinxda
+ilorzddd
+--------
+
+f04040 order 48[6x6x8]
+--------
+wukennnn
+maaaahnk
+mmmayfnk
+mphaykkk
+mpjyyyyk
+ppppcisu
+--------
+wukeqqqq
+nbbbbhql
+nnnbzfql
+nshbzlll
+nsjzzzzl
+sssscisu
+--------
+wukedjtv
+wukehhhh
+wukeffff
+hhhhcisu
+jjjjcisu
+xvlfcisu
+--------
+wukedjtv
+oooodjtv
+qqqqdjtv
+xvlfoooo
+xvlfmmmm
+xvlfcisu
+--------
+ggggdjtv
+rogaaaap
+rqgcappp
+rrrcaeop
+rccccemp
+xvlfeeee
+--------
+iiiidjtv
+toibbbbr
+tqidbrrr
+tttdbgor
+tddddgmr
+xvlfgggg
+--------
+
+Here is the simple heptomino that proves polyominoes can have odd order in 3d.
+With a little patience, you can verify this by hand.
 
 e0e080: order 9[3x3x7]
 -------

@@ -549,3 +549,9 @@ It fills a box 3 by 3 by 7.
 This suggests, to me anyways, that the conjecture might be false in the plane,
 we just haven't found a counterexample.
 
+Question: is there a polyomino with 3d order greater than 8,
+whose minimal packing fills a cube?
+I haven't found one yet.
+There are some in the plane, such as e0e080,
+whose minimal tiling forms a square.
+

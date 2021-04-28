@@ -377,6 +377,10 @@ if(x && y && orib2[x-1][y-1][1]) near |= 0x20;
 if(x && orib2[x-1][y][1]) near |= 0x40;
 if(orib2[x][y][1]) near |= 0x80;
 }
+if(x < o->rng_x-1) {
+if(orib2[x+1][y][0]) near |= 0x100;
+if(y < o->rng_y-1 && orib2[x+1][y+1][0]) near |= 0x200;
+}
 o->near = near;
 
 #if DEBUG
@@ -957,18 +961,22 @@ x = r_x, y = r_y;
 p->x = x, p->y = y, p->z = z;
 
 #if NEAR
-// Improves efficiency about 15%
+// Improves efficiency by 30%
 near = 0;
 if(y < dim_y-1) {
 if(ws[x+BOXWIDTH*(y+1)]&(HIGHBIT>>0)) near |= 1;
-if(x && ws[x-1+BOXWIDTH*(y+1)]&(HIGHBIT>>0)) near |= 2;
+if(!x || ws[x-1+BOXWIDTH*(y+1)]&(HIGHBIT>>0)) near |= 2;
 if(ws[x+BOXWIDTH*(y+1)]&(HIGHBIT>>1)) near |= 4;
-if(x && ws[x-1+BOXWIDTH*(y+1)]&(HIGHBIT>>1)) near |= 8;
-}
-if(y && ws[x+BOXWIDTH*(y-1)]&(HIGHBIT>>1)) near |= 0x10;
-if(x && y && ws[x-1+BOXWIDTH*(y-1)]&(HIGHBIT>>1)) near |= 0x20;
-if(x && ws[x-1+BOXWIDTH*(y)]&(HIGHBIT>>1)) near |= 0x40;
+if(!x || ws[x-1+BOXWIDTH*(y+1)]&(HIGHBIT>>1)) near |= 8;
+} else near |= 15;
+if(!y || ws[x+BOXWIDTH*(y-1)]&(HIGHBIT>>1)) near |= 0x10;
+if(!x || !y || ws[x-1+BOXWIDTH*(y-1)]&(HIGHBIT>>1)) near |= 0x20;
+if(!x || ws[x-1+BOXWIDTH*(y)]&(HIGHBIT>>1)) near |= 0x40;
 if(ws[x+BOXWIDTH*(y)]&(HIGHBIT>>1)) near |= 0x80;
+if(x < dim_x-1) {
+if(ws[x+1+BOXWIDTH*(y)]&(HIGHBIT>>0)) near |= 0x100;
+if(y == dim_y-1 || ws[x+1+BOXWIDTH*(y+1)]&(HIGHBIT>>0)) near |= 0x200;
+} else near |= 0x300;
 p->near = near;
 #endif
 
@@ -1930,14 +1938,18 @@ p->mzc = min_z_count;
 near = 0;
 if(y < dim_y-1) {
 if(b0[x+BOXWIDTH*(y+1)]&(HIGHBIT>>min_z)) near |= 1;
-if(x && b0[x-1+BOXWIDTH*(y+1)]&(HIGHBIT>>min_z)) near |= 2;
+if(!x || b0[x-1+BOXWIDTH*(y+1)]&(HIGHBIT>>min_z)) near |= 2;
 if(b0[x+BOXWIDTH*(y+1)]&(HIGHBIT>>(min_z+1))) near |= 4;
-if(x && b0[x-1+BOXWIDTH*(y+1)]&(HIGHBIT>>(min_z+1))) near |= 8;
-}
-if(y && b0[x+BOXWIDTH*(y-1)]&(HIGHBIT>>(min_z+1))) near |= 0x10;
-if(x && y && b0[x-1+BOXWIDTH*(y-1)]&(HIGHBIT>>(min_z+1))) near |= 0x20;
-if(x && b0[x-1+BOXWIDTH*(y)]&(HIGHBIT>>(min_z+1))) near |= 0x40;
+if(!x || b0[x-1+BOXWIDTH*(y+1)]&(HIGHBIT>>(min_z+1))) near |= 8;
+} else near |= 15;
+if(!y || b0[x+BOXWIDTH*(y-1)]&(HIGHBIT>>(min_z+1))) near |= 0x10;
+if(!x || !y || b0[x-1+BOXWIDTH*(y-1)]&(HIGHBIT>>(min_z+1))) near |= 0x20;
+if(!x || b0[x-1+BOXWIDTH*(y)]&(HIGHBIT>>(min_z+1))) near |= 0x40;
 if(b0[x+BOXWIDTH*(y)]&(HIGHBIT>>(min_z+1))) near |= 0x80;
+if(x < dim_x-1) {
+if(b0[x+1+BOXWIDTH*(y)]&(HIGHBIT>>min_z)) near |= 0x100;
+if(y == dim_y-1 || b0[x+1+BOXWIDTH*(y+1)]&(HIGHBIT>>min_z)) near |= 0x200;
+} else near |= 0x300;
 p->near = near;
 #endif
 

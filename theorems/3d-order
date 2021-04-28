@@ -81,4 +81,9 @@ It fills a box 3 by 3 by 7.
 (See solution-3d).
 This suggests, to me anyways, that the conjecture might be false in the plane,
 we just haven't found a counterexample.
+It is feasible to verify order 9 by hand.
+Show that orders 2 through 8 aren't possible in the plane.
+Since this shape spreads across a 3 by 3 square, it has to fill a box
+that is at least 3 by 3, if it is to escape the plane.
+The shape consists of 7 squares, so 3 by 3 by 7 is the best we can do.
 
