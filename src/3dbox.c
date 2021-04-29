@@ -36,6 +36,7 @@ static int ordFactor = 1;
 #define DEBUG 0
 #define DIAG 1
 #define NEAR 1
+#define SWING 1
 
 #define REPDIAMETER 16 // represent pieces this large
 #define SETSIZE 10 // number of pieces in the set
@@ -164,6 +165,11 @@ uchar ambig; // ambiguous indicator
 uchar inspace; // nonchiral orientation
 uchar zflip;
 int near;
+// the swing orientations, when one corner swings around to the other.
+short hr, vr; // horizontal vertical reflections
+short dr, dr2; // diagonal reflections
+short r1, r2, r3; // rotations
+short filler;
 struct SLICE pattern[NSQ];
 };
 
@@ -389,6 +395,130 @@ printf("_%d%s ", o->breakLine, (o->ambig ? "*" : ""));
 print_o(o);
 #endif
 ++o_max;
+}
+
+static int sortSlices(int n)
+{
+int change = 1;
+int i, j, diff;
+const struct ORIENT *o;
+
+while(change) {
+change = 0;
+for(i=0; i<n-1; ++i)
+if(orib3[i].xy > orib3[i+1].xy) {
+struct SLICE swap = orib3[i];
+orib3[i] = orib3[i+1];
+orib3[i+1] = swap;
+change = 1;
+}
+}
+
+o = o_list;
+for(i=0; i<o_max; ++i, ++o) {
+if(o->slices != n) continue;
+diff = orib3[0].xy - o->pattern[0].xy;
+for(j=0; j<n; ++j) {
+if(orib3[j].xy - o->pattern[j].xy != diff) break;
+if(orib3[j].bits != o->pattern[j].bits) break;
+}
+if(j == n) return i;
+}
+bailout("swing orientation not found", 0);
+return -1;
+}
+
+static void swingSet(void)
+{
+int i, j, n;
+const int r = REPDIAMETER;
+int x, y;
+struct ORIENT *o;
+const struct SLICE *s;
+
+o = o_list;
+for(i=0; i<o_max; ++i, ++o)
+o->r1 = o->r2 = o->r3 = o->hr = o->vr = o->dr = o->dr2 = -1;
+
+o = o_list;
+for(i=0; i<o_max; ++i, ++o) {
+// has to fill the lower left corner
+if(o->pattern[0].xy) continue;
+if(isNotHighbit(o->pattern[0].bits)) continue;
+n = o->slices;
+
+s = o->pattern;
+for(j=0; j<n; ++j, ++s) {
+y = s->xy / BOXWIDTH, x = s->xy % BOXWIDTH;
+orib3[j].bits = s->bits;
+orib3[j].xy = y * BOXWIDTH + r-1-x;
+}
+o_list[sortSlices(n)].hr = i;
+
+s = o->pattern;
+for(j=0; j<n; ++j, ++s) {
+y = s->xy / BOXWIDTH, x = s->xy % BOXWIDTH;
+orib3[j].bits = s->bits;
+orib3[j].xy = (r-1-y) * BOXWIDTH + x;
+}
+o_list[sortSlices(n)].vr = i;
+
+s = o->pattern;
+for(j=0; j<n; ++j, ++s) {
+y = s->xy / BOXWIDTH, x = s->xy % BOXWIDTH;
+orib3[j].bits = s->bits;
+orib3[j].xy = (r-1-y) * BOXWIDTH + r-1-x;
+}
+o_list[sortSlices(n)].r2 = i;
+
+if(dim_x != dim_y) continue;
+
+s = o->pattern;
+for(j=0; j<n; ++j, ++s) {
+y = s->xy / BOXWIDTH, x = s->xy % BOXWIDTH;
+orib3[j].bits = s->bits;
+orib3[j].xy = x * BOXWIDTH + r-1-y;
+}
+o_list[sortSlices(n)].r1 = i;
+
+s = o->pattern;
+for(j=0; j<n; ++j, ++s) {
+y = s->xy / BOXWIDTH, x = s->xy % BOXWIDTH;
+orib3[j].bits = s->bits;
+orib3[j].xy = (r-1-x) * BOXWIDTH + y;
+}
+o_list[sortSlices(n)].r3 = i;
+
+s = o->pattern;
+for(j=0; j<n; ++j, ++s) {
+y = s->xy / BOXWIDTH, x = s->xy % BOXWIDTH;
+orib3[j].bits = s->bits;
+orib3[j].xy = x * BOXWIDTH + y;
+}
+o_list[sortSlices(n)].dr = i;
+
+s = o->pattern;
+for(j=0; j<n; ++j, ++s) {
+y = s->xy / BOXWIDTH, x = s->xy % BOXWIDTH;
+orib3[j].bits = s->bits;
+orib3[j].xy = (r-1-x) * BOXWIDTH + (r-1-y);
+}
+o_list[sortSlices(n)].dr2 = i;
+
+}
+
+#if DEBUG
+o = o_list;
+for(i=0; i<o_max; ++i, ++o) {
+if(o->hr >= 0) printf("%d:", o->hr), print_o(o_list+o->hr), printf("hr from %d:", i), print_o(o);
+if(o->vr >= 0) printf("%d:", o->vr), print_o(o_list+o->vr), printf("vr from %d:", i), print_o(o);
+if(o->dr >= 0) printf("%d:", o->dr), print_o(o_list+o->dr), printf("dr from %d:", i), print_o(o);
+if(o->dr2 >= 0) printf("%d:", o->dr2), print_o(o_list+o->dr2), printf("dr2 from %d:", i), print_o(o);
+if(o->r1 >= 0) printf("%d:", o->r1), print_o(o_list+o->r1), printf("r1 from %d:", i), print_o(o);
+if(o->r2 >= 0) printf("%d:", o->r2), print_o(o_list+o->r2), printf("r2 from %d:", i), print_o(o);
+if(o->r3 >= 0) printf("%d:", o->r3), print_o(o_list+o->r3), printf("r3 from %d:", i), print_o(o);
+}
+#endif
 }
 
 static shapebits fromHex(char c)
@@ -692,6 +822,7 @@ if(dim_y > dim_x || dim_x > dim_z)
 bailout("dimensions must be y x z increasing", 0);
 if(dim_x > BOXWIDTH)
 bailout("x dimension too large, limit %d", BOXWIDTH);
+swingSet();
 if(!doNodes) {
 printf("order %d\n", boxOrder);
 printf("box %d by %d by %d\n", dim_x, dim_y, dim_z);
@@ -741,6 +872,7 @@ if((boxVolume/dim_y) % dim_x) continue;
 if(dim_x > BOXWIDTH) bailout("box too wide, limit %d", BOXWIDTH);
 dim_z = boxVolume / dim_y / dim_x;
 printf("box %d by %d by %d\n", dim_x, dim_y, dim_z);
+swingSet();
 solve();
 }
 }
@@ -1002,6 +1134,24 @@ if(p->x0 + o->rng_x > dim_x) goto next;
 if(p->y0 + o->rng_y > dim_y) goto next;
 if(p->z + o->rng_z > dim_z) goto next;
 // the piece fits in the box.
+
+#if SWING
+if(!z) {
+int swing;
+int corner = stack[0].onum;
+// I think this works even if p == stack, the first piece touches two corners.
+if((swing = o->hr) >= 0 && y == 0 && p->x0 + o->rng_x == dim_x && swing < corner) goto next;
+if((swing = o->vr) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->r2) >= 0 && p->x0 + o->rng_x == dim_x && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+if(dim_x == dim_y) {
+if((swing = o->dr2) >= 0 && p->x0 + o->rng_x == dim_x && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->dr) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
+if((swing = o->r1) >= 0 && y == 0 && p->x0 + o->rng_x == dim_x && swing < corner) goto next;
+if((swing = o->r3) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+}
+}
+#endif
+
 // Look for collision.
 p->xy = (short)p->y0 * BOXWIDTH + p->x0;
 s = o->pattern;
@@ -1974,6 +2124,26 @@ if(p->y0 < 0) goto next;
 if(p->x0 + o->rng_x > dim_x) goto next;
 if(p->y0 + o->rng_y > dim_y) goto next;
 // the piece fits in the box.
+
+#if SWING
+if(!this_idx && !min_z) {
+// Sinced nodes are normalized through the dihedral group, the same nodes are
+// produced; this just gets us off the floor faster.
+int swing;
+int corner = stack[0].onum;
+// I think this works even if p == stack, the first piece touches two corners.
+if((swing = o->hr) >= 0 && y == 0 && p->x0 + o->rng_x == dim_x && swing < corner) goto next;
+if((swing = o->vr) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->r2) >= 0 && p->x0 + o->rng_x == dim_x && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+if(dim_x == dim_y) {
+if((swing = o->dr2) >= 0 && p->x0 + o->rng_x == dim_x && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->dr) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
+if((swing = o->r1) >= 0 && y == 0 && p->x0 + o->rng_x == dim_x && swing < corner) goto next;
+if((swing = o->r3) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+}
+}
+#endif
+
 // Look for collision.
 p->xy = (short)p->y0 * BOXWIDTH + p->x0;
 s = o->pattern;

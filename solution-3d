@@ -279,62 +279,68 @@ ccehj
 dddhj
 -----
 
-e040!40: order <= 240[6x8x25]
--------------------------
-riooosjxoluaaalwqqqkxasyg
-rryossxxxllkajwwwqbxxssyy
-ryyylsyyylkkkhnjjjbbxcsyi
-szzztttyqdwlchhyjubnvnnnl
-sszxgtleddlllhyyydddvvnll
-slfgglleedbnhrrrlwdqvgtbl
-llffgxlethnnhhrawwpppttbb
-xlftxxxtttcnhiaaawfpyhtbm
--------------------------
-iiiofjjoouuuajllfqkkkaagg
-ripppsjxolusjjlwpppkxasyg
-tkypllkyqewkcjnnjpbncccii
-kkzxltmqqwwcchnduunnncnci
-skbxxmmmqdblgggyludqvgccl
-wbbbgyleuhbbigrzllqqgggck
-xlftinnnhhcnhizzzwfpyhtbm
-xxtttxnathcciiiamffyyhhmm
--------------------------
-jjjfffjdovvvbdlfffhhhajvg
-tjapfukddevssddbfpehsbvvv
-tterlkkdeexsgdndgeejbbbxi
-tkeevvvzrewocfddiuetttxxx
-wnexhvmrrrooigpdsssmtfrck
-wwbuyyruunboiipplsaqfffkk
-wociiynaunnqfkpzmvooopppk
-xcccibaaancfffqmmmfoyhpam
--------------------------
-ujaqmuqpppvbbbsbnnnhsjjjd
-vaaauuudpfxsbdbbgnyjssjvf
-vvrrrekzsxxggftbggejjbkff
-vqerhvzzzmxpgffiiizmtirxf
-nnnhhhrirmmojfmxismmmrrwj
-znuuuyrrumzqikpxxvaawfrjj
-ooouibrbvnqqkkqxvvaouepaj
-aocwbbbvvvaqfqqqkvcuuuaaa
--------------------------
-uuqqmmqqpgmmmssuenygzzzdd
-umgqmwqhfffmebsuuyyyszqud
-vqssseessfypgttugtxjrkkkf
-yqqsjeoisippjctvhzzziikwe
-zqdvzzziimzrjjmmhhziwilww
-zzvvvzpbwzztjemxhoawwemwj
-aphwndbbbjattkockrcleeezh
-aawwdddcvaatgoookkccudzzz
--------------------------
-umgqmwqhgggmebseeegggzqud
-mmggwwwhhgyeebbuetxgrqquu
-ymgsjeohsyyyebtvttxxrrque
-yydjjoooiiipcccvvtxirilee
-ydddjzpiwirrrcmvhoiiillle
-zphvnppwwwzreeecooolwmmmh
-pphhnnpcjjjtgeccrrrlldmhh
-aphwndcccjagggockrcldddzh
--------------------------
+e040!40: order <= 216[6x9x20]
+--------------------
+vkenitrwaaaxhunnnvvv
+kkeettwwwaqhhhbnagvh
+wkeodtixuqquebbbggge
+llldddxxuuqeeeaxxxee
+ylgruuuxuciadaaaxmre
+yyrrruyyykaaddjjjrrr
+yaaavvvyokkadozjukqc
+bpauhvbbbkgccczzkkqq
+ppphhhobrgggcxzotkqb
+--------------------
+vvnniirrlaxxxuunaivh
+vkenitrwbbbxhufmaahh
+wwoooiiinbquurbmmgah
+wlgodcixucmuerrmxaae
+auggfulhcciinralmmag
+yuurgllyogiadoijumrc
+buaggvlookhtooouuucc
+bbuugzobrhhhcxzotkqb
+bpcuhoorrrgrxxoottbb
+--------------------
+vmznibrlllyyyufsiiij
+mmmpejjjlbnyjtffaijj
+wnpppcjnnnmutttmzpxj
+nnnsfcchnmmmnrdzzzag
+aagfffmhhcinnslllmgg
+autttxlhgggtniilyttt
+drjtgnnnogtttpivvvtc
+ddcuzzndsihrpppkvsss
+dcccmzosssrrrxhotfsb
+--------------------
+xzzzebbmmmnyjwssjjjl
+zmzeebjamdnnjjfsdjxj
+zzbpewzzzfnwjtdrppxx
+znssscmzffwwwsddzpxk
+aqiskmmcvflbissqyowg
+erjtxxmqqqllfsiyyytf
+rrjjlxndqilfffckvhff
+drdxmzddiijsgphkkfsf
+fdddmmqdsissshhkfffd
+--------------------
+xxqqqbkamezzzwwsejll
+xohqjwaadddzlwgdddzl
+zbbbwwwzqdpkkkrrdpyk
+cqbvkyscvfowkvdrcokk
+qqiikkccvvbbiiqqooww
+eeiwlxpeqilbiyeqbhwi
+esjxlleeeljvfccchhhf
+ftxxxaqftjjjggcpwnud
+ffdymqqtttksgqhwwwdd
+--------------------
+xohqjkkkeeezlwgeeezl
+oohhjjkaqeplllggezzz
+cohvjysqqpppkvgrcyyy
+ccvvyyssqooovvvcccyk
+cqivkyscviobiyeqbowi
+eswwwpppiiivyyeebbii
+ssswlapelllvvyepbnui
+tttyaaffflkvgqppnnuu
+ftyyyaqftkkkqqqpwnud
+--------------------
 
 c060!80: order 4[2x2x5]
 -----
@@ -486,8 +492,8 @@ fiopwx
 
 Four in a row, still in the plane, allows for a couple of trivial shapes
 (such as f0a0 and f0c0 and f060), two crosses that can't fit into a corner,
-wider L, of order 14, C, of order 8, T, of order 32,
-shifted L, order 48, and still others.
+wider L, order 14, C, order 8, T, order 32,
+shifted L, order 48, lightning, order 16, and still others.
 
 f08080: order 14[3x4x7]
 -------
@@ -580,6 +586,23 @@ tqidbrrr
 tttdbgor
 tddddgmr
 xvlfgggg
+--------
+
+f018: order 16[2x6x8]
+--------
+aaekkkkp
+beehffop
+behhggoo
+behiiiio
+behjjjjo
+ddhllllo
+--------
+caaaamkk
+cffffmnp
+cggggmnp
+cciimmnp
+bcjjmnnp
+bddddnll
 --------
 
 Here is the simple heptomino that proves polyominoes can have odd order in 3d.
