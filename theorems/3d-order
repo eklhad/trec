@@ -88,11 +88,8 @@ that is at least 3 by 3, if it is to escape the plane.
 The shape consists of 7 squares, so 3 by 3 by 7 is the best we can do.
 
 Question: is there a polyomino with 3d order greater than 8,
-whose minimal packing fills a cube?
-I haven't found one yet.
+whose minimal packing fills a cube? I haven't found one yet.
 The stairs packa box that is 5 by 6 by 6 - close, but no cigar.
-There are some polyominoes in the plane, such as e0e080, of order 28,
-whose minimal tiling forms a square.
 To construct a 3d example of order 8, start with 8 subcubes to make the larger cube,
 and put in tabs and notches so that they all fit together, like this.
 e0f0e0!c0e0e040!e0a0e0
@@ -139,4 +136,12 @@ cccggg
 dddhhh
 ddddhh
 dddhhh
+
+There are polyominoes in the plane that tile a square, e0e080 for instance,
+of order 28, filling a 14 by 14 square.
+Make each piece 14 units high in the third dimension, and you have your cube.
+Verify with:
+	3dbox ff{fc}ff{fc}ff{fc}!ff{fc}ff{fc}!ff{fc}ff{fc} 2
+This is somewhat unsatisfying - I'm still looking for a cube that isn't
+a vertical extension of a square tiling in the plane.
 

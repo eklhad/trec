@@ -2,7 +2,7 @@
 3dbox.c: fill a box with 3d polyominoes.
 *********************************************************************/
 
-#define NSQ 80 // number of squares in largest polyomino
+#define NSQ 100 // number of squares in largest polyomino
 static int nsq; // number of squares in the polyomino
 static int dim_x, dim_y, dim_z; // box being filled
 static int curDepth; // when climbing through layers
@@ -865,7 +865,7 @@ while(boxOrder % ordFactor) ++boxOrder;
 if(boxOrder > MAXORDER) bailout("order to large, limit %d", MAXORDER);
 printf("order %d\n", boxOrder);
 boxVolume = boxOrder * nsq;
-for(dim_y = 2; dim_y*dim_y*dim_y <= boxVolume; ++dim_y) {
+for(dim_y = setMinDimension; dim_y*dim_y*dim_y <= boxVolume; ++dim_y) {
 if(boxVolume % dim_y) continue;
 for(dim_x = dim_y; dim_y*dim_x*dim_x <= boxVolume; ++dim_x) {
 if((boxVolume/dim_y) % dim_x) continue;
