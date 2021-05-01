@@ -342,24 +342,24 @@ for(x=0; x<o->rng_x; ++x)
 for(y=0; y<o->rng_y; ++y)
 for(z=0; z<o->rng_z; ++z)
 if(orib2[x][y][z]) {
-int subtotal, side;
+int subtotal, v, w;
 int k = z - o->breakLine;
 if(k <= 0) --k;
 // REPDIAMETER 16, k at most 8, k^2 at most 64
-// 80 squares: 80*64 = 4800
+// 100 squares: 100*64 = 6400
 subtotal = (k*k << 18);
-side = o->rng_y/2 - y;
-if(side <= 0 && !(o->rng_y&1)) --side;
-side = side * side;
-if(o->rng_y > o->rng_x)
-subtotal += (side << 9);
-else subtotal += side;
-side = o->rng_x/2 - x;
-if(side <= 0 && !(o->rng_x&1)) --side;
-side = side * side;
-if(o->rng_x > o->rng_y)
-subtotal += (side << 9);
-else subtotal += side;
+v = o->rng_y/2 - y;
+if(v <= 0 && !(o->rng_y&1)) --v;
+// extra credit for connectivity toward the middle
+if(v < 0 && orib2[x][y-1][z]) --v;
+if(v > 0 && orib2[x][y+1][z]) ++v;
+w = o->rng_x/2 - x;
+if(w <= 0 && !(o->rng_x&1)) --w;
+if(w < 0 && orib2[x-1][y][z]) --w;
+if(w > 0 && orib2[x+1][y][z]) ++w;
+if(v < 0) v = -v;
+if(w < 0) w = -w;
+subtotal += v + w + v*w;
 if(k < 0) bottom += subtotal; else top += subtotal;
 }
 if(bottom == top) o->ambig = 1;

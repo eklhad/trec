@@ -605,6 +605,41 @@ bcjjmnnp
 bddddnll
 --------
 
+Start with a 2 by 2 square, attach 2 more cubes, and find some trivial shapes
+of order 2 or 4, and three shapes of order 0 (when the cubes are on
+opposite sides of the square), and two shapes of modest order.
+
+c0c060: order 10[3x4x5]
+-----
+aabgg
+aaeej
+caafj
+cddii
+-----
+bbbgg
+ceeej
+cfffj
+ddiii
+-----
+bbggj
+cehhj
+cffhh
+ddihh
+-----
+
+c0c0!008080: order 8[2x4x6]
+------
+accffh
+abccgh
+bbeegg
+bddeeg
+------
+accffh
+aaffhh
+baddhg
+bddeeg
+------
+
 Here is the simple heptomino that proves polyominoes can have odd order in 3d.
 With a little patience, you can verify this by hand.
 
