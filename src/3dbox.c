@@ -11,6 +11,8 @@ static int reachup; /* greatest reach of node so far */
 static int setMaxDimension, setMinDimension;
 static int stopgap, forgetgap;
 static char r_shorts; // nodes must use shorts, rather than bytes
+static int restart = 0; // depth when resuming the analysis
+static int restartParent;
 static int boxOrder, boxArea, boxVolume;
 static int cbflag; // checkerboard flag
 static int ordFactor = 1;
@@ -794,6 +796,8 @@ static void markOldNodes(void);
 
 int main(int argc, const char **argv)
 {
+char *u;
+
 ++argv, --argc;
 while(argc && argv[0][0] == '-') {
 // -l is least colors, within reason
@@ -804,7 +808,7 @@ megaNodes = atoi(argv[0]+2), doNodes = 1, ++argv, --argc;
 }
 
 if(argc != 2 && argc != 4)
-bailout("usage: 3dbox [-l] [-mnnn] piece_set width depth height | 3dbox piece_set order", 0);
+bailout("usage: 3dbox [-l] [-mnnn] piece_set width depth height[@restart] | 3dbox piece_set order", 0);
 
 lowEmptySet();
 stringPiece(argv[0]);
@@ -823,12 +827,16 @@ bailout("dimensions must be y x z increasing", 0);
 if(dim_x > BOXWIDTH)
 bailout("x dimension too large, limit %d", BOXWIDTH);
 swingSet();
+
 if(!doNodes) {
 printf("order %d\n", boxOrder);
 printf("box %d by %d by %d\n", dim_x, dim_y, dim_z);
 solve();
 return 0;
 }
+
+u = strchr(argv[3], '@');
+if(u) restart = atoi(u+1);
 
 // At this point dim_z doesn't mean anything - until we find a solution.
 // Search up through the levels, with dim_x and dim_y as footprint,
@@ -843,11 +851,13 @@ expandNode(0, floor.pattern.b);
 while(nodesPending) {
 int j;
 printf(" @");
-markOldNodes();
+if(!restart) markOldNodes();
 printf("%d", curDepth);
 j = nodesCache / (maxNodes/10);
 if(j != hwm) { hwm = j; printf(" %%%d0", j); }
 expandNodes();
+restart = 0;
+restartParent = 0;
 ++curDepth;
 setBestZ(); /* also resets minDepth */
 if(stopsearch) break;
@@ -1219,6 +1229,54 @@ static int workStep;
 static long *workList; // the list of discovered nodes to expand
 static int workEnd, workAlloc;
 
+// Recache all the active nodes - as part of resumption.
+static void readNode(long idx, struct NODE *buf);
+static void recache(void)
+{
+static struct NODE rebuf, redest; /* for recaching */
+int cutoff = curDepth + forgetgap;
+int j;
+long n, hash, idx;
+long *hb;
+
+hashIdx = emalloc(slopNodes * sizeof(long));
+memset(hashIdx, 0, slopNodes*sizeof(long));
+nodesCache = 0;
+hwm = 0;
+
+for(j=mon_idx; j<nodesDisk; ++j) {
+if(j % 100000 == 0) printf(".");
+readNode(j, &rebuf);
+if(rebuf.dead) continue;
+if(rebuf.depth <= cutoff) continue;
+
+hash = rebuf.hash;
+n = hash % slopNodes;
+
+hb = hashIdx + n;
+while(1) {
+idx = *hb;
+if(!idx) break;
+idx &= 0x7fffffff;
+readNode(idx, &redest);
+if(redest.hash != hash) goto nextnode;
+if(memcmp(redest.pattern.b, rebuf.pattern.b, curNodeWidth)) goto nextnode;
+if(rebuf.depth < redest.depth) *hb = j;
+goto nextDisk;
+nextnode:
+++n, ++hb;
+if(n == slopNodes) n = 0, hb = hashIdx;
+}
+
+*hb = j;
+
+if(++nodesCache >= maxNodes)
+bailout("cannot recache at level %d", megaNodes);
+
+nextDisk: ;
+} /* loop recaching nodes on disk */
+}
+
 static void initFiles(void)
 {
 int flags;
@@ -1233,14 +1291,6 @@ mkdir(filename, 0777);
 sprintf(filename, "dotile/%s/data-x", piecename);
 xptr = strchr(filename, 'x');
 }
-
-for(i=0; i<60; ++i) {
-if(fd[i] > 0) close(fd[i]);
-flags = O_CREAT|O_TRUNC|O_RDWR|O_BINARY;
-*xptr = 'A' + i;
-fd[i] = open(filename, flags, 0666);
-if(fd[i] < 0) bailout("cannot create data file, errno %d", errno);
-} /* loop over files */
 
 if(workList) free(workList);
 workAlloc = 60;
@@ -1259,6 +1309,47 @@ maxNodes = megaNodes * 0x100000;
 slopNodes = maxNodes / 8 * 9;
 reachup = 0;
 
+if(restart) { /* resume program */
+long l;
+struct NODE buf;
+int cutoff = restart + forgetgap;
+
+nodesDisk = 0;
+for(i=0; i<60; ++i) {
+flags = O_RDWR|O_BINARY;
+*xptr = 'A' + i;
+fd[i] = open(filename, flags, 0666);
+if(fd[i] < 0) bailout("cannot reopen data file, errno %d", errno);
+l = lseek(fd[i], 0, SEEK_END);
+if(l%nodeSize) bailout("data file has bad length %ld", l);
+nodesDisk += l/nodeSize;
+} /* loop over files */
+
+readNode(nodesDisk-1, &buf);
+restartParent = buf.parent;
+if(!restartParent) bailout("restartParent is 0", 0);
+readNode(restartParent, &buf);
+if(buf.depth != restart)
+bailout("last depth was %d", buf.depth);
+
+mon_idx = 0;
+nodesPending = 0;
+for(i=1; i<nodesDisk; ++i) {
+readNode(i, &buf);
+if(buf.dead) continue;
+if(buf.depth == restart && i >= restartParent) ++nodesPending;
+if(buf.depth > restart) ++nodesPending;
+if(buf.depth > cutoff && !mon_idx) mon_idx = i;
+if(buf.depth + buf.gap > reachup) reachup = buf.depth + buf.gap;
+}
+
+printf("Restart with %d nodes, %d pending\n", nodesDisk, nodesPending);
+
+curDepth = restart;
+recache();
+return;
+} /* resume program */
+
 if(!hashIdx) hashIdx = emalloc(slopNodes * sizeof(long));
 memset(hashIdx, 0, slopNodes*sizeof(long));
 nodesCache = 0;
@@ -1267,6 +1358,14 @@ nodesDisk = 1; /* the initial node of all zeros is at location 0 */
 mon_idx = 1;
 nodesPending = 1;
 curDepth = 0;
+
+for(i=0; i<60; ++i) {
+if(fd[i] > 0) close(fd[i]);
+flags = O_CREAT|O_TRUNC|O_RDWR|O_BINARY;
+*xptr = 'A' + i;
+fd[i] = open(filename, flags, 0666);
+if(fd[i] < 0) bailout("cannot create data file, errno %d", errno);
+} /* loop over files */
 }
 
 static void appendWorkList(long idx)
@@ -2384,5 +2483,6 @@ static void expandNodes(void)
 {
 workEnd = workStep = 0;
 nodeStep = mon_idx;
+if(restartParent && restartParent >= nodeStep) nodeStep = restartParent;
 expandWorker(NULL);
 }

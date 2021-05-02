@@ -491,9 +491,10 @@ fiopwx
 ------
 
 Four in a row, still in the plane, allows for a couple of trivial shapes
-(such as f0a0 and f0c0 and f060), two crosses that can't fit into a corner,
+(f0a0 and f0c0 and f060), two crosses that can't fit into a corner,
 wider L, order 14, C, order 8, T, order 32,
-shifted L, order 48, lightning, order 16, and still others.
+shifted L, order 48, lightning, order 16, and two faucets and zigzag,
+order undetermined.
 
 f08080: order 14[3x4x7]
 -------
@@ -606,8 +607,8 @@ bddddnll
 --------
 
 Start with a 2 by 2 square, attach 2 more cubes, and find some trivial shapes
-of order 2 or 4, and three shapes of order 0 (when the cubes are on
-opposite sides of the square), and two shapes of modest order.
+of order 1 2 or 4, and three shapes of order 0 (when the cubes are on
+opposite sides of the square), and some shapes of modest order.
 
 c0c060: order 10[3x4x5]
 -----
@@ -627,6 +628,24 @@ cffhh
 ddihh
 -----
 
+c0e080: order 10[3x4x5]
+-----
+acfff
+aaagg
+aaggg
+dddjg
+-----
+bccff
+bbbhh
+bbhhh
+ddjjh
+-----
+cccfi
+eeiii
+eeeii
+edjjj
+-----
+
 c0c0!008080: order 8[2x4x6]
 ------
 accffh
@@ -639,6 +658,37 @@ aaffhh
 baddhg
 bddeeg
 ------
+
+40c0c080: order 28[4x6x7]
+-------
+abnooox
+aannrrr
+aannvwa
+daknvva
+djjjvva
+dgjjjvz
+-------
+bboooxx
+cccrrra
+dcccwwa
+dkksssa
+dlllsss
+gglllzz
+-------
+bbpppxx
+eeepppb
+feeewwb
+fkktttb
+fhhhttt
+ggmmmzz
+-------
+biqqqxb
+fiiqqqb
+fiiuwyb
+fkiuuyy
+hhhuuyy
+gmmmuzy
+-------
 
 Here is the simple heptomino that proves polyominoes can have odd order in 3d.
 With a little patience, you can verify this by hand.
