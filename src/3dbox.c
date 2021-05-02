@@ -875,7 +875,9 @@ while(boxOrder % ordFactor) ++boxOrder;
 if(boxOrder > MAXORDER) bailout("order to large, limit %d", MAXORDER);
 printf("order %d\n", boxOrder);
 boxVolume = boxOrder * nsq;
-for(dim_y = setMinDimension; dim_y*dim_y*dim_y <= boxVolume; ++dim_y) {
+// We're not considering flat boxes here, even if the piece is flat.
+// Nor any box narrower than the piece itself.
+for(dim_y = setMinDimension > 2 ? setMinDimension : 2; dim_y*dim_y*dim_y <= boxVolume; ++dim_y) {
 if(boxVolume % dim_y) continue;
 for(dim_x = dim_y; dim_y*dim_x*dim_x <= boxVolume; ++dim_x) {
 if((boxVolume/dim_y) % dim_x) continue;
@@ -1149,6 +1151,8 @@ if(p->z + o->rng_z > dim_z) goto next;
 if(!z) {
 int swing;
 int corner = stack[0].onum;
+// has to be the same piece swinging over
+if(o_list[corner].pno == o->pno) {
 // I think this works even if p == stack, the first piece touches two corners.
 if((swing = o->hr) >= 0 && y == 0 && p->x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->vr) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
@@ -1158,6 +1162,7 @@ if((swing = o->dr2) >= 0 && p->x0 + o->rng_x == dim_x && p->y0 + o->rng_y == dim
 if((swing = o->dr) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
 if((swing = o->r1) >= 0 && y == 0 && p->x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->r3) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+}
 }
 }
 #endif
@@ -2230,6 +2235,8 @@ if(!this_idx && !min_z) {
 // produced; this just gets us off the floor faster.
 int swing;
 int corner = stack[0].onum;
+// has to be the same piece swinging over
+if(o_list[corner].pno == o->pno) {
 // I think this works even if p == stack, the first piece touches two corners.
 if((swing = o->hr) >= 0 && y == 0 && p->x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->vr) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
@@ -2239,6 +2246,7 @@ if((swing = o->dr2) >= 0 && p->x0 + o->rng_x == dim_x && p->y0 + o->rng_y == dim
 if((swing = o->dr) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
 if((swing = o->r1) >= 0 && y == 0 && p->x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->r3) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+}
 }
 }
 #endif
