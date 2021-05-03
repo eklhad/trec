@@ -39,6 +39,7 @@ static int ordFactor = 1;
 #define DIAG 1
 #define NEAR 1
 #define SWING 1
+#define UPLINE 1
 
 #define REPDIAMETER 16 // represent pieces this large
 #define SETSIZE 10 // number of pieces in the set
@@ -177,6 +178,7 @@ struct SLICE pattern[NSQ];
 
 #define O_MAX 500
 static int o_max; /* number of orientations */
+static int o_max2;
 static struct ORIENT o_list[O_MAX];
 
 static void print_o(const struct ORIENT *o)
@@ -439,7 +441,7 @@ struct ORIENT *o;
 const struct SLICE *s;
 
 o = o_list;
-for(i=0; i<o_max; ++i, ++o)
+for(i=0; i<o_max2; ++i, ++o)
 o->r1 = o->r2 = o->r3 = o->hr = o->vr = o->dr = o->dr2 = -1;
 
 o = o_list;
@@ -520,6 +522,42 @@ if(o->r1 >= 0) printf("%d:", o->r1), print_o(o_list+o->r1), printf("r1 from %d:"
 if(o->r2 >= 0) printf("%d:", o->r2), print_o(o_list+o->r2), printf("r2 from %d:", i), print_o(o);
 if(o->r3 >= 0) printf("%d:", o->r3), print_o(o_list+o->r3), printf("r3 from %d:", i), print_o(o);
 }
+#endif
+}
+
+static void moreOrientations(void)
+{
+const struct ORIENT *o;
+struct ORIENT *q;
+const struct SLICE *s;
+int i, k, x, y;
+o_max2 = o_max;
+
+#if DIAG
+o = o_list;
+q = o_list + o_max;
+for(i=0; i<o_max; ++i, ++o) {
+x = o->x, y = o->y;
+while(x && y < o->rng_y-1) {
+--x, ++y;
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s) {
+if(s->xy != y*BOXWIDTH + x) continue;
+if(isNotHighbit(s->bits)) continue;
+// anchor this orientation on this cube
+if(o_max2 == O_MAX)
+bailout("too many extra orientations, limit %d", O_MAX);
+*q = *o;
+q->x = x, q->y = y;
+q->near = 0;
+++o_max2, ++q;
+break;
+}
+}
+}
+#if DEBUG
+printf("%d extra orientations\n", o_max2 - o_max);
+#endif
 #endif
 }
 
@@ -717,6 +755,8 @@ ordFactor = 2;
 stopgap = (setMinDimension&1) ? setMinDimension : setMinDimension - 1;
 forgetgap = stopgap/2 - setMaxDimension/2 - 1;
 if(forgetgap >= 0) bailout("forget gap should be negative, not %d", forgetgap);
+
+moreOrientations();
 }
 
 // find the highest empty bit in a short
@@ -898,6 +938,7 @@ static struct SF { // like a stack frame
 schar x, y, z; // where piece is placed
 schar x0, y0; // adjusted location of piece
 schar increase;
+uchar oneoff;
 short onum;
 short xy; // y*BOXWIDTH + x
 short breakLine;
@@ -1103,6 +1144,8 @@ x = r_x, y = r_y;
 }
 ++p;
 p->x = x, p->y = y, p->z = z;
+p->increase = 0;
+p->oneoff = 0;
 
 #if NEAR
 // Improves efficiency by 30%
@@ -1128,7 +1171,6 @@ p->near = near;
 printf("locate %d,%d,%d near %x\n", x, y, z, near);
 #endif
 
-p->increase = 0;
 p->onum = -1;
 o = o_list - 1;
 
