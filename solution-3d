@@ -387,7 +387,7 @@ abbcd
 abbdd
 -----
 
-c080!00c0: order <= 108[4x9x15]
+c080!00c0: order 108[4x9x15]
 ---------------
 wwggbbieerxxqww
 xxgjjiilrrpqqzz
@@ -433,7 +433,7 @@ hhiiffkhvvaatdd
 c040!0060: order ?
 I believe this cannot fill a box, but I don't have a proof.
 
-Here is a sample hexomino. We may bring in more later.
+Here is a sample hexomino. We will bring in more later.
 This is the Y hexomino that started it all in the 1980's.
 
 f840: order 28[2x7x12]
@@ -608,7 +608,8 @@ bddddnll
 
 Start with a 2 by 2 square, attach 2 more cubes, and find some trivial shapes
 of order 1 2 or 4, and three shapes of order 0 (when the cubes are on
-opposite sides of the square), and some shapes of modest order.
+opposite sides of the square), and some shapes of modest order,
+and c0e040, order undetermined.
 
 c0c060: order 10[3x4x5]
 -----
@@ -691,7 +692,8 @@ gmmmuzy
 -------
 
 Here is the simple heptomino that proves polyominoes can have odd order in 3d.
-With a little patience, you can verify this by hand.
+There are others, like f820 above, with order 25, but this has order 9,
+and with a little patience, you can verify it by hand.
 
 e0e080: order 9[3x3x7]
 -------
