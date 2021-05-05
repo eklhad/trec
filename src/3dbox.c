@@ -319,6 +319,7 @@ return;
 
 if(o_max == O_MAX)
 bailout("too many orientations, limit %d", O_MAX);
+if(n == 1) bailout("one dimensional piece", 0);
 memcpy(o->pattern, orib3, sizeof(struct SLICE)*n);
 o->slices = n;
 o->ono = o_max;
@@ -665,6 +666,7 @@ orib4[i][y] = mask;
 ++i;
 } /* loop gathering the rows in this piece */
 
+if(!nsq) bailout("empty piece", 0);
 if(nsqFirst >= 0 && nsq != nsqFirst)
 bailout("all polyominoes in the set must have the same number of squares", 0);
 if(nsq > NSQ)
@@ -1212,7 +1214,10 @@ if((swing = o->r3) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner
 // Look for collision.
 p->xy = (short)p->y0 * BOXWIDTH + p->x0;
 s = o->pattern;
-for(k=0; k<o->slices; ++k, ++s)
+if(ws[p->xy+s->xy] & s->bits) goto next;
+++s;
+if(ws[p->xy+s->xy] & s->bits) goto next;
+for(++s, k = o->slices-2; k; ++s, --k)
 if(ws[p->xy+s->xy] & s->bits) goto next;
 #if DEBUG
 printf("place{%d,%d,%d ", p->x, p->y, p->z);
@@ -1220,7 +1225,10 @@ print_o(o);
 sleep(1);
 #endif
 s = o->pattern;
-for(k=0; k<o->slices; ++k, ++s)
+ws[p->xy+s->xy] |= s->bits;
+++s;
+ws[p->xy+s->xy] |= s->bits;
+for(++s, k = o->slices-2; k; ++s, --k)
 ws[p->xy+s->xy] |= s->bits;
 goto advance;
 
@@ -1246,7 +1254,10 @@ printf("pop %d\n", j);
 }
 // unplace piece
 s = o->pattern;
-for(k=0; k<o->slices; ++k, ++s)
+ws[p->xy+s->xy] ^= s->bits;
+++s;
+ws[p->xy+s->xy] ^= s->bits;
+for(++s, k = o->slices-2; k; ++s, --k)
 ws[p->xy+s->xy] ^= s->bits;
 goto next;
 }
@@ -2296,7 +2307,10 @@ if((swing = o->r3) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner
 // Look for collision.
 p->xy = (short)p->y0 * BOXWIDTH + p->x0;
 s = o->pattern;
-for(k=0; k<o->slices; ++k, ++s)
+if(b0[p->xy+s->xy] & (s->bits>>min_z)) goto next;
+++s;
+if(b0[p->xy+s->xy] & (s->bits>>min_z)) goto next;
+for(++s, k = o->slices-2; k; ++s, --k)
 if(b0[p->xy+s->xy] & (s->bits>>min_z)) goto next;
 #if DEBUG
 printf("place{%d,%d,%d ", p->x, p->y, min_z);
@@ -2361,7 +2375,10 @@ min_z_count = p->mzc;
 o = o_list + p->onum;
 // unplace piece
 s = o->pattern;
-for(k=0; k<o->slices; ++k, ++s)
+b0[p->xy+s->xy] ^= (s->bits>>min_z);
+++s;
+b0[p->xy+s->xy] ^= (s->bits>>min_z);
+for(++s, k = o->slices-2; k; ++s, --k)
 b0[p->xy+s->xy] ^= (s->bits>>min_z);
 if(reset >= 0) {
 if(min_z > reset) goto backup;
@@ -2398,7 +2415,10 @@ continue;
 // place piece
 j = q->z;
 s = o->pattern;
-for(k=0; k<o->slices; ++k, ++s)
+b1[q->xy+s->xy] |= (s->bits>>j);
+++s;
+b1[q->xy+s->xy] |= (s->bits>>j);
+for(++s, k = o->slices-2; k; ++s, --k)
 b1[q->xy+s->xy] |= (s->bits>>j);
 }
 
