@@ -184,6 +184,7 @@ static struct ORIENT o_list[O_MAX];
 static void print_o(const struct ORIENT *o)
 {
 int x, y, n = 0;
+// assumes slices are in a raster order
 for(y=0; y<o->rng_y; ++y) {
 if(y) printf("!");
 for(x=0; x<o->rng_x; ++x) {
@@ -319,7 +320,6 @@ return;
 
 if(o_max == O_MAX)
 bailout("too many orientations, limit %d", O_MAX);
-if(n == 1) bailout("one dimensional piece", 0);
 memcpy(o->pattern, orib3, sizeof(struct SLICE)*n);
 o->slices = n;
 o->ono = o_max;
@@ -1213,23 +1213,21 @@ if((swing = o->r3) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner
 
 // Look for collision.
 p->xy = (short)p->y0 * BOXWIDTH + p->x0;
-s = o->pattern;
+s = o->pattern; k = o->slices; while(1) {
 if(ws[p->xy+s->xy] & s->bits) goto next;
+if(!--k) break;
 ++s;
-if(ws[p->xy+s->xy] & s->bits) goto next;
-for(++s, k = o->slices-2; k; ++s, --k)
-if(ws[p->xy+s->xy] & s->bits) goto next;
+}
 #if DEBUG
 printf("place{%d,%d,%d ", p->x, p->y, p->z);
 print_o(o);
 sleep(1);
 #endif
-s = o->pattern;
+s = o->pattern; k = o->slices; while(1) {
 ws[p->xy+s->xy] |= s->bits;
+if(!--k) break;
 ++s;
-ws[p->xy+s->xy] |= s->bits;
-for(++s, k = o->slices-2; k; ++s, --k)
-ws[p->xy+s->xy] |= s->bits;
+}
 goto advance;
 
 backup:
@@ -1253,12 +1251,11 @@ printf("pop %d\n", j);
 #endif
 }
 // unplace piece
-s = o->pattern;
+s = o->pattern; k = o->slices; while(1) {
 ws[p->xy+s->xy] ^= s->bits;
+if(!--k) break;
 ++s;
-ws[p->xy+s->xy] ^= s->bits;
-for(++s, k = o->slices-2; k; ++s, --k)
-ws[p->xy+s->xy] ^= s->bits;
+}
 goto next;
 }
 
@@ -2306,22 +2303,22 @@ if((swing = o->r3) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner
 
 // Look for collision.
 p->xy = (short)p->y0 * BOXWIDTH + p->x0;
-s = o->pattern;
+s = o->pattern; k = o->slices; while(1) {
 if(b0[p->xy+s->xy] & (s->bits>>min_z)) goto next;
+if(!--k) break;
 ++s;
-if(b0[p->xy+s->xy] & (s->bits>>min_z)) goto next;
-for(++s, k = o->slices-2; k; ++s, --k)
-if(b0[p->xy+s->xy] & (s->bits>>min_z)) goto next;
+}
 #if DEBUG
 printf("place{%d,%d,%d ", p->x, p->y, min_z);
 print_o(o);
 sleep(1);
 #endif
-s = o->pattern;
-for(k=0; k<o->slices; ++k, ++s) {
+s = o->pattern; k = o->slices; while(1) {
 shapebits t = (s->bits>>min_z);
 b0[p->xy+s->xy] |= t;
 if(t&min_z_bit) --min_z_count;
+if(!--k) break;
+++s;
 }
 
 // downgrade breakLine
@@ -2374,12 +2371,11 @@ min_z_bit = (HIGHBIT >> min_z);
 min_z_count = p->mzc;
 o = o_list + p->onum;
 // unplace piece
-s = o->pattern;
+s = o->pattern; k = o->slices; while(1) {
 b0[p->xy+s->xy] ^= (s->bits>>min_z);
+if(!--k) break;
 ++s;
-b0[p->xy+s->xy] ^= (s->bits>>min_z);
-for(++s, k = o->slices-2; k; ++s, --k)
-b0[p->xy+s->xy] ^= (s->bits>>min_z);
+}
 if(reset >= 0) {
 if(min_z > reset) goto backup;
 reset = -1;
@@ -2414,12 +2410,11 @@ continue;
 
 // place piece
 j = q->z;
-s = o->pattern;
+s = o->pattern; k = o->slices; while(1) {
 b1[q->xy+s->xy] |= (s->bits>>j);
+if(!--k) break;
 ++s;
-b1[q->xy+s->xy] |= (s->bits>>j);
-for(++s, k = o->slices-2; k; ++s, --k)
-b1[q->xy+s->xy] |= (s->bits>>j);
+}
 }
 
 // compute depth and shift the patttern back down to the floor
