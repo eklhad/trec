@@ -4,6 +4,7 @@
 
 #define NSQ 100 // number of squares in largest polyomino
 static int nsq; // number of squares in the polyomino
+static int nsqMix; // different square counts among the pieces
 static int dim_x, dim_y, dim_z; // box being filled
 static int curDepth; // when climbing through layers
 static int maxDepth, minDepth;
@@ -667,11 +668,10 @@ orib4[i][y] = mask;
 } /* loop gathering the rows in this piece */
 
 if(!nsq) bailout("empty piece", 0);
-if(nsqFirst >= 0 && nsq != nsqFirst)
-bailout("all polyominoes in the set must have the same number of squares", 0);
 if(nsq > NSQ)
 bailout("too many squares in the given polyomino, limit %d", NSQ);
-nsqFirst = nsq;
+if(nsqFirst < 0) nsqFirst = nsq;
+else if(nsq != nsqFirst) nsqMix = 1;
 
 // unpack into orib1
 memset(orib1, 0, sizeof(orib1));
@@ -731,7 +731,7 @@ qx[i] = x, qy[i] = y, qz[i] = z+1, ++nsq2;
 if(nsq2 != nsq) bailout("piece is not connected, %d squares", nsq2);
 
 // see if the checkerboard argument applies
-if(!(nsq&1)) {
+if(!nsqMix && !(nsq&1)) {
 i = 0;
 for(x=0; x<REPDIAMETER; ++x)
 for(y=0; y<REPDIAMETER; ++y)
@@ -753,6 +753,9 @@ if(cbflag) {
 puts("checkerboard upgrade");
 ordFactor = 2;
 }
+
+if(nsqMix)
+bailout("all polyominoes in the set must have the same number of squares", 0);
 
 stopgap = (setMinDimension&1) ? setMinDimension : setMinDimension - 1;
 forgetgap = stopgap/2 - setMaxDimension/2 - 1;

@@ -494,7 +494,7 @@ Four in a row, still in the plane, allows for a couple of trivial shapes
 (f0a0 and f0c0 and f060), two crosses that can't fit into a corner,
 wider L, order 14, C, order 8, T, order 32,
 shifted L, order 48, lightning, order 16, and two faucets and zigzag,
-order undetermined.
+no packings found yet.
 
 f08080: order 14[3x4x7]
 -------
@@ -609,7 +609,7 @@ bddddnll
 Start with a 2 by 2 square, attach 2 more cubes, and find some trivial shapes
 of order 1 2 or 4, and three shapes of order 0 (when the cubes are on
 opposite sides of the square), and some shapes of modest order,
-and c0e040, order undetermined.
+and c0e040, no packing found yet.
 
 c0c060: order 10[3x4x5]
 -----
