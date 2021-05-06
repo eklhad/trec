@@ -938,9 +938,7 @@ return 0;
 
 static struct SF { // like a stack frame
 schar x, y, z; // where piece is placed
-schar x0, y0; // adjusted location of piece
 schar increase;
-uchar oneoff;
 short onum;
 short xy; // y*BOXWIDTH + x
 short breakLine;
@@ -1016,7 +1014,7 @@ last_ci = COLORS - 1;
 for(lev=0; lev<boxOrder; ++lev) {
 p = stack + lev;
 o = o_list + p->onum;
-x0 = p->x0, y0 = p->y0, z0 = p->z;
+x0 = p->xy % BOXWIDTH, y0 = p->xy / BOXWIDTH, z0 = p->z;
 
 // check for neighboring colors
 memset(used, 0, sizeof(used));
@@ -1081,6 +1079,7 @@ struct SF *p = stack - 1;
 const struct ORIENT *o;
 const struct SLICE *s;
 int x, y, z, j, k, near = 0;
+int x0, y0;
 
 memset(ws, 0, sizeof(ws));
 
@@ -1147,7 +1146,6 @@ x = r_x, y = r_y;
 ++p;
 p->x = x, p->y = y, p->z = z;
 p->increase = 0;
-p->oneoff = 0;
 
 #if NEAR
 // Improves efficiency by 30%
@@ -1182,12 +1180,12 @@ if(++p->onum == o_max) goto backup;
 #if NEAR
 if(p->near & o->near) goto next;
 #endif
-p->x0 = p->x - o->x;
-if(p->x0 < 0) goto next;
-p->y0 = p->y - o->y;
-if(p->y0 < 0) goto next;
-if(p->x0 + o->rng_x > dim_x) goto next;
-if(p->y0 + o->rng_y > dim_y) goto next;
+x0 = p->x - o->x;
+if(x0 < 0) goto next;
+if(x0 + o->rng_x > dim_x) goto next;
+y0 = p->y - o->y;
+if(y0 < 0) goto next;
+if(y0 + o->rng_y > dim_y) goto next;
 if(p->z + o->rng_z > dim_z) goto next;
 // the piece fits in the box.
 
@@ -1198,21 +1196,21 @@ int corner = stack[0].onum;
 // has to be the same piece swinging over
 if(o_list[corner].pno == o->pno) {
 // I think this works even if p == stack, the first piece touches two corners.
-if((swing = o->hr) >= 0 && y == 0 && p->x0 + o->rng_x == dim_x && swing < corner) goto next;
-if((swing = o->vr) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
-if((swing = o->r2) >= 0 && p->x0 + o->rng_x == dim_x && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->hr) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
+if((swing = o->vr) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->r2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if(dim_x == dim_y) {
-if((swing = o->dr2) >= 0 && p->x0 + o->rng_x == dim_x && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->dr2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if((swing = o->dr) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
-if((swing = o->r1) >= 0 && y == 0 && p->x0 + o->rng_x == dim_x && swing < corner) goto next;
-if((swing = o->r3) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->r1) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
+if((swing = o->r3) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
 }
 }
 }
 #endif
 
 // Look for collision.
-p->xy = (short)p->y0 * BOXWIDTH + p->x0;
+p->xy = y0 * BOXWIDTH + x0;
 s = o->pattern; k = o->slices; while(1) {
 if(ws[p->xy+s->xy] & s->bits) goto next;
 if(!--k) break;
@@ -1675,7 +1673,7 @@ const struct SLICE *s;
 int x, y, z;
 shapebits mask;
 int diff = nt->depth - nb->depth;
-int j, k;
+int j, k, x0, y0;
 shapebits b[BOXWIDTH*BOXWIDTH];
 
 for(y=0; y<dim_y; ++y)
@@ -1758,15 +1756,15 @@ o = o_list - 1;
 next:
 if(++p->onum == o_max) goto backup;
 ++o;
-p->x0 = p->x - o->x;
-if(p->x0 < 0) goto next;
-p->y0 = p->y - o->y;
-if(p->y0 < 0) goto next;
-if(p->x0 + o->rng_x > dim_x) goto next;
-if(p->y0 + o->rng_y > dim_y) goto next;
+x0 = p->x - o->x;
+if(x0 < 0) goto next;
+if(x0 + o->rng_x > dim_x) goto next;
+y0 = p->y - o->y;
+if(y0 < 0) goto next;
+if(y0 + o->rng_y > dim_y) goto next;
 // the piece fits in the box.
 // Look for collision.
-p->xy = (short)p->y0 * BOXWIDTH + p->x0;
+p->xy = y0 * BOXWIDTH + x0;
 s = o->pattern;
 for(k=0; k<o->slices; ++k, ++s)
 if(b[p->xy+s->xy] & s->bits) goto next;
@@ -1861,7 +1859,7 @@ bailout("cannot fill the space between two successive nodes.", 0);
 
 for(p=betweenstack; added; --added, ++p) {
 z0 = n1.depth + p->z;
-x0 = p->x0, y0 = p->y0;
+x0 = p->xy % BOXWIDTH, y0 = p->xy / BOXWIDTH;
 o = p->onum + o_list;
 // find the colors that touch this piece.
 memset(used, 0, sizeof(used));
@@ -2169,6 +2167,7 @@ shapebits min_z_bit, mask;
 int reset = -1, near = 0;
 int breakLine = REPDIAMETER; // the first piece will ratchet it down
 int x, y, j, k;
+int x0, y0;
 uchar ambinclude, ambnode;
 uchar children = 0;
 struct NODE newnode, compnode, looknode;
@@ -2271,12 +2270,12 @@ if(++p->onum == o_max) goto backup;
 #if NEAR
 if(p->near & o->near) goto next;
 #endif
-p->x0 = p->x - o->x;
-if(p->x0 < 0) goto next;
-p->y0 = p->y - o->y;
-if(p->y0 < 0) goto next;
-if(p->x0 + o->rng_x > dim_x) goto next;
-if(p->y0 + o->rng_y > dim_y) goto next;
+x0 = p->x - o->x;
+if(x0 < 0) goto next;
+if(x0 + o->rng_x > dim_x) goto next;
+y0 = p->y - o->y;
+if(y0 < 0) goto next;
+if(y0 + o->rng_y > dim_y) goto next;
 // the piece fits in the box.
 
 #if SWING
@@ -2288,21 +2287,21 @@ int corner = stack[0].onum;
 // has to be the same piece swinging over
 if(o_list[corner].pno == o->pno) {
 // I think this works even if p == stack, the first piece touches two corners.
-if((swing = o->hr) >= 0 && y == 0 && p->x0 + o->rng_x == dim_x && swing < corner) goto next;
-if((swing = o->vr) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
-if((swing = o->r2) >= 0 && p->x0 + o->rng_x == dim_x && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->hr) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
+if((swing = o->vr) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->r2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if(dim_x == dim_y) {
-if((swing = o->dr2) >= 0 && p->x0 + o->rng_x == dim_x && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->dr2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if((swing = o->dr) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
-if((swing = o->r1) >= 0 && y == 0 && p->x0 + o->rng_x == dim_x && swing < corner) goto next;
-if((swing = o->r3) >= 0 && x == 0 && p->y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->r1) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
+if((swing = o->r3) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
 }
 }
 }
 #endif
 
 // Look for collision.
-p->xy = (short)p->y0 * BOXWIDTH + p->x0;
+p->xy = y0 * BOXWIDTH + x0;
 s = o->pattern; k = o->slices; while(1) {
 if(b0[p->xy+s->xy] & (s->bits>>min_z)) goto next;
 if(!--k) break;
