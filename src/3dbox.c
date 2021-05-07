@@ -45,6 +45,10 @@ static int ordFactor = 1;
 #define REPDIAMETER 16 // represent pieces this large
 #define SETSIZE 10 // number of pieces in the set
 static int setSize; // for sets of polyominoes
+static int qty[SETSIZE]; // limit on number of pieces used
+static int qtyc[SETSIZE]; // limit on chiral pieces used
+static int qtySpec; // some quantity was specified
+static int qtyTotal;
 #define MAXORDER 1000
 #define BOXWIDTH 32
 
@@ -636,7 +640,7 @@ memset(orib4, 0, sizeof(orib4));
 nsq = 0;
 i = y = 0;
 
-while((c = *s) != 0 && c != '_') {
+while((c = *s) != 0 && c != '_' && c != '=') {
 if(c == '!') { ++s; ++y; i=0;
 if(y >= REPDIAMETER) bailout("polyomino is too wide, limit %d rows", REPDIAMETER);
 continue;
@@ -742,8 +746,21 @@ if(i < 0) i = -i;
 if(!setSize) cbflag = i;
 else if(i != cbflag) cbflag = 0;
 } /* even squares */
+if(nsqMix) cbflag = 0;
 
 compileRotations();
+
+if(*s == '=') {
+int j = strtol(s+1, (char**)&s, 10);
+if(j <= 0 || j > MAXORDER) bailout("quantity out of range, limit 1 to %d", MAXORDER);
+qty[setSize] = j, qtySpec = 1, qtyTotal += nsq * j;
+if(*s == '=') {
+j = strtol(s+1, (char**)&s, 10);
+if(j <= 0 || j > MAXORDER) bailout("quantity out of range, limit 1 to %d", MAXORDER);
+qtyc[setSize] = j, qtyTotal += nsq * j;
+}
+if(*s && *s != '_') bailout("unexpected character %c after quantity specifier", *s);
+}
 
 if(*s) ++s;
 ++setSize;
@@ -757,11 +774,18 @@ ordFactor = 2;
 if(nsqMix)
 bailout("all polyominoes in the set must have the same number of squares", 0);
 
+if(qtySpec) {
+for(i=0; i<setSize; ++i)
+if(!qty[i]) bailout("each piece in the set should have a quantity specifier", 0);
+}
+
 stopgap = (setMinDimension&1) ? setMinDimension : setMinDimension - 1;
 forgetgap = stopgap/2 - setMaxDimension/2 - 1;
 if(forgetgap >= 0) bailout("forget gap should be negative, not %d", forgetgap);
 
+/* I don't think we need this.
 moreOrientations();
+*/
 }
 
 // find the highest empty bit in a short
@@ -865,6 +889,7 @@ dim_z = atoi(argv[3]);
 boxArea = dim_x * dim_y;
 boxVolume = boxArea * dim_z;
 if(boxVolume % nsq) bailout("volume %d does not admit a whole number of pieces", boxVolume);
+if(qtySpec && boxVolume != qtyTotal) bailout("box volume is not consistent with the volume of the pieces %d", qtyTotal);
 boxOrder = boxVolume / nsq;
 if(boxOrder > MAXORDER) bailout("order to large, limit %d", MAXORDER);
 if(dim_y > dim_x || dim_x > dim_z)
@@ -879,6 +904,8 @@ printf("box %d by %d by %d\n", dim_x, dim_y, dim_z);
 solve();
 return 0;
 }
+
+if(qtySpec) bailout("cannot combine node search with quantity specifiers", 0);
 
 u = strchr(argv[3], '@');
 if(u) restart = atoi(u+1);
@@ -913,6 +940,7 @@ return 0;
 }
 
 if(doNodes) bailout("order search using nodes is not yet implemented", 0);
+if(qtySpec) bailout("order search cannot be combined with quantity specifiers", 0);
 
 boxOrder = atoi(argv[1]);
 while(1) {
