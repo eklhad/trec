@@ -537,7 +537,6 @@ const struct ORIENT *o;
 struct ORIENT *q;
 const struct SLICE *s;
 int i, k, x, y;
-o_max2 = o_max;
 
 #if DIAG
 o = o_list;
@@ -783,6 +782,7 @@ stopgap = (setMinDimension&1) ? setMinDimension : setMinDimension - 1;
 forgetgap = stopgap/2 - setMaxDimension/2 - 1;
 if(forgetgap >= 0) bailout("forget gap should be negative, not %d", forgetgap);
 
+o_max2 = o_max;
 /* I don't think we need this.
 moreOrientations();
 */
@@ -1224,8 +1224,6 @@ if(p->z + o->rng_z > dim_z) goto next;
 if(!z) {
 int swing;
 int corner = stack[0].onum;
-// has to be the same piece swinging over
-if(o_list[corner].pno == o->pno) {
 // I think this works even if p == stack, the first piece touches two corners.
 if((swing = o->hr) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->vr) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
@@ -1235,7 +1233,6 @@ if((swing = o->dr2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && 
 if((swing = o->dr) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
 if((swing = o->r1) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->r3) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
-}
 }
 }
 #endif
@@ -2315,8 +2312,6 @@ if(!this_idx && !min_z) {
 // produced; this just gets us off the floor faster.
 int swing;
 int corner = stack[0].onum;
-// has to be the same piece swinging over
-if(o_list[corner].pno == o->pno) {
 // I think this works even if p == stack, the first piece touches two corners.
 if((swing = o->hr) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->vr) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
@@ -2326,7 +2321,6 @@ if((swing = o->dr2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && 
 if((swing = o->dr) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
 if((swing = o->r1) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->r3) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
-}
 }
 }
 #endif
