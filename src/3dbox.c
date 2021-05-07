@@ -43,12 +43,13 @@ static int ordFactor = 1;
 #define UPLINE 1
 
 #define REPDIAMETER 16 // represent pieces this large
-#define SETSIZE 10 // number of pieces in the set
+#define SETSIZE 30 // number of pieces in the set
 static int setSize; // for sets of polyominoes
 static int qty[SETSIZE]; // limit on number of pieces used
 static int qtyc[SETSIZE]; // limit on chiral pieces used
 static int qtySpec; // some quantity was specified
 static int qtyTotal;
+static int qu[SETSIZE], quc[SETSIZE]; // quantity used
 #define MAXORDER 1000
 #define BOXWIDTH 32
 
@@ -181,7 +182,7 @@ short filler;
 struct SLICE pattern[NSQ];
 };
 
-#define O_MAX 500
+#define O_MAX 1000
 static int o_max; /* number of orientations */
 static int o_max2;
 static struct ORIENT o_list[O_MAX];
@@ -752,10 +753,10 @@ compileRotations();
 if(*s == '=') {
 int j = strtol(s+1, (char**)&s, 10);
 if(j <= 0 || j > MAXORDER) bailout("quantity out of range, limit 1 to %d", MAXORDER);
-qty[setSize] = j, qtySpec = 1, qtyTotal += nsq * j;
+qty[setSize] = j, qtyc[setSize] = -1, qtySpec = 1, qtyTotal += nsq * j;
 if(*s == '=') {
 j = strtol(s+1, (char**)&s, 10);
-if(j <= 0 || j > MAXORDER) bailout("quantity out of range, limit 1 to %d", MAXORDER);
+if(j < 0 || j > MAXORDER) bailout("quantity out of range, limit 0 to %d", MAXORDER);
 qtyc[setSize] = j, qtyTotal += nsq * j;
 }
 if(*s && *s != '_') bailout("unexpected character %c after quantity specifier", *s);
@@ -1211,6 +1212,15 @@ if(++p->onum == o_max) goto backup;
 #if NEAR
 if(p->near & o->near) goto next;
 #endif
+if(qtySpec) {
+int piece = o->pno;
+if(qtyc[piece] >= 0) { // chirality specified
+if(o->inspace && qu[piece] == qty[piece]) goto next;
+if(!o->inspace && quc[piece] == qtyc[piece]) goto next;
+} else {
+if(qu[piece] == qty[piece]) goto next;
+}
+}
 x0 = p->x - o->x;
 if(x0 < 0) goto next;
 if(x0 + o->rng_x > dim_x) goto next;
@@ -1254,12 +1264,13 @@ ws[p->xy+s->xy] |= s->bits;
 if(!--k) break;
 ++s;
 }
+if(qtySpec) {
+int piece = o->pno;
+if(qtyc[piece] >= 0 && !o->inspace) ++quc[piece]; else ++qu[piece];
+}
 goto advance;
 
 backup:
-#if DEBUG
-puts("}");
-#endif
 if(--lev < 0) {
 puts("no solution");
 return 0;
@@ -1277,10 +1288,17 @@ printf("pop %d\n", j);
 #endif
 }
 // unplace piece
+#if DEBUG
+puts("}");
+#endif
 s = o->pattern; k = o->slices; while(1) {
 ws[p->xy+s->xy] ^= s->bits;
 if(!--k) break;
 ++s;
+}
+if(qtySpec) {
+int piece = o->pno;
+if(qtyc[piece] >= 0 && !o->inspace) --quc[piece]; else --qu[piece];
 }
 goto next;
 }

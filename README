@@ -502,20 +502,40 @@ The spatial pentomino formed by placing a cube ontop of a 2×2 block has order 4
 Recall the hex puzzle, which attained commercial success.
 The 12 distinct pentominoes tile a 6 by 10 board.
 Perhaps a 3 dimensional version would also attain commercial success.
+The command line is rather awkward, but you can designate the 12 pentominoes,
+with quantity specifiers, and its containing box, like this.
+3dbox f8=1_f080=1_f040=1_e030=1_e08080=1_e04040=1_40e040=1_80e020=1_80e040=1_c06020=1_e0a0=1_e0c0=1 4 3 5
+These 12 pentominoes fill a 5 by 4 by 3 box as follows.
+
+aaaaa
+bbbbl
+bgffl
+fffhl
+-----
+cccci
+dciii
+gggil
+dhhhl
+-----
+eejjj
+deekj
+dgekj
+dhkkk
+
 If we ignore chirality, there are 11 new pentominoes in 3 dimensions.
 As mentioned before, we humans can't reflect pieces in 3 space, so bring in
-the left and right handed versions, and there are 17 new pentominoes.
-combine this with the original 12, and there are 29, which is a prime number,
+the left and right handed versions, and there are 19 new pentominoes.
+combine this with the original 12, and there are 31, which is a prime number,
 and doesn't lead to a convenient rectangle.
-Omit the long pentomino, 5 in a row, and find 28 pieces,
-filling a box 7 by 5 by 4.
-I haven't explored this, but it seems interesting,
-and I rather wish I had the pieces in my hands to play with.
+Omit the long pentomino, 5 in a row, and find 30 pieces,
+filling a box 6 by 5 by 5.
+I rather wish I had the pieces in my hands to explore this real world puzzle.
+More on this later.
 
 My tiling software, in trec.c,
 would have to be restructured to find the order of a 3 dimensional polyomino,
 that is, the smallest box that could be filled with this polyomino.
-This has been done in 3dbox.c.
+This has been done, in 3dbox.c.
 This program is simpler: no interactive features (^c kills the program),
 no multithreading, no config file.
 Everything is on the command line.
@@ -535,11 +555,17 @@ and some matrix solutionss are in solution-3d.
 If you want to search by nodes, the way trec.c does,
 rather than brute force, use the -m option.
 -m20 creates a cache of 20 megabytes, and uses nodes.
+
 3dbox e04040 10 3 10
 3dbox -m2 e04040 10 3 10
+
 Both produce the same solution, 60 T pentominoes packing a 10 by 3 by 10 box.
 As the size of the box increases, you will want to search by nodes,
-or the program will take forever.
+or the program will take forever!
+
+I am on the path to finding the orders of all the pentominoes in 3d.
+There are only a couple yet to resolve.
+See solution-3d for these tilings.
 
 Recall the (still open) conjecture that no polyomino has odd order.
 This applies to the plane, but in 3 dimensions the conjecture is false.
@@ -548,4 +574,14 @@ It fills a box 3 by 3 by 7.
 (See solution-3d).
 This suggests, to me anyways, that the conjecture might be false in the plane,
 we just haven't found a counterexample.
+
+Returning to the 30 penominoes, including the mirror versions when chiral,
+and omiting the line, let's try to fill a 5 by 5 by 6 box.
+My program can search for a solution, though it hasn't found one yet.
+I include the command line here, because it is far from obvious,
+and it illustrates how to specify the number of left and right handed versions.
+I moved the ugly piece to the front, and some friendly flat pieces to the end,
+in hopes of finding a solution sooner.
+
+3dbox c040!0060=1=1_f040=1_e030=1_e08080=1_e04040=1_40e040=1_80e020=1_80e040=1_c06020=1_e0a0=1_e080!0080=1=1_e080!80=1=1_e080!40=1=1_e080!20=1=1_e040!40=1_e040!0040=1=1_c060!80=1=1_c060!40=1=1_c0c0!80=1_c080!00c0=1_f080=1_e0c0=1 5 5 6
 
