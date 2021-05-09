@@ -317,6 +317,7 @@ if(mask) orib3[n].xy = y*BOXWIDTH + x, orib3[n].bits = mask, ++n;
 o = o_list;
 for(j=0; j<o_max; ++j, ++o)
 if( n == o->slices && !memcmp(orib3, o->pattern, sizeof(struct SLICE)*n)) {
+if(j < o_max2) bailout("a piece is duplicated in the set", 0);
 o->inspace |= !chiral;
 if((o->zflip&3) == r1 &&
 (o->zflip&4) != (r2<<2))
@@ -764,6 +765,7 @@ if(*s && *s != '_') bailout("unexpected character %c after quantity specifier", 
 
 if(*s) ++s;
 ++setSize;
+o_max2 = o_max;
 } /* loop over pieces in the set */
 
 if(cbflag) {
@@ -783,7 +785,6 @@ stopgap = (setMinDimension&1) ? setMinDimension : setMinDimension - 1;
 forgetgap = stopgap/2 - setMaxDimension/2 - 1;
 if(forgetgap >= 0) bailout("forget gap should be negative, not %d", forgetgap);
 
-o_max2 = o_max;
 /* I don't think we need this.
 moreOrientations();
 */

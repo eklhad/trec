@@ -522,13 +522,15 @@ deekj
 dgekj
 dhkkk
 
-If we ignore chirality, there are 11 new pentominoes in 3 dimensions.
-As mentioned before, we humans can't reflect pieces in 3 space, so bring in
-the left and right handed versions, and there are 19 new pentominoes.
+They also fill a 2 by 5 by 6 box, and a 2 by 3 by 10 box.
+
+There are 11 new pentominoes in 3 dimensions. As mentioned before,
+we humans can't reflect pieces in 3 space, so bring in the left and right handed
+versions, and there are 19 new pieces to hold in your hand.
 combine this with the original 12, and there are 31, which is a prime number,
 and doesn't lead to a convenient rectangle.
 Omit the long pentomino, 5 in a row, and find 30 pieces,
-filling a box 6 by 5 by 5.
+suggesting a box 6 by 5 by 5.
 I rather wish I had the pieces in my hands to explore this real world puzzle.
 More on this later.
 
@@ -580,8 +582,9 @@ and omiting the line, let's try to fill a 5 by 5 by 6 box.
 My program can search for a solution, though it hasn't found one yet.
 I include the command line here, because it is far from obvious,
 and it illustrates how to specify the number of left and right handed versions.
-I moved the ugly piece to the front, and some friendly flat pieces to the end,
-in hopes of finding a solution sooner.
+I moved the ugly piece to the front, and some friendly pieces to the end,
+in hopes of finding a solution sooner, but nothing yet.
+Obviously this is not a marketable puzzle for the public.
 
-3dbox c040!0060=1=1_f040=1_e030=1_e08080=1_e04040=1_40e040=1_80e020=1_80e040=1_c06020=1_e0a0=1_e080!0080=1=1_e080!80=1=1_e080!40=1=1_e080!20=1=1_e040!40=1_e040!0040=1=1_c060!80=1=1_c060!40=1=1_c0c0!80=1_c080!00c0=1_f080=1_e0c0=1 5 5 6
+3dbox c040!0060=1=1_f040=1_e030=1_e04040=1_40e040=1_80e020=1_80e040=1_c06020=1_e080!0080=1=1_e080!80=1=1_e080!40=1=1_e080!20=1=1_e040!40=1_e040!0040=1=1_c060!80=1=1_c060!40=1=1_c080!00c0=1_f080=1_e0a0=1_e08080=1_c0c0!80=1_e0c0=1 5 5 6
 
