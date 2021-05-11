@@ -588,3 +588,12 @@ Obviously this is not a marketable puzzle for the public.
 
 3dbox c040!0060=1=1_f040=1_e030=1_e04040=1_40e040=1_80e020=1_80e040=1_c06020=1_e080!0080=1=1_e080!80=1=1_e080!40=1=1_e080!20=1=1_e040!40=1_e040!0040=1=1_c060!80=1=1_c060!40=1=1_c080!00c0=1_f080=1_e0a0=1_e08080=1_c0c0!80=1_e0c0=1 5 5 6
 
+For modest puzzles, with no repeated pieces, we can generate and/or count all
+the solutions. Use -c to count, and -a to see all of them. However, in some
+situations, duplicate patterns will appear, and will be flagged accordingly.
+The best way to avoid this is to put symmetric pieces at the end, like this.
+
+3dbox -a 80e040=1_f040=1_e030=1_c06020=1_f8=1_e04040=1_e0a0=1_f080=1_e08080=1 3 3 5
+
+This finds the 3 distinct solutions to packing 9 pentominoes in a 3 by 3 by 5 box.
+
