@@ -2,26 +2,6 @@
 3dbox.c: fill a box with 3d polyominoes.
 *********************************************************************/
 
-#define NSQ 100 // number of squares in largest polyomino
-static int nsq; // number of squares in the polyomino
-static int nsqMix; // different square counts among the pieces
-static int dim_x, dim_y, dim_z; // box being filled
-static int curDepth; // when climbing through layers
-static int maxDepth, minDepth;
-static int reachup; /* greatest reach of node so far */
-static int setMaxDimension, setMinDimension;
-static int stopgap, forgetgap;
-static char r_shorts; // nodes must use shorts, rather than bytes
-static int restart = 0; // depth when resuming the analysis
-static int restartParent;
-static int boxOrder, boxArea, boxVolume;
-static int cbflag; // checkerboard flag
-static int ordFactor = 1;
-
-// see the comments at the top of trec.c
-#define stopsearch (2*curDepth + stopgap > maxDepth)
-#define stopstore(x) (2*curDepth + stopgap == maxDepth || curDepth + x.depth + x.gap > maxDepth)
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -40,7 +20,45 @@ static int ordFactor = 1;
 #define DIAG 1
 #define NEAR 1
 #define SWING 1
-#define UPLINE 1
+
+typedef unsigned char uchar;
+typedef signed char schar;
+typedef ushort shapebits;
+
+// short highbit macros
+#define HIGHBIT 0x8000
+#define isHighbit(word) ((short)(word) < 0)
+#define isNotHighbit(word) ((short)(word) >= 0)
+
+// command line parameters
+static uchar doNodes; // look by using nodes instead of filling the entire box
+static uchar robin = 1; // round robin on the colors
+static uchar countFlag; // count or generate solutions
+static int countSol = 0;
+static int oc_2, oc_3, oc_4, oc_6; // overcounts
+static int megaNodes = 80; // millions of nodes that can be cached
+static long maxNodes; // megaNodes times a million
+static long slopNodes; // maxNodes plus some slop for the randomness of the hash
+static int dim_x, dim_y, dim_z; // box being filled
+static int boxOrder, boxArea, boxVolume;
+
+#define NSQ 100 // number of squares in largest polyomino
+static int nsq; // number of squares in the polyomino
+static int nsqMix; // different square counts among the pieces
+static int curDepth; // when climbing through layers
+static int maxDepth, minDepth;
+static int reachup; /* greatest reach of node so far */
+static int setMaxDimension, setMinDimension;
+static int stopgap, forgetgap;
+static uchar r_shorts; // nodes must use shorts, rather than bytes
+static int restart = 0; // depth when resuming the analysis
+static int restartParent;
+static int cbflag; // checkerboard flag
+static int ordFactor = 1;
+
+// see the comments at the top of trec.c
+#define stopsearch (2*curDepth + stopgap > maxDepth)
+#define stopstore(x) (2*curDepth + stopgap == maxDepth || curDepth + x.depth + x.gap > maxDepth)
 
 #define REPDIAMETER 16 // represent pieces this large
 #define SETSIZE 30 // number of pieces in the set
@@ -53,15 +71,6 @@ static int qtyTotal;
 static int qu[SETSIZE], quc[SETSIZE]; // quantity used
 #define MAXORDER 1000
 #define BOXWIDTH 32
-
-typedef unsigned char uchar;
-typedef signed char schar;
-typedef ushort shapebits;
-
-// short highbit macros
-#define HIGHBIT 0x8000
-#define isHighbit(word) ((short)(word) < 0)
-#define isNotHighbit(word) ((short)(word) >= 0)
 
 // orientation boards
 static uchar orib1[REPDIAMETER][REPDIAMETER][REPDIAMETER];
@@ -177,8 +186,10 @@ uchar zflip;
 int near;
 // the swing orientations, when one corner swings around to the other.
 short hr, vr; // horizontal vertical reflections
-short dr, dr2; // diagonal reflections
+short dxy, dxz, dyz; // diagonal reflections
 short r1, r2, r3; // rotations
+short dr2; // rotate 180 then xy reflect
+short spin1, spin2;
 uchar zero_spin, zero_dxy, zero_dxz, zero_dyz, zero_hr, zero_vr, zero_zr, farbits;
 struct SLICE pattern[NSQ];
 };
@@ -519,7 +530,7 @@ const struct SLICE *s;
 
 o = o_list;
 for(i=0; i<o_max2; ++i, ++o)
-o->r1 = o->r2 = o->r3 = o->hr = o->vr = o->dr = o->dr2 = -1;
+o->r1 = o->r2 = o->r3 = o->hr = o->vr = o->dxy = o->dxz = o->dyz = o->dr2 = o->spin1 = o->spin2 = -1;
 
 o = o_list;
 for(i=0; i<o_max; ++i, ++o) {
@@ -552,7 +563,8 @@ orib3[j].xy = (r-1-y) * BOXWIDTH + r-1-x;
 }
 o_list[sortSlices(n)].r2 = i;
 
-if(dim_x != dim_y) continue;
+if(dim_x == dim_y) {
+// these only make sense on a square base.
 
 s = o->pattern;
 for(j=0; j<n; ++j, ++s) {
@@ -576,7 +588,7 @@ y = s->xy / BOXWIDTH, x = s->xy % BOXWIDTH;
 orib3[j].bits = s->bits;
 orib3[j].xy = x * BOXWIDTH + y;
 }
-o_list[sortSlices(n)].dr = i;
+o_list[sortSlices(n)].dxy = i;
 
 s = o->pattern;
 for(j=0; j<n; ++j, ++s) {
@@ -585,7 +597,7 @@ orib3[j].bits = s->bits;
 orib3[j].xy = (r-1-x) * BOXWIDTH + (r-1-y);
 }
 o_list[sortSlices(n)].dr2 = i;
-
+}
 }
 
 #if DEBUG
@@ -593,7 +605,9 @@ o = o_list;
 for(i=0; i<o_max; ++i, ++o) {
 if(o->hr >= 0) printf("%d:", o->hr), print_o(o_list+o->hr), printf("hr from %d:", i), print_o(o);
 if(o->vr >= 0) printf("%d:", o->vr), print_o(o_list+o->vr), printf("vr from %d:", i), print_o(o);
-if(o->dr >= 0) printf("%d:", o->dr), print_o(o_list+o->dr), printf("dr from %d:", i), print_o(o);
+if(o->dxy >= 0) printf("%d:", o->dxy), print_o(o_list+o->dxy), printf("dxy from %d:", i), print_o(o);
+if(o->dxz >= 0) printf("%d:", o->dxz), print_o(o_list+o->dxz), printf("dxz from %d:", i), print_o(o);
+if(o->dyz >= 0) printf("%d:", o->dyz), print_o(o_list+o->dyz), printf("dyz from %d:", i), print_o(o);
 if(o->dr2 >= 0) printf("%d:", o->dr2), print_o(o_list+o->dr2), printf("dr2 from %d:", i), print_o(o);
 if(o->r1 >= 0) printf("%d:", o->r1), print_o(o_list+o->r1), printf("r1 from %d:", i), print_o(o);
 if(o->r2 >= 0) printf("%d:", o->r2), print_o(o_list+o->r2), printf("r2 from %d:", i), print_o(o);
@@ -925,14 +939,6 @@ break;
 } while(++minDepth);
 }
 
-static uchar doNodes; // look by using nodes instead of filling the entire box
-static uchar robin = 1; // round robin on the colors
-static uchar countFlag; // count or generate solutions
-static int countSol = 0;
-static int oc_2, oc_3, oc_4, oc_6; // overcounts
-static int megaNodes = 80; // millions of nodes that can be cached
-static long maxNodes; // megaNodes times a million
-static long slopNodes; // maxNodes plus some slop for the randomness of the hash
 static struct NODE floor;
 static void initFiles(void);
 static int solve(void);
@@ -1509,16 +1515,17 @@ if(p->z + o->rng_z > dim_z) goto next;
 // the piece fits in the box.
 
 #if SWING
-if(!z) {
+if(!p->z) {
 int swing;
 int corner = stack[0].onum;
+x = p->x, y = p->y;
 // I think this works even if p == stack, the first piece touches two corners.
 if((swing = o->hr) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->vr) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if((swing = o->r2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if(dim_x == dim_y) {
 if((swing = o->dr2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
-if((swing = o->dr) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
+if((swing = o->dxy) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
 if((swing = o->r1) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->r3) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
 }
@@ -2609,13 +2616,14 @@ if(!this_idx && !min_z) {
 // produced; this just gets us off the floor faster.
 int swing;
 int corner = stack[0].onum;
+x = p->x, y = p->y;
 // I think this works even if p == stack, the first piece touches two corners.
 if((swing = o->hr) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->vr) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if((swing = o->r2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if(dim_x == dim_y) {
 if((swing = o->dr2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
-if((swing = o->dr) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
+if((swing = o->dxy) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
 if((swing = o->r1) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->r3) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
 }
