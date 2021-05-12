@@ -67,7 +67,7 @@ static int qty[SETSIZE]; // limit on number of pieces used
 static int qtyc[SETSIZE]; // limit on chiral pieces used
 static int qtySpec; // some quantity was specified
 static int qtyOne = 1; // just one of each piece
-static int qtyTotal;
+static int qtyTotal, qtyOrder;
 static int qu[SETSIZE], quc[SETSIZE]; // quantity used
 #define MAXORDER 1000
 #define BOXWIDTH 32
@@ -908,13 +908,13 @@ compileRotations();
 if(*s == '=') {
 int j = strtol(s+1, (char**)&s, 10);
 if(j <= 0 || j > MAXORDER) bailout("quantity out of range, limit 1 to %d", MAXORDER);
-qty[setSize] = j, qtyc[setSize] = -1, qtySpec = 1, qtyTotal += nsq * j;
+qty[setSize] = j, qtyc[setSize] = -1, qtySpec = 1, qtyTotal += nsq * j, qtyOrder += j;
 if(j > 1) qtyOne = 0;
 if(*s == '=') {
 j = strtol(s+1, (char**)&s, 10);
 if(j < 0 || j > MAXORDER) bailout("quantity out of range, limit 0 to %d", MAXORDER);
-qtyc[setSize] = j, qtyTotal += nsq * j;
-if(j) qtyOne = 0;
+qtyc[setSize] = j, qtyTotal += nsq * j, qtyOrder += j;
+if(j > 1) qtyOne = 0;
 }
 if(*s && *s != '_') bailout("unexpected character %c after quantity specifier", *s);
 }
@@ -928,9 +928,6 @@ if(cbflag) {
 puts("checkerboard upgrade");
 ordFactor = 2;
 }
-
-if(nsqMix)
-bailout("all polyominoes in the set must have the same number of squares", 0);
 
 if(!qtySpec) qtyOne = 0;
 if(qtySpec) {
@@ -1040,6 +1037,8 @@ bailout("usage: 3dbox [-l] [-c] [-a] [-mnnn] piece_set width depth height[@resta
 lowEmptySet();
 stringPiece(argv[0]);
 
+if(nsqMix && (doNodes || argc == 2)) bailout("all polyominoes in the set must have the same number of squares", 0);
+
 if(countFlag) {
 char opt = (countFlag == 1 ? 'c' : 'a');
 if(doNodes || argc == 2)
@@ -1052,9 +1051,13 @@ dim_y = atoi(argv[2]);
 dim_z = atoi(argv[3]);
 boxArea = dim_x * dim_y;
 boxVolume = boxArea * dim_z;
+if(!nsqMix) {
 if(boxVolume % nsq) bailout("volume %d does not admit a whole number of pieces", boxVolume);
-if(qtySpec && boxVolume != qtyTotal) bailout("box volume is not consistent with the volume of the pieces %d", qtyTotal);
 boxOrder = boxVolume / nsq;
+} else if(qtySpec) {
+if(boxVolume != qtyTotal) bailout("box volume is not consistent with the volume of the pieces %d", qtyTotal);
+boxOrder = qtyOrder;
+} else bailout("all polyominoes in the set must have the same number of squares", 0);
 if(boxOrder > MAXORDER) bailout("order to large, limit %d", MAXORDER);
 if(dim_y > dim_x || dim_x > dim_z)
 bailout("dimensions must be y x z increasing", 0);
@@ -1337,7 +1340,7 @@ int corner_ono, corner_piece, thispiece;
 int oc; // overcount
 int j;
 int x0, y0;
-const struct ORIENT *q, *r;
+const struct ORIENT *q;
 const struct SF *w;
 
 if(!countFlag) {
@@ -1348,7 +1351,7 @@ exit(0);
 
 corner_ono = stack[0].onum;
 q = o_list + corner_ono;
-corner_piece = q->pno;
+corner_piece = q->pno * 2 + q->inspace;
 if(dim_x == q->rng_x && dim_y == q->rng_y && q->farbits&0x10 ||
 dim_x == q->rng_x && dim_y == q->rng_y && dim_z == q->rng_z && q->farbits&4 ||
 dim_x == q->rng_x && dim_z == q->rng_z && q->farbits&2 ||
@@ -1360,8 +1363,8 @@ exit(1);
 
 // look for lesser pieces on the ceiling
 for(w = stack+1; w < p; ++w) {
-r = o_list + w->onum;
-thispiece = r->pno;
+const struct ORIENT *r = o_list + w->onum;
+thispiece = r->pno * 2 + r->inspace;
 if(thispiece >= corner_piece) continue; // not lesser
 if(w->z + r->rng_z < dim_z) continue; // not on the ceiling
 x0 = w->x - r->x;
@@ -1589,24 +1592,35 @@ if(y0 + o->rng_y > dim_y) goto next;
 if(p->z + o->rng_z > dim_z) goto next;
 // the piece fits in the box.
 
+// Look for collision.
+p->xy = y0 * BOXWIDTH + x0;
+s = o->pattern; k = o->slices; while(1) {
+if(ws[p->xy+s->xy] & s->bits) goto next;
+if(!--k) break;
+++s;
+}
+
 #if SWING
 if(!p->z) {
 int swing;
 int corner = stack[0].onum;
 // I think this works even if p == stack, the first piece touches two corners.
-if((swing = o->hr) >= 0 && y0 == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
-if((swing = o->vr) >= 0 && x0 == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
+// Note that we can't reflect if you specified 0 reflections of a piece.
+// But no chirality restrictions is -1, which passes the qtyc test.
+// The piece is ok (chirality) where it is.
+if((swing = o->hr) >= 0 && y0 == 0 && x0 + o->rng_x == dim_x && swing < corner && (o_list[swing].inspace || qtyc[o_list[swing].pno])) goto next;
+if((swing = o->vr) >= 0 && x0 == 0 && y0 + o->rng_y == dim_y && swing < corner && (o_list[swing].inspace || qtyc[o_list[swing].pno])) goto next;
 if((swing = o->r2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if(dim_x == dim_y) {
-if((swing = o->dr2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
-if((swing = o->dxy) >= 0 && x0 == 0 && y0 == 0 && swing < corner) goto next;
+if((swing = o->dr2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner && (o_list[swing].inspace || qtyc[o_list[swing].pno])) goto next;
+if((swing = o->dxy) >= 0 && x0 == 0 && y0 == 0 && swing < corner && (o_list[swing].inspace || qtyc[o_list[swing].pno])) goto next;
 if((swing = o->r1) >= 0 && y0 == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->r3) >= 0 && x0 == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
 }
 if(x0 == 0 && y0 == 0) {
-if(dim_x == dim_z && (swing = o->dxz) >= 0 &&  swing < corner) goto next;
+if(dim_x == dim_z && (swing = o->dxz) >= 0 &&  swing < corner && (o_list[swing].inspace || qtyc[o_list[swing].pno])) goto next;
 if(dim_y == dim_z) {
-if((swing = o->dyz) >= 0 &&  swing < corner) goto next;
+if((swing = o->dyz) >= 0 &&  swing < corner && (o_list[swing].inspace || qtyc[o_list[swing].pno])) goto next;
 // with y <= x <= z, x = y = z
 if((swing = o->spin1) >= 0 &&  swing < corner) goto next;
 if((swing = o->spin2) >= 0 &&  swing < corner) goto next;
@@ -1615,13 +1629,6 @@ if((swing = o->spin2) >= 0 &&  swing < corner) goto next;
 }
 #endif
 
-// Look for collision.
-p->xy = y0 * BOXWIDTH + x0;
-s = o->pattern; k = o->slices; while(1) {
-if(ws[p->xy+s->xy] & s->bits) goto next;
-if(!--k) break;
-++s;
-}
 #if DEBUG
 printf("place{%d,%d,%d ", p->x, p->y, p->z);
 print_o(o);
@@ -2693,6 +2700,14 @@ if(y0 < 0) goto next;
 if(y0 + o->rng_y > dim_y) goto next;
 // the piece fits in the box.
 
+// Look for collision.
+p->xy = y0 * BOXWIDTH + x0;
+s = o->pattern; k = o->slices; while(1) {
+if(b0[p->xy+s->xy] & (s->bits>>min_z)) goto next;
+if(!--k) break;
+++s;
+}
+
 #if SWING
 if(!this_idx && !min_z) {
 // Sinced nodes are normalized through the dihedral group, the same nodes are
@@ -2712,13 +2727,6 @@ if((swing = o->r3) >= 0 && x0 == 0 && y0 + o->rng_y == dim_y && swing < corner) 
 }
 #endif
 
-// Look for collision.
-p->xy = y0 * BOXWIDTH + x0;
-s = o->pattern; k = o->slices; while(1) {
-if(b0[p->xy+s->xy] & (s->bits>>min_z)) goto next;
-if(!--k) break;
-++s;
-}
 #if DEBUG
 printf("place{%d,%d,%d ", p->x, p->y, min_z);
 print_o(o);
