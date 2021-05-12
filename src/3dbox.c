@@ -1593,18 +1593,17 @@ if(p->z + o->rng_z > dim_z) goto next;
 if(!p->z) {
 int swing;
 int corner = stack[0].onum;
-x = p->x, y = p->y;
 // I think this works even if p == stack, the first piece touches two corners.
-if((swing = o->hr) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
-if((swing = o->vr) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->hr) >= 0 && y0 == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
+if((swing = o->vr) >= 0 && x0 == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if((swing = o->r2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if(dim_x == dim_y) {
 if((swing = o->dr2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
-if((swing = o->dxy) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
-if((swing = o->r1) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
-if((swing = o->r3) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->dxy) >= 0 && x0 == 0 && y0 == 0 && swing < corner) goto next;
+if((swing = o->r1) >= 0 && y0 == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
+if((swing = o->r3) >= 0 && x0 == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
 }
-if(x == 0 && y == 0) {
+if(x0 == 0 && y0 == 0) {
 if(dim_x == dim_z && (swing = o->dxz) >= 0 &&  swing < corner) goto next;
 if(dim_y == dim_z) {
 if((swing = o->dyz) >= 0 &&  swing < corner) goto next;
@@ -2700,16 +2699,15 @@ if(!this_idx && !min_z) {
 // produced; this just gets us off the floor faster.
 int swing;
 int corner = stack[0].onum;
-x = p->x, y = p->y;
 // I think this works even if p == stack, the first piece touches two corners.
-if((swing = o->hr) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
-if((swing = o->vr) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->hr) >= 0 && y0 == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
+if((swing = o->vr) >= 0 && x0 == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if((swing = o->r2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if(dim_x == dim_y) {
 if((swing = o->dr2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
-if((swing = o->dxy) >= 0 && x == 0 && y == 0 && swing < corner) goto next;
-if((swing = o->r1) >= 0 && y == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
-if((swing = o->r3) >= 0 && x == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
+if((swing = o->dxy) >= 0 && x0 == 0 && y0 == 0 && swing < corner) goto next;
+if((swing = o->r1) >= 0 && y0 == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
+if((swing = o->r3) >= 0 && x0 == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
 }
 }
 #endif

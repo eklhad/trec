@@ -597,3 +597,10 @@ The best way to avoid this is to put symmetric pieces at the end, like this.
 
 This finds the 3 distinct solutions to packing 9 pentominoes in a 3 by 3 by 5 box.
 
+Recall that the 12 flat pentominoes tile a 6 by 10 rectangle in 2339 ways.
+Earlier we used these pieces to fill a box 3 by 4 by 5.
+According to my software, there are 3940 distinct packings.
+
+3dbox -c 80e040=1_80e020=1_c06020=1_40e040=1_e030=1_f040=1_f080=1_f8=1_e0c0=1_e08080=1_e04040=1_e0a0=1 4 3 5
+3940 solutions
+
