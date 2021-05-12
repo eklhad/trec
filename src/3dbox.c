@@ -1043,6 +1043,8 @@ if(countFlag) {
 char opt = (countFlag == 1 ? 'c' : 'a');
 if(doNodes || argc == 2)
 bailout("-%c option can only be used when filling a specific box", opt);
+if(!(qtySpec&qtyOne))
+bailout("-%c option requires exactly one of each piece", opt);
 }
 
 if(argc == 4) {
@@ -1084,10 +1086,7 @@ if(dim_x != o->rng_x) o->zero_hr = 0;
 if(dim_y != o->rng_y) o->zero_vr = 0;
 if(dim_z != o->rng_z) o->zero_zr = 0;
 }
-if(!qtyOne) {
-if(opt == 'c') bailout("-c option requires one of each piece; I cannot come up with an exact count", 0);
-printf("warning: -a option should be used with 1 instance of each piece; equivalent solutions will be generated\n");
-}else if(opt == 'a') {
+if(opt == 'a') {
 #if DEBUG
 for(j=0; j<o_max; ++j) {
 o = o_list + j;
@@ -1128,10 +1127,8 @@ countSol -= oc_2/2;
 countSol -= oc_3/3 * 2;
 countSol -= oc_4/4 * 3;
 countSol -= oc_6/6 * 5;
-if(qtyOne) {
 if(countFlag == 2) puts("");
 printf("%d solutions\n", countSol);
-}
 }
 return 0;
 }
@@ -1342,6 +1339,8 @@ int j;
 int x0, y0;
 const struct ORIENT *q;
 const struct SF *w;
+uchar reach1 = 0;
+uchar chirequal = 0;
 
 if(!countFlag) {
 puts("solution!");
@@ -1351,28 +1350,53 @@ exit(0);
 
 corner_ono = stack[0].onum;
 q = o_list + corner_ono;
-corner_piece = q->pno * 2 + q->inspace;
+corner_piece = q->pno;
+if(dim_z == q->rng_z && q->farbits&1) {
+reach1 = 1;
+if(qtyc[corner_piece] > 0) {
+printf("Chiral piece connects the origin with the top, I am not programmed to respond in this area.\n");
+print_o(q);
+print_solution();
+exit(1);
+}
+}
+
 if(dim_x == q->rng_x && dim_y == q->rng_y && q->farbits&0x10 ||
-dim_x == q->rng_x && dim_y == q->rng_y && dim_z == q->rng_z && q->farbits&4 ||
 dim_x == q->rng_x && dim_z == q->rng_z && q->farbits&2 ||
+dim_x == q->rng_x && dim_y == q->rng_y && dim_z == q->rng_z && q->farbits&4 ||
 dim_y == q->rng_y && dim_z == q->rng_z && q->farbits&8) {
 printf("Piece connects the origin with a nonadjacent corner, I am not programmed to respond in this area.\n");
 print_o(q);
+print_solution();
 exit(1);
 }
 
 // look for lesser pieces on the ceiling
 for(w = stack+1; w < p; ++w) {
 const struct ORIENT *r = o_list + w->onum;
-thispiece = r->pno * 2 + r->inspace;
-if(thispiece >= corner_piece) continue; // not lesser
 if(w->z + r->rng_z < dim_z) continue; // not on the ceiling
+thispiece = r->pno;
+if(thispiece > corner_piece) continue; // lesser, that's good
+// same piece, could reach up to the ceiling from the origin, or,
+// one could be spacial and the other chiral.
 x0 = w->x - r->x;
 y0 = w->y - r->y;
-if(x0 == 0 && y0 == 0 && r->farbits&1) return;
-if(x0 + r->rng_x == dim_x && y0 == 0 && r->farbits&2) return;
-if(x0 + r->rng_x == dim_x && y0 + r->rng_y == dim_y && r->farbits&4) return;
-if(x0 == 0 && y0 + r->rng_y == dim_y && r->farbits&8) return;
+if(x0 == 0 && y0 == 0 && r->farbits&1) {
+if(thispiece < corner_piece) return;
+if(!reach1) chirequal = 1;
+}
+if(x0 + r->rng_x == dim_x && y0 == 0 && r->farbits&2) {
+if(thispiece < corner_piece) return;
+chirequal = 1;
+}
+if(x0 + r->rng_x == dim_x && y0 + r->rng_y == dim_y && r->farbits&4) {
+if(thispiece < corner_piece) return;
+chirequal = 1;
+}
+if(x0 == 0 && y0 + r->rng_y == dim_y && r->farbits&8) {
+if(thispiece < corner_piece) return;
+chirequal = 1;
+}
 }
 
 if(countFlag == 2) puts("");
@@ -1456,6 +1480,17 @@ oc = 2;
 if(countFlag == 2) { printf("duplicate 2 xz "); print_o(q); }
 oc = 2;
 }
+}
+
+if(chirequal) {
+if(oc > 1) {
+printf("chiral top and bottom cannot combine with any symmetry at the origin.\n");
+print_o(q);
+print_solution();
+exit(1);
+}
+if(countFlag == 2) { printf("duplicate 2 chiral "); print_o(q); }
+oc = 2;
 }
 
 ++countSol;
@@ -1606,21 +1641,20 @@ int swing;
 int corner = stack[0].onum;
 // I think this works even if p == stack, the first piece touches two corners.
 // Note that we can't reflect if you specified 0 reflections of a piece.
-// But no chirality restrictions is -1, which passes the qtyc test.
-// The piece is ok (chirality) where it is.
-if((swing = o->hr) >= 0 && y0 == 0 && x0 + o->rng_x == dim_x && swing < corner && (o_list[swing].inspace || qtyc[o_list[swing].pno])) goto next;
-if((swing = o->vr) >= 0 && x0 == 0 && y0 + o->rng_y == dim_y && swing < corner && (o_list[swing].inspace || qtyc[o_list[swing].pno])) goto next;
+// we need no quantity specifiers, or qtyOne
+if((swing = o->hr) >= 0 && y0 == 0 && x0 + o->rng_x == dim_x && swing < corner && (!qtySpec || qtyOne)) goto next;
+if((swing = o->vr) >= 0 && x0 == 0 && y0 + o->rng_y == dim_y && swing < corner && (!qtySpec || qtyOne)) goto next;
 if((swing = o->r2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner) goto next;
 if(dim_x == dim_y) {
-if((swing = o->dr2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner && (o_list[swing].inspace || qtyc[o_list[swing].pno])) goto next;
-if((swing = o->dxy) >= 0 && x0 == 0 && y0 == 0 && swing < corner && (o_list[swing].inspace || qtyc[o_list[swing].pno])) goto next;
+if((swing = o->dr2) >= 0 && x0 + o->rng_x == dim_x && y0 + o->rng_y == dim_y && swing < corner && (!qtySpec || qtyOne)) goto next;
+if((swing = o->dxy) >= 0 && x0 == 0 && y0 == 0 && swing < corner && (!qtySpec || qtyOne)) goto next;
 if((swing = o->r1) >= 0 && y0 == 0 && x0 + o->rng_x == dim_x && swing < corner) goto next;
 if((swing = o->r3) >= 0 && x0 == 0 && y0 + o->rng_y == dim_y && swing < corner) goto next;
 }
 if(x0 == 0 && y0 == 0) {
-if(dim_x == dim_z && (swing = o->dxz) >= 0 &&  swing < corner && (o_list[swing].inspace || qtyc[o_list[swing].pno])) goto next;
+if(dim_x == dim_z && (swing = o->dxz) >= 0 &&  swing < corner && (!qtySpec || qtyOne)) goto next;
 if(dim_y == dim_z) {
-if((swing = o->dyz) >= 0 &&  swing < corner && (o_list[swing].inspace || qtyc[o_list[swing].pno])) goto next;
+if((swing = o->dyz) >= 0 &&  swing < corner && (!qtySpec || qtyOne)) goto next;
 // with y <= x <= z, x = y = z
 if((swing = o->spin1) >= 0 &&  swing < corner) goto next;
 if((swing = o->spin2) >= 0 &&  swing < corner) goto next;
@@ -1634,7 +1668,7 @@ printf("place{%d,%d,%d ", p->x, p->y, p->z);
 print_o(o);
 sleep(1);
 #endif
-if(p == stack && countFlag == 1) printf("origin %d\n", p->onum);
+if(p == stack && countFlag == 1) { printf("origin %d ", p->onum); print_o(o); }
 s = o->pattern; k = o->slices; while(1) {
 ws[p->xy+s->xy] |= s->bits;
 if(!--k) break;
