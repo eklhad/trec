@@ -1339,8 +1339,6 @@ int j;
 int x0, y0;
 const struct ORIENT *q;
 const struct SF *w;
-uchar reach1 = 0;
-uchar chirequal = 0;
 
 if(!countFlag) {
 puts("solution!");
@@ -1351,16 +1349,6 @@ exit(0);
 corner_ono = stack[0].onum;
 q = o_list + corner_ono;
 corner_piece = q->pno;
-if(dim_z == q->rng_z && q->farbits&1) {
-reach1 = 1;
-if(qtyc[corner_piece] > 0) {
-printf("Chiral piece connects the origin with the top, I am not programmed to respond in this area.\n");
-print_o(q);
-print_solution();
-exit(1);
-}
-}
-
 if(dim_x == q->rng_x && dim_y == q->rng_y && q->farbits&0x10 ||
 dim_x == q->rng_x && dim_z == q->rng_z && q->farbits&2 ||
 dim_x == q->rng_x && dim_y == q->rng_y && dim_z == q->rng_z && q->farbits&4 ||
@@ -1383,23 +1371,26 @@ x0 = w->x - r->x;
 y0 = w->y - r->y;
 if(x0 == 0 && y0 == 0 && r->farbits&1) {
 if(thispiece < corner_piece) return;
-if(!reach1) chirequal = 1;
 }
 if(x0 + r->rng_x == dim_x && y0 == 0 && r->farbits&2) {
 if(thispiece < corner_piece) return;
-chirequal = 1;
 }
 if(x0 + r->rng_x == dim_x && y0 + r->rng_y == dim_y && r->farbits&4) {
 if(thispiece < corner_piece) return;
-chirequal = 1;
 }
 if(x0 == 0 && y0 + r->rng_y == dim_y && r->farbits&8) {
 if(thispiece < corner_piece) return;
-chirequal = 1;
 }
 }
 
 if(countFlag == 2) puts("");
+
+if(qtyc[corner_piece] > 0) {
+printf("chiral piece at the origin, I can't handle this situation, please put your chiral pieces last in the set.\n");
+print_o(q);
+print_solution();
+exit(1);
+}
 
 // ok, none of the pieces in the corners of the ceiling are lesser.
 // See if the piece at the origin is too weird.
@@ -1480,17 +1471,6 @@ oc = 2;
 if(countFlag == 2) { printf("duplicate 2 xz "); print_o(q); }
 oc = 2;
 }
-}
-
-if(chirequal) {
-if(oc > 1) {
-printf("chiral top and bottom cannot combine with any symmetry at the origin.\n");
-print_o(q);
-print_solution();
-exit(1);
-}
-if(countFlag == 2) { printf("duplicate 2 chiral "); print_o(q); }
-oc = 2;
 }
 
 ++countSol;

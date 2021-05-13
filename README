@@ -606,7 +606,37 @@ According to my software, there are 3940 distinct packings.
 
 The 2 by 3 by 10 box holds 12 solutions, and the 2 by 5 by 6 box holds 264 solutions.
 
-The well known Soma puzzle has 245 solutions.
+The well known Soma puzzle has 240 solutions.
+My software can generate them, without duplicates, but the order of the
+pieces in the set is critical. Chiral has to be at the end.
+3dbox can't handle a solution with a chiral piece at the origin.
 
-3dbox -a c080!40=1=1_c060=1_e080=1_e040=1_c080!80=1_c080=1 3 3 3
+3dbox -a c08080=1_80c080=1_c060=1_c080=1_c080!80=1_c080!40=1=1 3 3 3
+
+The first piece is the L, with no symmetry, and every solution has L at the
+origin, thus no duplicates are generated.
+By spinning and reflecting, each solution has L in a preferred orientation,
+one with its corner in the lower left corner of the cube, and one with its toe
+in the lower left corner of the cube.
+
+3dbox -a 80c080=1_c080!80=1_c08080=1_c060=1_c080=1_c080!40=1=1 3 3 3
+
+This line starts with the triangle tetromino.
+Every solution has the triangle at the origin, and 3dbox puts it in a preferred
+orientation, with its length running along the edge y = z = 0.
+You can place the triangle here too, if you have the puzzle in your hand; and
+you know you are on your way to a solution, and you won't miss any solutions.
+This piece is symmetric, so each solution is printed twice,
+courtesy of its reflection through the triangle.
+I flag them with the phrase duplicate 2, and adjust the count,
+so at the end of the page, it still says 240 solutions.
+Yes, the output has duplicates, but hey, if you don't want them,
+then put the L back in front.
+
+3dbox -a c080!80=1_c08080=1_80c080=1_c060=1_c080=1_c080!40=1=1 3 3 3
+
+The corner is first in line, and when it fits into the corner of the cube,
+there is a 6 fold symmetry. This is indicated by duplicate 6 in the output.
+These solutions are repeated 6 times over, rotations and reflections,
+but at the end of the page, it still says 240 solutions.
 
