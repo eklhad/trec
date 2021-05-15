@@ -1013,6 +1013,7 @@ static int solve(void);
 static void expandNode(long this_idx, const uchar *base_b);
 static void expandNodes(void);
 static void markOldNodes(void);
+static void inCorner(void);
 
 int main(int argc, const char **argv)
 {
@@ -1171,6 +1172,8 @@ if(doNodes) bailout("order search using nodes is not yet implemented", 0);
 if(qtySpec) bailout("order search cannot be combined with quantity specifiers", 0);
 
 boxOrder = atoi(argv[1]);
+// order 0 is a special case
+if(!boxOrder) inCorner();
 while(1) {
 while(boxOrder % ordFactor) ++boxOrder;
 if(boxOrder > MAXORDER) bailout("order to large, limit %d", MAXORDER);
@@ -2983,4 +2986,144 @@ workEnd = workStep = 0;
 nodeStep = mon_idx;
 if(restartParent && restartParent >= nodeStep) nodeStep = restartParent;
 expandWorker(NULL);
+}
+
+/*********************************************************************
+The following is practically a separate program from the above,
+but I want to reuse the machinery to grab a piece or set of pieces
+from the command line and compute orientations etc, so it's here.
+inCorner() tries to fill the corner of a box of unspecified dimensions.
+It is here to prove certain shapes have order 0, and never tile a box.
+It is only useful for a few shapes.
+This is not very efficient.
+*********************************************************************/
+
+#define CDIM 32 // corner dimension
+#define CSTACKSIZE 2000
+
+static struct CSF { // corner stack frame
+schar x, y, z; // where piece is placed
+short onum; // orientation number
+short snum; // slice number
+} cstack[CSTACKSIZE];
+
+static void inCorner(void)
+{
+int x,y, z;
+int x1, y1, z1, x0, y0, z0;
+shapebits mask;
+int diag = 0;
+int j, k, lev = -1;
+struct CSF *p = cstack - 1;
+const struct ORIENT *o;
+const struct SLICE *s, *t;
+// can the stack handle this chunk of board?
+// If I packed it myself it would be 1/6 the size, but who cares?
+uchar b[CDIM][CDIM][CDIM];
+
+memset(b, 0, sizeof(b));
+// I'm only setting dimensions so swingSet() will run properly.
+dim_x = dim_y = dim_z = NSQ + 1;
+swingSet();
+puts("diag 0");
+
+advance:
+if(++lev == CSTACKSIZE) bailout("corner stack overflow %d", lev);
+
+// find location to place the piece
+if(!lev) x = y = z = 0;
+else {
+x = p->x, y = p->y, z = p->z;
+while(b[x][y][z]) {
+++y, --x;
+if(x >= 0) continue;
+x += y-1, y = 0, ++z;
+if(x >= 0) continue;
+++x; // next layer
+if(z == CDIM) { puts("success"); exit(0); }
+x = z, z = 0;
+if(x > diag)
+printf("diag %d\n", (diag = x));
+}
+}
+++p;
+p->x = x, p->y = y, p->z = z;
+#if DEBUG
+printf("locate %d,%d,%d\n", x, y, z);
+#endif
+p->onum = -1;
+o = o_list - 1;
+
+next_o:
+if(++p->onum == o_max) goto backup;
+++o;
+s = o->pattern - 1;
+p->snum = -1;
+next_s:
+if(++p->snum == o->slices) goto next_o;
+++s;
+mask = s->bits;
+z1 = 0;
+while(isNotHighbit(mask)) ++z1, mask <<= 1;
+x1 = s->xy % BOXWIDTH, y1 = s->xy / BOXWIDTH;
+x0 = x - x1, y0 = y - y1, z0 = z - z1;
+if(x0 < 0 || y0< 0 || z0 < 0) goto next_s;
+// look for collisions
+for(k=0, t = o->pattern; k < o->slices; ++k, ++t) {
+int x2 = t->xy % BOXWIDTH, y2 = t->xy / BOXWIDTH;
+mask = t->bits;
+for(j=0;mask; ++j, mask<<=1)
+if(isHighbit(mask) && x0+x2 < CDIM && y0+y2 < CDIM && z0+j < CDIM && b[x0+x2][y0+y2][z0+j]) goto next_s;
+}
+
+#if SWING
+if(p == cstack) {
+int swing;
+int corner = p->onum;
+if((swing = o->dxy) >= 0 && swing < corner) goto next_o;
+if((swing = o->dxz) >= 0 && swing < corner) goto next_o;
+if((swing = o->dyz) >= 0 && swing < corner) goto next_o;
+if((swing = o->spin1) >= 0 && swing < corner) goto next_o;
+if((swing = o->spin2) >= 0 && swing < corner) goto next_o;
+}
+#endif
+
+if(p == cstack) { printf("origin %d ", p->onum); print_o(o); }
+#if DEBUG
+printf("place{%d,%d,%d@%d,%d ", p->x, p->y, p->z, x1, y1);
+print_o(o);
+sleep(1);
+#endif
+for(k=0, t = o->pattern; k < o->slices; ++k, ++t) {
+int x2 = t->xy % BOXWIDTH, y2 = t->xy / BOXWIDTH;
+mask = t->bits;
+for(j=0;mask; ++j, mask<<=1)
+if(isHighbit(mask) && x0+x2 < CDIM && y0+y2 < CDIM && z0+j < CDIM) b[x0+x2][y0+y2][z0+j] = 1;
+}
+goto advance;
+
+backup:
+if(--lev < 0) {
+puts("no solution");
+exit(0);
+}
+#if DEBUG
+puts("}");
+#endif
+--p;
+o = o_list + p->onum;
+s = o->pattern + p->snum;
+mask = s->bits;
+z1 = 0;
+while(isNotHighbit(mask)) ++z1, mask <<= 1;
+x = p->x, y = p->y, z = p->z;
+x1 = s->xy % BOXWIDTH, y1 = s->xy / BOXWIDTH;
+x0 = x - x1, y0 = y - y1, z0 = z - z1;
+for(k=0, t = o->pattern; k < o->slices; ++k, ++t) {
+int x2 = t->xy % BOXWIDTH, y2 = t->xy / BOXWIDTH;
+mask = t->bits;
+for(j=0;mask; ++j, mask<<=1)
+if(isHighbit(mask) && x0+x2 < CDIM && y0+y2 < CDIM && z0+j < CDIM) b[x0+x2][y0+y2][z0+j] = 0;
+}
+goto next_s;
 }
