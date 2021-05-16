@@ -3053,7 +3053,7 @@ static void inCorner(void)
 int x,y, z;
 int x1, y1, z1, x0, y0, z0;
 shapebits mask;
-int diag = 0;
+int diag = 0, diag2;
 int j, k, lev = -1;
 struct CSF *p = cstack - 1;
 const struct ORIENT *o;
@@ -3093,6 +3093,44 @@ p->x = x, p->y = y, p->z = z;
 #if DEBUG
 printf("locate %d,%d,%d\n", x, y, z);
 #endif
+
+// look for holes
+diag2 = x + y + z;
+if(diag2 && diag2 < CDIM-2) {
+int x2, y2, z2;
+for(z2=z; z2<=diag2; ++z2)
+for(x2=0; x2<=diag2-z2; ++x2) {
+y2 = diag2 - z2 - x2;
+if(b[x2][y2][z2]) continue;
+if(!b[x2+1][y2][z2]) continue;
+if(!b[x2][y2+1][z2]) continue;
+if(!b[x2][y2][z2+1]) continue;
+if(x2 && !b[x2-1][y2][z2]) continue;
+if(y2 && !b[x2][y2-1][z2]) continue;
+if(z2 && !b[x2][y2][z2-1]) continue;
+#if DEBUG
+puts("hole");
+#endif
+goto backup;
+}
+++diag2;
+for(z2=0; z2<=diag2; ++z2)
+for(x2=0; x2<=diag2-z2; ++x2) {
+y2 = diag2 - z2 - x2;
+if(b[x2][y2][z2]) continue;
+if(!b[x2+1][y2][z2]) continue;
+if(!b[x2][y2+1][z2]) continue;
+if(!b[x2][y2][z2+1]) continue;
+if(x2 && !b[x2-1][y2][z2]) continue;
+if(y2 && !b[x2][y2-1][z2]) continue;
+if(z2 && !b[x2][y2][z2-1]) continue;
+#if DEBUG
+puts("hole+");
+#endif
+goto backup;
+}
+}
+
 p->onum = -1;
 o = o_list - 1;
 
