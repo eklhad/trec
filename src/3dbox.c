@@ -31,6 +31,7 @@ typedef ushort shapebits;
 #define isNotHighbit(word) ((short)(word) >= 0)
 
 // command line parameters
+static int showdiag;
 static uchar doNodes; // look by using nodes instead of filling the entire box
 static uchar robin = 1; // round robin on the colors
 static uchar countFlag; // count or generate solutions
@@ -192,6 +193,7 @@ short dr2; // rotate 180 then xy reflect
 short spin1, spin2;
 uchar zero_spin, zero_dxy, zero_dxz, zero_dyz, zero_hr, zero_vr, zero_zr, farbits;
 struct SLICE pattern[NSQ];
+uchar slant[NSQ];
 };
 
 #define O_MAX 1000
@@ -1030,10 +1032,12 @@ if(argc && !strcmp(*argv, "-a"))
 ++argv, --argc, countFlag = 2;
 if(argc && argv[0][0] == '-' && argv[0][1] == 'm' && isdigit(argv[0][2]))
 megaNodes = atoi(argv[0]+2), doNodes = 1, ++argv, --argc;
+if(argc && argv[0][0] == '-' && argv[0][1] == 'd' && isdigit(argv[0][2]))
+showdiag = atoi(argv[0]+2), ++argv, --argc;
 }
 
 if(argc != 2 && argc != 4)
-bailout("usage: 3dbox [-l] [-c] [-a] [-mnnn] piece_set width depth height[@restart] | 3dbox piece_set order", 0);
+bailout("usage: 3dbox [-l] [-dnn] [-c] [-a] [-mnnn] piece_set width depth height[@restart] | 3dbox piece_set order", 0);
 
 lowEmptySet();
 stringPiece(argv[0]);
@@ -3007,6 +3011,43 @@ short onum; // orientation number
 short snum; // slice number
 } cstack[CSTACKSIZE];
 
+static void slantSet(void)
+{
+struct ORIENT *o;
+const struct SLICE *s, *t;
+int diag1, diag2;
+shapebits mask;
+int x1, y1, z1, x2, y2, z2;
+int i, k, l;
+
+o = o_list;
+for(i=0; i<o_max; ++i, ++o) {
+s = o->pattern;
+for(k=0; k<o->slices; ++k, ++s) {
+mask = s->bits;
+z1 = 0;
+while(isNotHighbit(mask)) ++z1, mask <<= 1;
+x1 = s->xy % BOXWIDTH, y1 = s->xy / BOXWIDTH;
+diag1 = x1 + y1 + z1;
+
+t = o->pattern;
+for(l=0; l<o->slices; ++l, ++t) {
+if(t == s) continue;
+mask = t->bits;
+z2 = 0;
+while(isNotHighbit(mask)) ++z2, mask <<= 1;
+x2 = t->xy % BOXWIDTH, y2 = t->xy / BOXWIDTH;
+diag2 = x2 + y2 + z2;
+if(diag2 < diag1) { o->slant[k] = 1; break; }
+if(diag2 > diag1) continue;
+if(z2 > z1 || z2 == z1 && y2 >= y1) continue;
+o->slant[k] = 1;
+break;
+}
+}
+}
+}
+
 static void inCorner(void)
 {
 int x,y, z;
@@ -3025,6 +3066,7 @@ memset(b, 0, sizeof(b));
 // I'm only setting dimensions so swingSet() will run properly.
 dim_x = dim_y = dim_z = NSQ + 1;
 swingSet();
+slantSet();
 puts("diag 0");
 
 advance:
@@ -3062,6 +3104,7 @@ p->snum = -1;
 next_s:
 if(++p->snum == o->slices) goto next_o;
 ++s;
+if(o->slant[p->snum]) goto next_s;
 mask = s->bits;
 z1 = 0;
 while(isNotHighbit(mask)) ++z1, mask <<= 1;
@@ -3089,8 +3132,10 @@ if((swing = o->spin2) >= 0 && swing < corner) goto next_o;
 #endif
 
 if(p == cstack) { printf("origin %d ", p->onum); print_o(o); }
+else if(x + y + z <= showdiag) { printf("%d,%d,%d %d ", x, y, z, p->onum); print_o(o); }
+
 #if DEBUG
-printf("place{%d,%d,%d@%d,%d ", p->x, p->y, p->z, x1, y1);
+printf("place{%d,%d,%d@%d,%d ", x, y, z, x1, y1);
 print_o(o);
 sleep(1);
 #endif
