@@ -3102,12 +3102,58 @@ for(z2=z; z2<=diag2; ++z2)
 for(x2=0; x2<=diag2-z2; ++x2) {
 y2 = diag2 - z2 - x2;
 if(b[x2][y2][z2]) continue;
-if(!b[x2+1][y2][z2]) continue;
-if(!b[x2][y2+1][z2]) continue;
-if(!b[x2][y2][z2+1]) continue;
+// we're on the current diag, everything on the previous diag is filled,
+// so we don't need these 3 lines.
+#if 0
 if(x2 && !b[x2-1][y2][z2]) continue;
 if(y2 && !b[x2][y2-1][z2]) continue;
 if(z2 && !b[x2][y2][z2-1]) continue;
+#endif
+if(!b[x2+1][y2][z2]) {
+// ok, perhaps a hole of size 2
+if(b[x2+2][y2][z2] &&
+b[x2][y2+1][z2] &&
+b[x2][y2][z2+1] &&
+b[x2+1][y2+1][z2] &&
+b[x2+1][y2][z2+1] &&
+(!y2 || b[x2+1][y2-1][z2]) &&
+(!z2 || b[x2+1][y2][z2-1])) {
+#if DEBUG
+puts("hole2x");
+#endif
+goto backup;
+}
+continue;
+}
+if(!b[x2][y2+1][z2]) {
+// ok, perhaps a hole of size 2
+if(b[x2][y2+2][z2] &&
+b[x2][y2][z2+1] &&
+b[x2+1][y2+1][z2] &&
+b[x2][y2+1][z2+1] &&
+(!x2 || b[x2-1][y2+1][z2]) &&
+(!z2 || b[x2][y2+1][z2-1])) {
+#if DEBUG
+puts("hole2y");
+#endif
+goto backup;
+}
+continue;
+}
+if(!b[x2][y2][z2+1]) {
+// ok, perhaps a hole of size 2
+if(b[x2][y2][z2+2] &&
+b[x2+1][y2][z2+1] &&
+b[x2][y2+1][z2+1] &&
+(!x2 || b[x2-1][y2][z2+1]) &&
+(!y2 || b[x2][y2-1][z2+1])) {
+#if DEBUG
+puts("hole2z");
+#endif
+goto backup;
+}
+continue;
+}
 #if DEBUG
 puts("hole");
 #endif
