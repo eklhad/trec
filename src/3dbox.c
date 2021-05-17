@@ -3096,7 +3096,7 @@ printf("locate %d,%d,%d\n", x, y, z);
 
 // look for holes
 diag2 = x + y + z;
-if(diag2 && diag2 < CDIM-2) {
+if(diag2 && diag2 < CDIM-3) {
 int x2, y2, z2;
 for(z2=z; z2<=diag2; ++z2)
 for(x2=0; x2<=diag2-z2; ++x2) {
@@ -3131,12 +3131,20 @@ if(b[x2][y2+2][z2] &&
 b[x2][y2][z2+1] &&
 b[x2+1][y2+1][z2] &&
 b[x2][y2+1][z2+1] &&
-(!x2 || b[x2-1][y2+1][z2]) &&
 (!z2 || b[x2][y2+1][z2-1])) {
+if(!x2 || b[x2-1][y2+1][z2]) {
 #if DEBUG
 puts("hole2y");
 #endif
 goto backup;
+}
+if(b[x2-1][y2+1][z2+1] &&
+b[x2-1][y2+2][z2]) {
+#if DEBUG
+puts("hole3xy");
+#endif
+goto backup;
+}
 }
 continue;
 }
@@ -3144,13 +3152,32 @@ if(!b[x2][y2][z2+1]) {
 // ok, perhaps a hole of size 2
 if(b[x2][y2][z2+2] &&
 b[x2+1][y2][z2+1] &&
-b[x2][y2+1][z2+1] &&
-(!x2 || b[x2-1][y2][z2+1]) &&
+b[x2][y2+1][z2+1]) {
+if((!x2 || b[x2-1][y2][z2+1]) &&
 (!y2 || b[x2][y2-1][z2+1])) {
 #if DEBUG
 puts("hole2z");
 #endif
 goto backup;
+}
+if((!x2 || b[x2-1][y2][z2+1]) &&
+y2 && !b[x2][y2-1][z2+1] &&
+b[x2][y2-1][z2+2] &&
+b[x2+1][y2-1][z2+1]) {
+#if DEBUG
+puts("hole3yz");
+#endif
+goto backup;
+}
+if((!y2 || b[x2][y2-1][z2+1]) &&
+x2 && !b[x2-1][y2][z2+1] &&
+b[x2-1][y2][z2+2] &&
+b[x2-1][y2+1][z2+1]) {
+#if DEBUG
+puts("hole3xz");
+#endif
+goto backup;
+}
 }
 continue;
 }
@@ -3164,14 +3191,56 @@ for(z2=0; z2<=diag2; ++z2)
 for(x2=0; x2<=diag2-z2; ++x2) {
 y2 = diag2 - z2 - x2;
 if(b[x2][y2][z2]) continue;
-if(!b[x2+1][y2][z2]) continue;
-if(!b[x2][y2+1][z2]) continue;
-if(!b[x2][y2][z2+1]) continue;
 if(x2 && !b[x2-1][y2][z2]) continue;
 if(y2 && !b[x2][y2-1][z2]) continue;
 if(z2 && !b[x2][y2][z2-1]) continue;
+if(!b[x2+1][y2][z2]) {
+// ok, perhaps a hole of size 2
+if(b[x2+2][y2][z2] &&
+b[x2][y2+1][z2] &&
+b[x2][y2][z2+1] &&
+b[x2+1][y2+1][z2] &&
+b[x2+1][y2][z2+1] &&
+(!y2 || b[x2+1][y2-1][z2]) &&
+(!z2 || b[x2+1][y2][z2-1])) {
 #if DEBUG
-puts("hole+");
+puts("hole+2x");
+#endif
+goto backup;
+}
+continue;
+}
+if(!b[x2][y2+1][z2]) {
+// ok, perhaps a hole of size 2
+if(b[x2][y2+2][z2] &&
+b[x2][y2][z2+1] &&
+b[x2+1][y2+1][z2] &&
+b[x2][y2+1][z2+1] &&
+(!z2 || b[x2][y2+1][z2-1]) &&
+(!x2 || b[x2-1][y2+1][z2])) {
+#if DEBUG
+puts("hole+2y");
+#endif
+goto backup;
+}
+continue;
+}
+if(!b[x2][y2][z2+1]) {
+// ok, perhaps a hole of size 2
+if(b[x2][y2][z2+2] &&
+b[x2+1][y2][z2+1] &&
+b[x2][y2+1][z2+1] &&
+(!x2 || b[x2-1][y2][z2+1]) &&
+(!y2 || b[x2][y2-1][z2+1])) {
+#if DEBUG
+puts("hole+2z");
+#endif
+goto backup;
+}
+continue;
+}
+#if DEBUG
+printf("hole+@%d,%d,%d\n", x2, y2, z2);
 #endif
 goto backup;
 }
