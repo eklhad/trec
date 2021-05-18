@@ -3216,12 +3216,22 @@ if(b[x2][y2+2][z2] &&
 b[x2][y2][z2+1] &&
 b[x2+1][y2+1][z2] &&
 b[x2][y2+1][z2+1] &&
-(!z2 || b[x2][y2+1][z2-1]) &&
-(!x2 || b[x2-1][y2+1][z2])) {
+(!z2 || b[x2][y2+1][z2-1])) {
+if(!x2 || b[x2-1][y2+1][z2]) {
 #if DEBUG
 puts("hole+2y");
 #endif
 goto backup;
+}
+if(b[x2-1][y2+1][z2+1] &&
+b[x2-1][y2+2][z2] &&
+(!z2 || b[x2-1][y2+1][z2-1]) &&
+(x2 == 1 || b[x2-2][y2+1][z2])) {
+#if DEBUG
+puts("hole+3xy");
+#endif
+goto backup;
+}
 }
 continue;
 }
@@ -3229,13 +3239,36 @@ if(!b[x2][y2][z2+1]) {
 // ok, perhaps a hole of size 2
 if(b[x2][y2][z2+2] &&
 b[x2+1][y2][z2+1] &&
-b[x2][y2+1][z2+1] &&
-(!x2 || b[x2-1][y2][z2+1]) &&
+b[x2][y2+1][z2+1]) {
+if((!x2 || b[x2-1][y2][z2+1]) &&
 (!y2 || b[x2][y2-1][z2+1])) {
 #if DEBUG
 puts("hole+2z");
 #endif
 goto backup;
+}
+if((!x2 || b[x2-1][y2][z2+1]) &&
+y2 && !b[x2][y2-1][z2+1] &&
+b[x2][y2-1][z2+2] &&
+b[x2+1][y2-1][z2+1] &&
+(!x2 || b[x2-1][y2-1][z2+1]) &&
+(y2 == 1 || b[x2][y2-2][z2+1])) {
+#if DEBUG
+puts("hole+3yz");
+#endif
+goto backup;
+}
+if((!y2 || b[x2][y2-1][z2+1]) &&
+x2 && !b[x2-1][y2][z2+1] &&
+b[x2-1][y2][z2+2] &&
+b[x2-1][y2+1][z2+1] &&
+(!y2 || b[x2-1][y2-1][z2+1]) &&
+(x2 == 1 || b[x2-2][y2][z2+1])) {
+#if DEBUG
+puts("hole+3xz");
+#endif
+goto backup;
+}
 }
 continue;
 }
