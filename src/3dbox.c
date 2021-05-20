@@ -35,6 +35,7 @@ static int showdiag;
 static uchar doNodes; // look by using nodes instead of filling the entire box
 static uchar robin = 1; // round robin on the colors
 static uchar countFlag; // count or generate solutions
+static uchar tubes = 0;
 static int countSol = 0;
 static int oc_2, oc_3, oc_4, oc_6; // overcounts
 static int megaNodes = 80; // millions of nodes that can be cached
@@ -355,6 +356,22 @@ o->zflip = r1; // remember the spin
 o->zflip |= (r2<<2); // remember point reflection
 o->inspace = !chiral;
 o->zero_spin = o->zero_dxy = o->zero_dxz = o->zero_dyz = o->zero_hr = o->zero_vr = o->zero_zr = o->farbits = 0;
+
+for(x=0; x<=rng_x; ++x)
+for(y=0; y<=rng_y; ++y)
+for(z=0; z<=rng_z-1; ++z) {
+if(!orib2[x][y][z] || !orib2[x][y][z+1]) continue;
+if(z < rng_z-1 && orib2[x][y][z+2]) continue;
+if(x && orib2[x-1][y][z]) continue;
+if(x < rng_x && orib2[x+1][y][z]) continue;
+if(y && orib2[x][y-1][z]) continue;
+if(y < rng_y && orib2[x][y+1][z]) continue;
+if(x && orib2[x-1][y][z+1]) continue;
+if(x < rng_x && orib2[x+1][y][z+1]) continue;
+if(y && orib2[x][y-1][z+1]) continue;
+if(y < rng_y && orib2[x][y+1][z+1]) continue;
+tubes = 1;
+}
 
 // compute the break level. Include this piece if we have
 // tiled up through breakLine.
@@ -3067,6 +3084,7 @@ memset(b, 0, sizeof(b));
 dim_x = dim_y = dim_z = NSQ + 1;
 swingSet();
 slantSet();
+if(tubes) puts("tubes");
 puts("diag 0");
 
 advance:
@@ -3111,34 +3129,49 @@ if(z2 && !b[x2][y2][z2-1]) continue;
 #endif
 if(!b[x2+1][y2][z2]) {
 // ok, perhaps a hole of size 2
-if(b[x2+2][y2][z2] &&
-b[x2][y2+1][z2] &&
+if(b[x2][y2+1][z2] &&
 b[x2][y2][z2+1] &&
 b[x2+1][y2+1][z2] &&
 b[x2+1][y2][z2+1] &&
 (!y2 || b[x2+1][y2-1][z2]) &&
 (!z2 || b[x2+1][y2][z2-1])) {
+if(b[x2+2][y2][z2]) {
 #if DEBUG
 puts("hole2x");
 #endif
 goto backup;
 }
+if(!tubes) {
+#if DEBUG
+puts("tube2x");
+#endif
+goto backup;
+}
+}
 continue;
 }
 if(!b[x2][y2+1][z2]) {
 // ok, perhaps a hole of size 2
-if(b[x2][y2+2][z2] &&
-b[x2][y2][z2+1] &&
+if(b[x2][y2][z2+1] &&
 b[x2+1][y2+1][z2] &&
 b[x2][y2+1][z2+1] &&
 (!z2 || b[x2][y2+1][z2-1])) {
 if(!x2 || b[x2-1][y2+1][z2]) {
+if(b[x2][y2+2][z2]) {
 #if DEBUG
 puts("hole2y");
 #endif
 goto backup;
 }
-if(b[x2-1][y2+1][z2+1] &&
+if(!tubes) {
+#if DEBUG
+puts("tube2y");
+#endif
+goto backup;
+}
+}
+if(b[x2][y2+2][z2] &&
+b[x2-1][y2+1][z2+1] &&
 b[x2-1][y2+2][z2]) {
 #if DEBUG
 puts("hole3xy");
@@ -3150,16 +3183,24 @@ continue;
 }
 if(!b[x2][y2][z2+1]) {
 // ok, perhaps a hole of size 2
-if(b[x2][y2][z2+2] &&
-b[x2+1][y2][z2+1] &&
+if(b[x2+1][y2][z2+1] &&
 b[x2][y2+1][z2+1]) {
 if((!x2 || b[x2-1][y2][z2+1]) &&
 (!y2 || b[x2][y2-1][z2+1])) {
+if(b[x2][y2][z2+2]) {
 #if DEBUG
 puts("hole2z");
 #endif
 goto backup;
 }
+if(!tubes) {
+#if DEBUG
+puts("tube2z");
+#endif
+goto backup;
+}
+}
+if(b[x2][y2][z2+2]) {
 if((!x2 || b[x2-1][y2][z2+1]) &&
 y2 && !b[x2][y2-1][z2+1] &&
 b[x2][y2-1][z2+2] &&
@@ -3179,6 +3220,7 @@ puts("hole3xz");
 goto backup;
 }
 }
+}
 continue;
 }
 #if DEBUG
@@ -3186,7 +3228,9 @@ puts("hole");
 #endif
 goto backup;
 }
+
 ++diag2;
+
 for(z2=0; z2<=diag2; ++z2)
 for(x2=0; x2<=diag2-z2; ++x2) {
 y2 = diag2 - z2 - x2;
@@ -3196,34 +3240,49 @@ if(y2 && !b[x2][y2-1][z2]) continue;
 if(z2 && !b[x2][y2][z2-1]) continue;
 if(!b[x2+1][y2][z2]) {
 // ok, perhaps a hole of size 2
-if(b[x2+2][y2][z2] &&
-b[x2][y2+1][z2] &&
+if(b[x2][y2+1][z2] &&
 b[x2][y2][z2+1] &&
 b[x2+1][y2+1][z2] &&
 b[x2+1][y2][z2+1] &&
 (!y2 || b[x2+1][y2-1][z2]) &&
 (!z2 || b[x2+1][y2][z2-1])) {
+if(b[x2+2][y2][z2]) {
 #if DEBUG
 puts("hole+2x");
 #endif
 goto backup;
 }
+if(!tubes) {
+#if DEBUG
+puts("tube+2x");
+#endif
+goto backup;
+}
+}
 continue;
 }
 if(!b[x2][y2+1][z2]) {
 // ok, perhaps a hole of size 2
-if(b[x2][y2+2][z2] &&
-b[x2][y2][z2+1] &&
+if(b[x2][y2][z2+1] &&
 b[x2+1][y2+1][z2] &&
 b[x2][y2+1][z2+1] &&
 (!z2 || b[x2][y2+1][z2-1])) {
 if(!x2 || b[x2-1][y2+1][z2]) {
+if(b[x2][y2+2][z2]) {
 #if DEBUG
 puts("hole+2y");
 #endif
 goto backup;
 }
-if(b[x2-1][y2+1][z2+1] &&
+if(!tubes) {
+#if DEBUG
+puts("tube+2y");
+#endif
+goto backup;
+}
+}
+if(b[x2][y2+2][z2] &&
+b[x2-1][y2+1][z2+1] &&
 b[x2-1][y2+2][z2] &&
 (!z2 || b[x2-1][y2+1][z2-1]) &&
 (x2 == 1 || b[x2-2][y2+1][z2])) {
@@ -3237,16 +3296,24 @@ continue;
 }
 if(!b[x2][y2][z2+1]) {
 // ok, perhaps a hole of size 2
-if(b[x2][y2][z2+2] &&
-b[x2+1][y2][z2+1] &&
+if(b[x2+1][y2][z2+1] &&
 b[x2][y2+1][z2+1]) {
 if((!x2 || b[x2-1][y2][z2+1]) &&
 (!y2 || b[x2][y2-1][z2+1])) {
+if(b[x2][y2][z2+2]) {
 #if DEBUG
 puts("hole+2z");
 #endif
 goto backup;
 }
+if(!tubes) {
+#if DEBUG
+puts("tube+2z");
+#endif
+goto backup;
+}
+}
+if(b[x2][y2][z2+2]) {
 if((!x2 || b[x2-1][y2][z2+1]) &&
 y2 && !b[x2][y2-1][z2+1] &&
 b[x2][y2-1][z2+2] &&
@@ -3268,6 +3335,7 @@ b[x2-1][y2+1][z2+1] &&
 puts("hole+3xz");
 #endif
 goto backup;
+}
 }
 }
 continue;
