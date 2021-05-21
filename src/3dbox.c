@@ -17,7 +17,8 @@
 #endif
 
 #define DEBUG 0
-#define DIAG 1
+#define NODEHOLES 0
+#define CORNERHOLES 1
 #define NEAR 1
 #define SWING 1
 
@@ -288,11 +289,8 @@ if(y > rng_y) rng_y = y;
 if(z > rng_z) rng_z = z;
 }
 
-#if DIAG
-// Scan in a diagonal pattern, rather than raster,
-// but this only increases speed a few percent,
-// so it might be more confusing than it's worth.
-// Assumes dim_x >= dim_y.
+// Scan in a diagonal pattern, rather than raster, it increases speed
+// a few percent. Assumes dim_x >= dim_y.
 x = y = 0;
 while(!orib2[x][y][0]) {
 ++y, --x;
@@ -306,17 +304,6 @@ continue;
 if(x < 0) x += y+1, y = 0;
 }
 start_y = y, start_x = x;
-#else
-
-for(y=0; y<REPDIAMETER; ++y)
-for(x=0; x<REPDIAMETER; ++x)
-if(orib2[x][y][0]) {
-start_y = y, start_x = x;
-goto pack;
-}
-bailout("orientation %d has nothing on the floor", o_max);
-pack:
-#endif
 
 n = 0;
 for(y=0; y<REPDIAMETER; ++y)
@@ -713,7 +700,6 @@ struct ORIENT *q;
 const struct SLICE *s;
 int i, k, x, y;
 
-#if DIAG
 o = o_list;
 q = o_list + o_max;
 for(i=0; i<o_max; ++i, ++o) {
@@ -737,7 +723,6 @@ break;
 }
 #if DEBUG
 printf("%d extra orientations\n", o_max2 - o_max);
-#endif
 #endif
 }
 
@@ -1528,7 +1513,6 @@ if(!lev) x = y = z = 0;
 else {
 x = p->x, y = p->y, z = p->z;
 
-#if DIAG
 relocate:
 // Assumes dim_x >= dim_y.
 while(isHighbit(ws[y*BOXWIDTH+x])) {
@@ -1542,14 +1526,6 @@ continue;
 }
 if(x < 0) x += y+1, y = 0;
 }
-#else
-
-while(isHighbit(ws[y*BOXWIDTH+x])) {
-if(++x < dim_x) continue;
-x = 0;
-if(++y == dim_y) break;
-}
-#endif
 
 if(y == dim_y) { // have to push workspace down
 int r_x, r_y;
@@ -1568,12 +1544,8 @@ printf("push %d\n", j);
 for(y=0; y<dim_y; ++y)
 for(x=0; x<dim_x; ++x)
 ws[y*BOXWIDTH+x] <<= j;
-#if DIAG
 x = y = 0;
 goto relocate;
-#else
-x = r_x, y = r_y;
-#endif
 }
 }
 ++p;
@@ -2162,7 +2134,6 @@ bailout("placement stack overflow %d", MAXLAYER);
 x = y = 0;
 if(!lev) z = 0; else z = p->z;
 
-#if DIAG
 relocate:
 while(isHighbit(b[y*BOXWIDTH + x])) {
 ++y, --x;
@@ -2175,13 +2146,6 @@ continue;
 }
 if(x < 0) x += y+1, y = 0;
 }
-#else
-while(isHighbit(b[y*BOXWIDTH + x])) {
-if(++x < dim_x) continue;
-x = 0;
-if(++y == dim_y) break;
-}
-#endif
 if(y == dim_y) { // have to push workspace down
 int r_x, r_y;
 j = REPDIAMETER;
@@ -2199,12 +2163,8 @@ for(x=0; x<dim_x; ++x) {
 b[y*BOXWIDTH + x] <<= j;
 b[y*BOXWIDTH + x] |= ((1<<j)-1);
 }
-#if DIAG
 x = y = 0;
 goto relocate;
-#else
-x = r_x, y = r_y;
-#endif
 }
 
 ++p;
@@ -2627,7 +2587,7 @@ shapebits min_z_bit, mask;
 int reset = -1, near = 0;
 int breakLine = REPDIAMETER; // the first piece will ratchet it down
 int x, y, j, k;
-int x0, y0;
+int x0, y0, diag2;
 uchar ambinclude, ambnode;
 uchar children = 0;
 struct NODE newnode, compnode, looknode;
@@ -2666,7 +2626,6 @@ if(lev && min_z == p->z)
 x = p->x, y = p->y;
 else x = y = 0;
 
-#if DIAG
 while(b0[y*BOXWIDTH+x] & min_z_bit) {
 ++y, --x;
 if(y == dim_y) {
@@ -2678,14 +2637,6 @@ continue;
 }
 if(x < 0) x += y+1, y = 0;
 }
-#else
-
-while(b0[y*BOXWIDTH+x] & min_z_bit) {
-if(++x < dim_x) continue;
-x = 0;
-if(++y == dim_y) break;
-}
-#endif
 
 if(y == dim_y)
 bailout("no empty square found at level %d", min_z);
@@ -2696,6 +2647,243 @@ p->x = x, p->y = y;
 // here x and y are absolute, but z is relative to the node.
 p->z = min_z;
 p->mzc = min_z_count;
+
+// look for holes
+#if NODEHOLES
+// This is complicated, and the speed is exactly the same, so leave it off.
+diag2 = x + y;
+if(diag2 > 1 && diag2 < dim_x + dim_y-4 && min_z < 10) {
+int x2, y2;
+shapebits zb0 = min_z_bit;
+shapebits zb1 = zb0 >> 1;
+shapebits zb2 = zb1 >> 1;
+for(x2 = x, y2 = y; x2 && y2 < dim_y; --x2, ++y2) {
+if(b0[x2+BOXWIDTH*y2]&zb0) continue;
+// we're on the current diag, everything on the previous diag is filled,
+// so we don't need these 3 lines.
+#if 0
+if(x2 && !(b0[x2-1+BOXWIDTH*y2]&zb0)) continue;
+if(y2 && !(b0[x2+BOXWIDTH*(y2-1)]&zb0)) continue;
+#endif
+if(x2 < dim_x-1 && !(b0[x2+1+BOXWIDTH*y2]&zb0)) {
+// ok, perhaps a hole of size 2
+if((y2 == dim_y-1 || b0[x2+BOXWIDTH*(y2+1)]&zb0) &&
+b0[x2+BOXWIDTH*y2]&zb1 &&
+(y2 == dim_y-1 || b0[x2+1+BOXWIDTH*(y2+1)]&zb0) &&
+b0[x2+1+BOXWIDTH*y2]&zb1 &&
+(!y2 || b0[x2+1+BOXWIDTH*(y2-1)]&zb0)) {
+if(x2 == dim_x-2 || b0[x2+2+BOXWIDTH*y2]&zb0) {
+#if DEBUG
+puts("hole2x");
+#endif
+goto backup;
+}
+if(!tubes) {
+#if DEBUG
+puts("tube2x");
+#endif
+goto backup;
+}
+}
+continue;
+}
+if(y2 < dim_y-1 && !(b0[x2+BOXWIDTH*(y2+1)]&zb0)) {
+// ok, perhaps a hole of size 2
+if(b0[x2+BOXWIDTH*y2]&zb1 &&
+(x2 == dim_x-1 || b0[x2+1+BOXWIDTH*(y2+1)]&zb0) &&
+b0[x2+BOXWIDTH*(y2+1)]&zb1) {
+if(!x2 || b0[x2-1+BOXWIDTH*(y2+1)]&zb0) {
+if(y2 == dim_y-2 || b0[x2+BOXWIDTH*(y2+2)]&zb0) {
+#if DEBUG
+puts("hole2y");
+#endif
+goto backup;
+}
+if(!tubes) {
+#if DEBUG
+puts("tube2y");
+#endif
+goto backup;
+}
+continue;
+}
+if((y2 == dim_y-2 || b0[x2+BOXWIDTH*(y2+2)]&zb0) &&
+b0[x2-1+BOXWIDTH*(y2+1)]&zb1 &&
+(y2 == dim_y-2 || b0[x2-1+BOXWIDTH*(y2+2)]&zb0)) {
+#if DEBUG
+puts("hole3xy");
+#endif
+goto backup;
+}
+}
+continue;
+}
+if(!(b0[x2+BOXWIDTH*y2]&zb1)) {
+// ok, perhaps a hole of size 2
+if((x2 == dim_x-1 || b0[x2+1+BOXWIDTH*y2]&zb1) &&
+(y2 == dim_y-1 || b0[x2+BOXWIDTH*(y2+1)]&zb1)) {
+if((!x2 || b0[x2-1+BOXWIDTH*y2]&zb1) &&
+(!y2 || b0[x2+BOXWIDTH*(y2-1)]&zb1)) {
+if(b0[x2+BOXWIDTH*y2]&zb2) {
+#if DEBUG
+puts("hole2z");
+#endif
+goto backup;
+}
+if(!tubes) {
+#if DEBUG
+puts("tube2z");
+#endif
+goto backup;
+}
+}
+if(b0[x2+BOXWIDTH*y2]&zb2) {
+if((!x2 || b0[x2-1+BOXWIDTH*y2]&zb1) &&
+y2 && !(b0[x2+BOXWIDTH*(y2-1)]&zb1) &&
+b0[x2+BOXWIDTH*(y2-1)]&zb2 &&
+(x2 == dim_x-1 || b0[x2+1+BOXWIDTH*(y2-1)]&zb1) &&
+(!x2 || b0[x2-1+BOXWIDTH*(y2-1)]&zb1) &&
+(y2 == 1 || b0[x2+BOXWIDTH*(y2-2)]&zb1)) {
+#if DEBUG
+puts("hole3yz");
+#endif
+goto backup;
+}
+if((!y2 || b0[x2+BOXWIDTH*(y2-1)]&zb1) &&
+x2 && !(b0[x2-1+BOXWIDTH*y2]&zb1) &&
+b0[x2-1+BOXWIDTH*y2]&zb2 &&
+(y2 == dim_y-1 || b0[x2-1+BOXWIDTH*(y2+1)]&zb1) &&
+(!y2 || b0[x2-1+BOXWIDTH*(y2-1)]&zb1) &&
+(x2 == 1 || b0[x2-2+BOXWIDTH*y2]&zb1)) {
+#if DEBUG
+puts("hole3xz");
+#endif
+goto backup;
+}
+}
+}
+continue;
+}
+#if DEBUG
+puts("hole");
+#endif
+goto backup;
+}
+
+++diag2;
+
+for(x2 = diag2, y2 = 0; x2 && y2 <dim_y; --x2, ++y2) {
+if(x2 >= dim_x) continue;
+if(b0[x2+BOXWIDTH*y2]&zb0) continue;
+if(x2 && !(b0[x2-1+BOXWIDTH*y2]&zb0)) continue;
+if(y2 && !(b0[x2+BOXWIDTH*(y2-1)]&zb0)) continue;
+if(x2 < dim_x-1 && !(b0[x2+1+BOXWIDTH*y2]&zb0)) {
+// ok, perhaps a hole of size 2
+if((y2 == dim_y-1 || b0[x2+BOXWIDTH*(y2+1)]&zb0) &&
+b0[x2+BOXWIDTH*y2]&zb1 &&
+(y2 == dim_y-1 || b0[x2+1+BOXWIDTH*(y2+1)]&zb0) &&
+b0[x2+1+BOXWIDTH*y2]&zb1 &&
+(!y2 || b0[x2+1+BOXWIDTH*(y2-1)]&zb0)) {
+if(x2 == dim_x-2 || b0[x2+2+BOXWIDTH*y2]&zb0) {
+#if DEBUG
+puts("hole+2x");
+#endif
+goto backup;
+}
+if(!tubes) {
+#if DEBUG
+puts("tube+2x");
+#endif
+goto backup;
+}
+}
+continue;
+}
+if(y2 < dim_y-1 && !(b0[x2+BOXWIDTH*(y2+1)]&zb0)) {
+// ok, perhaps a hole of size 2
+if(b0[x2+BOXWIDTH*y2]&zb1 &&
+(x2 == dim_x-1 || b0[x2+1+BOXWIDTH*(y2+1)]&zb0) &&
+b0[x2+BOXWIDTH*(y2+1)]&zb1) {
+if(!x2 || b0[x2-1+BOXWIDTH*(y2+1)]&zb0) {
+if(y2 == dim_y-2 || b0[x2+BOXWIDTH*(y2+2)]&zb0) {
+#if DEBUG
+puts("hole+2y");
+#endif
+goto backup;
+}
+if(!tubes) {
+#if DEBUG
+puts("tube+2y");
+#endif
+goto backup;
+}
+continue;
+}
+if((y2 == dim_y-2 || b0[x2+BOXWIDTH*(y2+2)]&zb0) &&
+b0[x2-1+BOXWIDTH*(y2+1)]&zb1 &&
+(y2 == dim_y-2 || b0[x2-1+BOXWIDTH*(y2+2)]&zb0) &&
+(x2 == 1 || b0[x2-2+BOXWIDTH*(y2+1)]&zb0)) {
+#if DEBUG
+puts("hole+3xy");
+#endif
+goto backup;
+}
+}
+continue;
+}
+if(!(b0[x2+BOXWIDTH*y2]&zb1)) {
+// ok, perhaps a hole of size 2
+if((x2 == dim_x-1 || b0[x2+1+BOXWIDTH*y2]&zb1) &&
+(y2 == dim_y-1 || b0[x2+BOXWIDTH*(y2+1)]&zb1)) {
+if((!x2 || b0[x2-1+BOXWIDTH*y2]&zb1) &&
+(!y2 || b0[x2+BOXWIDTH*(y2-1)]&zb1)) {
+if(b0[x2+BOXWIDTH*y2]&zb2) {
+#if DEBUG
+puts("hole+2z");
+#endif
+goto backup;
+}
+if(!tubes) {
+#if DEBUG
+puts("tube+2z");
+#endif
+goto backup;
+}
+}
+if(b0[x2+BOXWIDTH*y2]&zb2) {
+if((!x2 || b0[x2-1+BOXWIDTH*y2]&zb1) &&
+y2 && !(b0[x2+BOXWIDTH*(y2-1)]&zb1) &&
+b0[x2+BOXWIDTH*(y2-1)]&zb2 &&
+(x2 == dim_x-1 || b0[x2+1+BOXWIDTH*(y2-1)]&zb1) &&
+(!x2 || b0[x2-1+BOXWIDTH*(y2-1)]&zb1) &&
+(y2 == 1 || b0[x2+BOXWIDTH*(y2-2)]&zb1)) {
+#if DEBUG
+puts("hole+3yz");
+#endif
+goto backup;
+}
+if((!y2 || b0[x2+BOXWIDTH*(y2-1)]&zb1) &&
+x2 && !(b0[x2-1+BOXWIDTH*y2]&zb1) &&
+b0[x2-1+BOXWIDTH*y2]&zb2 &&
+(y2 == dim_y-1 || b0[x2-1+BOXWIDTH*(y2+1)]&zb1) &&
+(!y2 || b0[x2-1+BOXWIDTH*(y2-1)]&zb1) &&
+(x2 == 1 || b0[x2-2+BOXWIDTH*y2]&zb1)) {
+#if DEBUG
+puts("hole+3xz");
+#endif
+goto backup;
+}
+}
+}
+continue;
+}
+#if DEBUG
+puts("hole+");
+#endif
+goto backup;
+}
+}
+#endif
 
 #if NEAR
 near = 0;
@@ -3113,8 +3301,10 @@ printf("locate %d,%d,%d\n", x, y, z);
 #endif
 
 // look for holes
+#if CORNERHOLES
+// This speeds things up quite a bit.
 diag2 = x + y + z;
-if(diag2 && diag2 < CDIM-3) {
+if(diag2 > 1 && diag2 < CDIM-3) {
 int x2, y2, z2;
 for(z2=z; z2<=diag2; ++z2)
 for(x2=0; x2<=diag2-z2; ++x2) {
@@ -3169,6 +3359,7 @@ puts("tube2y");
 #endif
 goto backup;
 }
+continue;
 }
 if(b[x2][y2+2][z2] &&
 b[x2-1][y2+1][z2+1] &&
@@ -3280,6 +3471,7 @@ puts("tube+2y");
 #endif
 goto backup;
 }
+continue;
 }
 if(b[x2][y2+2][z2] &&
 b[x2-1][y2+1][z2+1] &&
@@ -3346,6 +3538,7 @@ printf("hole+@%d,%d,%d\n", x2, y2, z2);
 goto backup;
 }
 }
+#endif
 
 p->onum = -1;
 o = o_list - 1;
