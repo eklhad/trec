@@ -145,3 +145,27 @@ Verify with:
 This is somewhat unsatisfying - I'm still looking for a cube that isn't
 a vertical extension of a square tiling in the plane.
 
+This from the agile mind of John Conway.
+Fill a 3 by 3 by 3 box with 6 pieces: 4 blocks that are 2 by 2 by 1, and 3 unit cubes.
+6 times 4 + 3 is 27, so the volume is correct.
+You can ask my software to solve it.
+
+3dbox c0c0=6_80=3 3 3 3
+
+However, you can find the solution, and prove it is unique, in your head;
+no need for software or even paper and pencil.
+Pause here and try to solve.
+
+By a parity argument, each 3 by 3 layer has 1 unit cube, or perhaps 3.
+If one layer contains all 3 cubes then there are none left for the other two layers.
+Thus each layer has one cube.
+The top layer has one cube.
+Put it in the center, and four square pieces march around it.
+That forces another cube just below the first, two cubes in one layer, a contradiction.
+Put the cube in the top layer front and center.
+This is bracketed by squares on either side.
+There will be another cube below this one, or just behind this one, two cubes in one layer, a contradiction.
+Therefore, the cube is in the corner.
+Moving to the bottom layer, its cube is in the opposite corner.
+The final cube is in the very center, and the unique solution follows from there.
+
