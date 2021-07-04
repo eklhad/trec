@@ -169,3 +169,20 @@ Therefore, the cube is in the corner.
 Moving to the bottom layer, its cube is in the opposite corner.
 The final cube is in the very center, and the unique solution follows from there.
 
+There is work done, and work yet to be done, on pairs of polyominoes that tile
+a rectangle, when neither tiles a rectangle on its own.
+Does this happen in three dimensions?
+I don't think it happens in an interesting way, though one can construct an example.
+Start with a 3 by 3 square, then put a ring of 8 on top of it, then another ring of 8.
+This has a hole of depth 2.
+Now build a key to go in this lock.
+Start with a 3 by 3 square and put a stick of height 2 on the center square.
+Neither tiles a box, yet together they have order 2.
+That said, I don't expect to run into such pairs in the wild;
+there is a lot of flexibility in 3 dimensions.
+
+The same lock and key mechanism works with just one ring of 8, and a stick
+of height 1, though it is less obvious that the latter has order zero.
+3dbox e0e0e0!0040 0
+gets to diag 4 and no solution.
+

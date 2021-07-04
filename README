@@ -640,3 +640,24 @@ there is a 6 fold symmetry. This is indicated by duplicate 6 in the output.
 These solutions are repeated 6 times over, rotations and reflections,
 but at the end of the page, it still says 240 solutions.
 
+There is another way to use 3dbox - filling the corner of a box of undetermined size.
+This can be used to prove a shape has order 0.
+If it can't tile the first octant, it can't tile a box.
+You may notice, when tiling with nodes, that you never get off the flor,
+or you never get very far off the floor.
+This is a good time to try the octant test.
+An example is e0e0e0!0040,
+a 3 by 3 square with another cube placed atop the center square.
+Play with it manually, and it seems to get into trouble.
+Do this to verify it.
+
+3dbox e0e0e0!0040 0
+
+diag 0
+origin 0 e0e0e0!004000
+diag 1
+diag 2
+diag 3
+diag 4
+no solution
+
