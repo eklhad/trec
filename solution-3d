@@ -430,8 +430,7 @@ ggillkkhhccttbb
 hhiiffkhvvaatdd
 ---------------
 
-c040!0060: order ?
-Believe this has order 0, but have no proof.
+c040!0060: order 0
 
 Here is a sample hexomino. We will bring in more later.
 This is the Y hexomino that started it all in the 1980's.
@@ -494,7 +493,7 @@ Four in a row, still in the plane, allows for a couple of trivial shapes
 (f0a0 and f0c0 and f060), two crosses that can't fit into a corner,
 wider L, order 14, C, order 8, T, order 32,
 shifted L, order 48, lightning, order 16, and two faucets and zigzag,
-no packings found yet.
+still undetermined.
 
 f08080: order 14[3x4x7]
 -------
