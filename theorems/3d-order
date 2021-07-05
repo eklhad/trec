@@ -194,8 +194,8 @@ Piece B is a 3 by 3 by 3 block with holes instead of attached cubes.
 Here is a pair that isn't lock&key; it isn't constructed for the purpose.
 We already proved the twisted octomino has order 0.
 See c040!0060 in this directory.
-A ring of 8 obviously has order 0.
-Together they have order 8, in a 4 by 4 by 4 cube.
+And a ring of 8 obviously has order 0.
+Together they have order 8, in a 4 by 4 by 4 box.
 
 3dbox e060!0070_e0a0e0 2
 
@@ -218,4 +218,28 @@ cccg
 eegg
 eegg
 efff
+
+Does this 18-omino have order 2?
+Start with a 3 by 3 square, then put two bars of width 3 on top
+of this square, one at the bottom and one at the top.
+Put another bar of length 3 across these two bars, connecting them like abridge.
+In my notation, it's e0e0e0!a0a0a0!00e0.
+This has order 2, if you don't mind linking the pieces together,
+which you can't do with physical pieces in your hand.
+This issue never comes up in two dimensions.
+So I guess we need to define order carefully.
+
+3dbox e0e0e0!a0a0a0!00e0 2
+
+aabb
+abbb
+aabb
+----
+aaab
+abab
+aaab
+----
+aabb
+abbb
+aabb
 
