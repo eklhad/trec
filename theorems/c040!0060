@@ -36,6 +36,9 @@ This continues down the wall forever.
 That was the last option for C.
 Therefore, this piece has order 0.
 
+I think this proof is beautiful. If I'd gone here first,
+I could have saved a lot of computing cycles looking for a solution.
+
 The same proof works for extended (stretched out) versions of this piece.
 e060!0070
 f070!0078

@@ -171,9 +171,9 @@ The final cube is in the very center, and the unique solution follows from there
 
 There is work done, and work yet to be done, on pairs of polyominoes that tile
 a rectangle, when neither tiles a rectangle on its own.
-Does this happen in three dimensions?
-I don't think it happens in an interesting way,
-i.e. order > 10, though one can easily construct a low-order example.
+Does this happen in three dimensions? I don't think it happens often,
+or in an interesting way, i.e. order > 10,
+though one can easily construct a low-order lock&key example.
 Start with a 3 by 3 square, then put a ring of 8 on top of it, then another ring of 8.
 This has a hole of depth 2.
 Now build a key to go in this lock.
@@ -190,4 +190,32 @@ Piece A is a 3 by 3 by 3 block, with a single cube
 attached to the center of the front face, a single cube attached to the
 center of the right face, and a single cube attached to the center of the top.
 Piece B is a 3 by 3 by 3 block with holes instead of attached cubes.
+
+Here is a pair that isn't lock&key; it isn't constructed for the purpose.
+We already proved the twisted octomino has order 0.
+See c040!0060 in this directory.
+A ring of 8 obviously has order 0.
+Together they have order 8, in a 4 by 4 by 4 cube.
+
+3dbox e060!0070_e0a0e0 2
+
+aaah
+baah
+bddh
+bddd
+----
+ccch
+baaa
+dddh
+bfff
+----
+cech
+begh
+begh
+bfgf
+----
+cccg
+eegg
+eegg
+efff
 
