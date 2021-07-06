@@ -173,7 +173,7 @@ There is work done, and work yet to be done, on pairs of polyominoes that tile
 a rectangle, when neither tiles a rectangle on its own.
 Does this happen in three dimensions? I don't think it happens often,
 or in an interesting way, i.e. order > 10,
-though one can easily construct a low-order lock&key example.
+though one can easily construct a low-order lock & key example.
 Start with a 3 by 3 square, then put a ring of 8 on top of it, then another ring of 8.
 This has a hole of depth 2.
 Now build a key to go in this lock.
@@ -191,7 +191,7 @@ attached to the center of the front face, a single cube attached to the
 center of the right face, and a single cube attached to the center of the top.
 Piece B is a 3 by 3 by 3 block with holes instead of attached cubes.
 
-Here is a pair that isn't lock&key; it isn't constructed for the purpose.
+Here is a tiling pair that isn't lock & key; it isn't constructed for that purpose.
 We already proved the twisted octomino has order 0.
 See c040!0060 in this directory.
 And a ring of 8 obviously has order 0.
@@ -219,7 +219,7 @@ eegg
 eegg
 efff
 
-Does this 18-omino have order 2?
+Does the following 18-omino have order 2?
 Start with a 3 by 3 square, then put two bars of width 3 on top
 of this square, one at the bottom and one at the top.
 Put another bar of length 3 across these two bars, connecting them like abridge.
@@ -227,7 +227,7 @@ In my notation, it's e0e0e0!a0a0a0!00e0.
 This has order 2, if you don't mind linking the pieces together,
 which you can't do with physical pieces in your hand.
 This issue never comes up in two dimensions.
-So I guess we need to define order carefully.
+I guess we need to define order carefully in higher dimensions.
 
 3dbox e0e0e0!a0a0a0!00e0 2
 

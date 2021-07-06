@@ -2,7 +2,7 @@ The order of the 23 pentominoes.
 Start with the 12 flat penominoes.
 The line, L, Utah, and Y tile rectangles, and are not included here.
 The cross can't fit into a corner and has order 0.
-See theorems/3d-order for more details.
+See theorems/order-3d for more details.
 
 e0a0: order 6[2x3x5]
 -----

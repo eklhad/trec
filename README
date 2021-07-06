@@ -551,7 +551,7 @@ or an order to start your search.
 The solution is a sequence of matrices, one matrix per layer in the box.
 I don't have an easy way to turn this into an image,
 but John has programs to present the packing in a 3 dimensional animation.
-Some basic results are in theorems/3d-order,
+Some basic results are in theorems/order-3d,
 and some matrix solutionss are in solution-3d.
 
 If you want to search by nodes, the way trec.c does,
