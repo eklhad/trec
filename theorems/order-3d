@@ -60,15 +60,12 @@ This is e080!20 in our notation.
 It has order 18, using this piece in all its rotations and reflections.
 We can place a cube on top of the L tetromino in 3 more ways, giving:
 e080!40 order 4, e080!80 order 18, and e080!0080 order 6.
-Put a cube atop the triangle tetromino, and e040!0040 has order 10, and e040!40 has order <= 240.
+Put a cube atop the triangle tetromino, and e040!0040 has order 10, and e040!40 has order <= 216.
 Put a cube atop the stair tetromino, and c060!80 has order 4, and c060!40 has order 28.
 Putting a cube atop a 2 by 2 square gives c0c0!80 with order 4.
 There are only two penominoes left, the two that do not have 4 cubes in a plane.
-These are c080!00c0, with order <= 108,
-and c040!0060, which, I believe, has order 0.
-My software can't tile the first layer of the box, of any size.
-In other words, it can't get off the floor.
-Perhaps you can help me develop a formal proof of untilability.
+These are c080!00c0, with order 108,
+and c040!0060, which cannot tile a box.
 
 We obviously aren't going to evaluate all the hexominoes, however, the one that
 started it all for me in 1987, the Y hexomino, f840, has order 92 in the plane,
@@ -153,7 +150,7 @@ You can ask my software to solve it.
 3dbox c0c0=6_80=3 3 3 3
 
 However, you can find the solution, and prove it is unique, in your head;
-no need for software or even paper and pencil.
+no need for software, or even pencil and paper.
 Pause here and try to solve.
 
 By a parity argument, each 3 by 3 layer has 1 unit cube, or perhaps 3.
@@ -171,8 +168,7 @@ The final cube is in the very center, and the unique solution follows from there
 
 There is work done, and work yet to be done, on pairs of polyominoes that tile
 a rectangle, when neither tiles a rectangle on its own.
-Does this happen in three dimensions? I don't think it happens often,
-or in an interesting way, i.e. order > 10,
+Does this happen in three dimensions? I don't think it happens very often,
 though one can easily construct a low-order lock & key example.
 Start with a 3 by 3 square, then put a ring of 8 on top of it, then another ring of 8.
 This has a hole of depth 2.

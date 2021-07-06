@@ -57,6 +57,8 @@ static uchar r_shorts; // nodes must use shorts, rather than bytes
 static int restart = 0; // depth when resuming the analysis
 static int restartParent;
 static int cbflag; // checkerboard flag
+static int csflag; // checkerstripe flag
+static int cpflag; // checkerplane flag
 static int ordFactor = 1;
 
 // see the comments at the top of trec.c
@@ -744,6 +746,32 @@ for(r1=0; r1<3; ++r1) {
 for(r2=0; r2<2; ++r2) {
 for(r3=0; r3<2; ++r3) {
 for(r4=0; r4<4; ++r4) {
+
+// checkerboad can be run once for all rotations,
+// not so for checkerstripe.
+if(!nsqMix && !(nsq&1)) {
+int x, y, z, i = 0;
+for(x=0; x<REPDIAMETER; ++x)
+for(y=0; y<REPDIAMETER; ++y)
+for(z=0; z<REPDIAMETER; ++z)
+if(orib1[x][y][z])
+if((x+y)&1) ++i; else --i;
+if(i < 0) i = -i;
+i &= 2;
+if(!o_max) csflag = i;
+else if(i != csflag) csflag = 0;
+i = 0;
+for(x=0; x<REPDIAMETER; ++x)
+for(y=0; y<REPDIAMETER; ++y)
+for(z=0; z<REPDIAMETER; ++z)
+if(orib1[x][y][z])
+if(x&1) ++i; else --i;
+if(i < 0) i = -i;
+i &= 2;
+if(!o_max) cpflag = i;
+else if(i != cpflag) cpflag = 0;
+}
+
 pulldown(r1, r2, r3);
 counterclockwise();
 memcpy(orib1, orib2, sizeof(orib2));
@@ -902,12 +930,13 @@ for(z=0; z<REPDIAMETER; ++z)
 if(orib1[x][y][z])
 if((x+y+z)&1) ++i; else --i;
 if(i < 0) i = -i;
-if(!setSize) cbflag = i;
+i &= 2;
+if(!o_max) cbflag = i;
 else if(i != cbflag) cbflag = 0;
 } /* even squares */
-if(nsqMix) cbflag = 0;
 
 compileRotations();
+if(nsqMix) cbflag = csflag = cpflag = 0;
 
 if(*s == '=') {
 int j = strtol(s+1, (char**)&s, 10);
@@ -930,6 +959,14 @@ o_max2 = o_max;
 
 if(cbflag) {
 puts("checkerboard upgrade");
+ordFactor = 2;
+}
+if(csflag) {
+puts("checkerstripe upgrade");
+ordFactor = 2;
+}
+if(cpflag) {
+puts("checkerplane upgrade");
 ordFactor = 2;
 }
 

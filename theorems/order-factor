@@ -167,6 +167,30 @@ Each dimension is even, and the shape has order divisible by 4.
 With e0f080, pieces group together in pairs on the floor, consuming 4 or 6 squares.
 Once again each dimension is even.
 
+	Checkerstripe and Checkerplane
+
+In two dimensions we overlaid a checkerboard,
+and sometimes black and white stripes.
+Let's step up to 3 dimensions.
+The 3d checkerboard is still in force, each white square surrounded by 6 black squares.
+You can also place a checkerboard on the floor,
+and then extend black and white columns up the height of the box.
+This is called checkerstripes.
+Finally, you can lay black and white stripes along the floor,
+and extend them up to black and white planes, like the layers of a cake.
+This is called checkerplane.
+My software checks for all of these, so you don't have to.
+It reports an upgrade if any of these patterns so indicates,
+whence the order is even.
+As with two dimensions, all pieces in the set must have an even number of cubes,
+or this doesn't make sense.
+
+An example is f080f0, the T hexomino.
+You can see the checkerboard argument at a glance.
+Each piece consumes an excess or deficiency of 2 white squares, in any orientation.
+Overlay checkerstripes, or checkerplanes, and find the same situation.
+3dbox 80f080 alerts you to all three conditions, before it analyzes the puzzle.
+
 	An Odd Tiling
 
 There are certainly rectangles that are tiled with an odd number of pieces,
