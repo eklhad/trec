@@ -1188,8 +1188,8 @@ if(u) restart = atoi(u+1);
 curDepth = 0;
 setBestZ();
 if(maxDepth < dim_x) return 0;
-initFiles();
 setbuf(stdout, 0);
+initFiles();
 printf("?%dx%d", dim_x, dim_y);
 expandNode(0, floor.pattern.b);
 while(nodesPending) {
