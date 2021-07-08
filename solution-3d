@@ -690,8 +690,181 @@ hhhuuyy
 gmmmuzy
 -------
 
+Attach a square to the C pentomino and see what happens.
+The first is the fork hexomino. I was surprised this one packs at all,
+but it does, and with a very low order.
+Others have order 2 or 4, or are shown below.
+
+c060c0: order 15[3x5x6]
+------
+aahhkk
+beehhn
+bfhhmn
+cfjjmo
+cddllo
+------
+baakkn
+bfeemn
+cfggmo
+cggjjo
+ddggll
+------
+aaiikk
+beeiin
+bfiimn
+cfjjmo
+cddllo
+------
+
+e040c0: order 10[3x4x5]
+-----
+aafff
+baggg
+aaagj
+eeegg
+-----
+cccfj
+bchhj
+bcchj
+behhh
+-----
+ddffj
+bdiii
+dddij
+beeii
+-----
+
+c040c080: order 12[3x4x6]
+------
+aaggkg
+babbkk
+aahhhk
+afffkk
+------
+cccggg
+bbbiii
+ddhdhh
+ffjfjj
+------
+ceccll
+eeiili
+edddll
+eejjjl
+------
+
+Put a cube on the pentomino stairs to get some fun shapes.
+
+c06030: order 24[3x6x8]
+--------
+agghhnnt
+aagglltt
+caaggttw
+ciaootvw
+dimmoovx
+djjqqoox
+--------
+bbhhnnrr
+cbbllrrw
+cibbrrvw
+dieessvx
+deemmssx
+eejjqqss
+--------
+chhnnppw
+cillppvw
+difppuvx
+dffkkuux
+ffkkmmuu
+fkkjjqqu
+--------
+
+c0602020 order 48[6x6x8]
+--------
+qnncceem
+qqeeaamm
+wqqqmmmu
+woookkku
+ooeecckk
+oggyyllk
+--------
+nncceefn
+weeaaffn
+wppfffnn
+pphhhnnu
+phheeccu
+phggyyll
+--------
+nfcbethp
+wedajhhp
+xrrhhhpp
+rrjjjppv
+rjjlezcu
+rjvgfydl
+--------
+nfcbetir
+wedajiir
+xttiiirr
+ttkkkrrv
+tkklezcu
+tkvgfydl
+--------
+qffbbtts
+qqddjjss
+xqqqsssv
+xuuuooov
+uullzzoo
+uvvffddo
+--------
+siffbbtt
+siiddjjv
+ssiiiqqv
+xssgggqq
+xllzzggq
+vvffddgq
+--------
+
+c06020!80 order 4[2x3x4]
+----
+abbd
+bbdd
+bddc
+----
+accd
+aacc
+baac
+----
+
+c06020!40 order 24[3x6x8]
+--------
+abimmqqw
+bbdkmrqw
+cddjooss
+ddjjossx
+eghlpsuu
+eggllnuv
+--------
+aaiimmqq
+cbbkorrw
+ccdkotww
+eefjpsxx
+ehhjpuux
+ggllnnvv
+--------
+caaiimrq
+cabiotrr
+ffkkpttw
+effkpptt
+hhfjnuvx
+ghlnnvvx
+--------
+
+c06020!0040: order ? still looking
+
+c07020: order ? still looking
+
 Here is the simple heptomino that proves polyominoes can have odd order in 3d.
-There are others, like f820 above, with order 25, but this has order 9,
+There are others, like c060c0 above, with order 15,
+and f820, with order 25, but this has order 9,
 and with a little patience, you can verify it by hand.
 
 e0e080: order 9[3x3x7]

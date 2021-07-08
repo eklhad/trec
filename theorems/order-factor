@@ -167,15 +167,28 @@ Each dimension is even, and the shape has order divisible by 4.
 With e0f080, pieces group together in pairs on the floor, consuming 4 or 6 squares.
 Once again each dimension is even.
 
+	An Odd Tiling
+
+There are certainly rectangles that are tiled with an odd number of pieces,
+they just don't seem to be minimal. The suboptimal tiling of e0e080,
+which you can see in pictures/e0e080sub.png,
+presents a rectangle with 45 pieces.
+This is not an artificially contrived rectangle;
+it is the smallest rectangle having a width of 15.
+This casts some doubt on the "even order" conjecture,
+for it seems a mere matter of chance that a smaller, 14×14 tiling exists,
+giving the even order of 28.
+Also, in 3 dimensions, e0e080 has order 9, filling a 3 by 3 by 7 box.
+
 	Checkerstripe and Checkerplane
 
-In two dimensions we overlaid a checkerboard,
+In two dimensions, we overlaid a checkerboard,
 and sometimes black and white stripes.
 Let's step up to 3 dimensions.
 The 3d checkerboard is still in force, each white square surrounded by 6 black squares.
 You can also place a checkerboard on the floor,
 and then extend black and white columns up the height of the box.
-This is called checkerstripes.
+This is called checkerstripe.
 Finally, you can lay black and white stripes along the floor,
 and extend them up to black and white planes, like the layers of a cake.
 This is called checkerplane.
@@ -191,16 +204,25 @@ Each piece consumes an excess or deficiency of 2 white squares, in any orientati
 Overlay checkerstripes, or checkerplanes, and find the same situation.
 3dbox 80f080 alerts you to all three conditions, before it analyzes the puzzle.
 
-	An Odd Tiling
+Put a cube atop the middle square of the stair penomino.
+c06020!0040 is checkerstripe, but not checkerboard,
+so this really is new territory.
 
-There are certainly rectangles that are tiled with an odd number of pieces,
-they just don't seem to be minimal. The suboptimal tiling of e0e080,
-which you can see in pictures/e0e080sub.png,
-presents a rectangle with 45 pieces.
-This is not an artificially contrived rectangle;
-it is the smallest rectangle having a width of 15.
-This casts some doubt on the "even order" conjecture,
-for it seems a mere matter of chance that a smaller, 14×14 tiling exists,
-giving the even order of 28.
-Also, in 3 dimensions, e0e080 has order 9, filling a 3 by 3 by 7 box.
+	Stairs in 3 Dimensions
+
+The stair hexomino, c06030, has an order divisible by 3.
+Put a 3 color checkerboard on the floor, with red running
+from the back left corner to the front right corner.
+As you move up the box, the red stripe moves up and to the right,
+along with the rest of the checkerboard pattern.
+Stairs running with the grain are a multiple of 3,
+and stairs running against the grain do not participate.
+Let the red stripe, and the checkerboard pattern, slant up and to the left,
+and stairs running with the grain are a multiple of 3,
+and stairs running against the grain do not participate.
+Put these together and the order is divisible by 3.
+
+The L hexomino, f08080, has order divisible by 3.
+Extend the aforementioned tricolor checkerboard pattern on the floor
+to stripes going up.
 
