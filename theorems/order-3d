@@ -84,9 +84,23 @@ Since this shape spreads across a 3 by 3 square, it has to fill a box
 that is at least 3 by 3, if it is to escape the plane.
 The shape consists of 7 squares, so 3 by 3 by 7 is the best we can do.
 
+I love this field because each shape has its own personality.
+Consider the fork hexomino, c060c0.
+This obviously goes nowhere in the plane.
+I thought, at first, it could not filla box either,
+and I spent an hour or so lying in bed trying to prove it.
+However, it does pack, and you can almost find the solution by hand.
+Since this shape spreads across a 3 by 3 square, it has to fill a box
+that is at least 3 by 3, if it is to escape the plane.
+3 by 3 and 3 by 4 don't work.
+3 by 5 by 5 isn't even, so 3 by 5 by 6 is the best we can do.
+That's order 15, and there is indeed a solution.
+Try to find it, or check out solution-3d.
+This is another polyomino of odd order.
+
 Question: is there a polyomino with 3d order greater than 8,
 whose minimal packing fills a cube? I haven't found one yet.
-The stairs packa box that is 5 by 6 by 6 - close, but no cigar.
+The stair pentomino packsa box that is 5 by 6 by 6 - close, but no cigar.
 To construct a 3d example of order 8, start with 8 subcubes to make the larger cube,
 and put in tabs and notches so that they all fit together, like this.
 e0f0e0!c0e0e040!e0a0e0

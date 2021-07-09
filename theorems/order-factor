@@ -222,7 +222,3 @@ and stairs running with the grain are a multiple of 3,
 and stairs running against the grain do not participate.
 Put these together and the order is divisible by 3.
 
-The L hexomino, f08080, has order divisible by 3.
-Extend the aforementioned tricolor checkerboard pattern on the floor
-to stripes going up.
-

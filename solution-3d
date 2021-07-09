@@ -690,9 +690,8 @@ hhhuuyy
 gmmmuzy
 -------
 
-Attach a square to the C pentomino and see what happens.
-The first is the fork hexomino. I was surprised this one packs at all,
-but it does, and with a very low order.
+Attach a cube to the C pentomino and see what happens.
+The first is the fork hexomino, referenced in theorems/order-3d.
 Others have order 2 or 4, or are shown below.
 
 c060c0: order 15[3x5x6]

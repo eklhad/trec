@@ -1,0 +1,49 @@
+I asked Scott Aaronson about polyomino tilings and quantum computing,
+and he was kind enough to reply within the hour.
+Here is our exchange.
+
+============================================================
+
+A polyomino is a set of squares pasted together to make a particular shape.
+One of the interesting questions is whether a polyomino can be used to tile a rectangle.
+If so, the smallest number of polyominoes used is the order.
+I started playing with this in 1986, and have solved many open tiling problems since then.
+
+A set of polyominoes can also be used.
+Here are two hexominoes making a 20 by 120 rectangle, from my github site.
+
+https://github.com/eklhad/trec/blob/master/pictures/e038_f04040.png
+
+So the order of this pair of hexominoes is <= 400, but probably less.
+Tall skinny rectangles are easily packed, due to the boundary conditions.
+The problem grows exponentially as the rectangle is closer to square, having the same or lesser area.
+The order of this pair is almost certainly less than 400, in a rectangle that is more square,
+but I will probably never have the computing power at my hand to determine that.
+
+Finally my question:
+Could a quantum computer determine whether a polyomino, or set of polyominoes, packs a given rectangle?
+This has no practical applications, it's not like Shore's algorithm, but I still wonder.
+I imagine qbits locating each piece on the board, and the patterns constructively interfere if those pieces don't overlap.
+Or perhaps qbits draw edges between squares, or not, and interfere if the shapes drawn are all the prescribed polyomino.
+Perhaps someone could work on this problem, certainly worthy of a paper.
+I know I don't know enough to even get started.
+
+Sincerely,
+
+Karl Dahlke
+
+============================================================
+
+Hi Karl,
+
+For this problem, like for just about any other combinatorial
+optimization problem, I'd expect that a quantum computer could give
+you a square-root speedup over what a classical computer can do --
+using Grover's algorithm
+
+https://en.wikipedia.org/wiki/Grover%27s_algorithm
+
+or variations thereof -- but probably no better than that.
+
+Best,
+Scott
