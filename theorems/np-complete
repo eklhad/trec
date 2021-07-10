@@ -1,0 +1,50 @@
+	Tiling a rectangle using a finite set of polyominoes is np-complete.
+
+Start with an instance of 3-sat.
+We will create blocks, as we did when proving undecidability.
+The number of blocks is proportional to the number of clauses
+times the number of variables, so still polynomial.
+
+Say there are 26 boolean variables, a through z.
+Our rectangle will have 27 blocks across.
+If there are 50 clauses there will be 51 rows going down.
+
+The top row selects one of two blocks for each variable.
+This is a or z, true or false.
+This is the solution.
+The last block on the upper right is a clause 0 block.
+It is just something to get us started.
+
+Clauses are numbered, and sequence numbers will be encoded in binary notches
+on the blocks in the rightmost column,
+so that we will consider clause 1, clause 2, clause 3, etc.
+The last clause has no connecting notches below, just a smooth edge
+at the bottom of the rectangle.
+
+Let the first clause be d|g|~h.
+There are 26 blocks that simply carry the values of a through z,
+true or false, down to the row below.
+Because d is in a clause, there is a block that carries the value of d to
+the row below, and also indicates the value of d on its right edge.
+Four blocks carry e true or false below, while carrying d true or false to the right.
+This continues through f, then there are blocks that carry g below,
+d to the right, and also bring in the value of g to the right.
+Another block puts the value of h on its right edge.
+From here we travel all the way to z, whence the right edge sports the boolean
+values of d, g, and h.
+There are 7 blocks for clause 1,
+the 7 ways that clause can be satisfied by the values of d g and h.
+One of these 7 blocks fits the knobs and notches of the block just below z,
+and shows the sequence number below, ready for clause 2.
+
+Clause 2 becomes the third row, and if it can be satisfied by the choices
+for a through z, then clause 3 is next, and so on.
+
+The bottom row is the last clause.
+Its 7 blocks have no sequence number below,
+and the blocks under the variables do not carry the boolean values
+to the row below, instead, their bottom edges are smooth.
+Thus the last clause completes the rectangle.
+
+If we could tile a rectangle in polynomial time then we could solve 3sat,
+and that completes the proof.
