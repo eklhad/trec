@@ -1,0 +1,51 @@
+	Tiling a Rectangle is Undecidable.
+
+Given a turing machine (tm), and an input, one can construct a finite set
+of polyominoes, such that tiling a rectangle with those polyominoes runs that tm
+on that input, and reaches a final state.
+Thus tiling a rectangle is undecidable.
+
+The proof is straightforward in concept,
+though it can become tedious if you cover all the details.
+
+The constructed polyominoes are square blocks, large enough to encode state
+and symbol information on any of its four sides using notches and knobs.
+Perhaps each block is 100 by 100 square.
+
+The first set of blocks defines the input, one block per symbol.
+0 or 1 is displayed on the bottom, and sequence numbers in binary connect the blocks left to right.
+Thus the blocks spell out the input on the tape.
+
+To the right of the last symbol, a notch requires a block that encodes blank below.
+Additional blocks can be attached to the right, all showing blank below.
+The last block has no notches or knobs above or to the right,
+and is the last blank on the tape.
+Reserve enough blanks for the tm as it performs its calculation.
+This becomes the top row of our rectangle.
+
+Each row is a snapshot of the tape as the tm goes through its transitions.
+The bottom row leaves the tm in a final state.
+
+The upper left block, which is the first symbol on the tape,
+encodes the initial state of the tm below, along with the symbol 0 1 or blank.
+The other blocks on the top row present symbols below, with no states.
+Now let's build the rectangle row by row.
+
+Blocks carry stateless symbols faithfully down to the next row.
+Other blocks convert the state and symbol above to the new symbol below,
+and the new state on the left or right.
+Other blocks carry the symbol above, and the state on the left or right,
+to the symbol and state below.
+Laying down a row effectively writes the new symbol on the tape,
+moves the head left or right, and moves the tm into a new state.
+
+Once we reach a final state, we need a row to complete the rectangle.
+A block matches a final state and symbol above, and has a closing indicator
+on the left or the right or both,
+and a smooth edge below.
+Other blocks match the closing indicator, left or right or both,
+and present a smooth edge below.
+That completes the rectangle, and in so doing,
+simulates the tm on its input, all the way to a final state.
+Therefore, the question of tiling a rectangle with a finite set
+of polyominoes is undecidable.
