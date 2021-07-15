@@ -492,7 +492,7 @@ fiopwx
 Four in a row, still in the plane, allows for a couple of trivial shapes
 (f0a0 and f0c0 and f060), two crosses that can't fit into a corner,
 wider L, order 14, C, order 8, T, order 32,
-shifted L, order 48, lightning, order 16, and two faucets and zigzag,
+shifted L, order 48, lightning, order 16, and two faucets and a zigzag,
 still undetermined.
 
 f08080: order 14[3x4x7]
@@ -689,6 +689,9 @@ fkiuuyy
 hhhuuyy
 gmmmuzy
 -------
+
+Attach a cube to the chair pentomino and find shapes of order <= 16,
+except for 40e08080, whose order is undetermined.
 
 Attach a cube to the C pentomino and see what happens.
 The first is the fork hexomino, referenced in theorems/order-3d.

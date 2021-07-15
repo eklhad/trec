@@ -10,7 +10,7 @@ and the other prime factors establish the other dimensions.
 
 	Tetrominoes
 
-The line, L, triangle, square, have orders 1, 2, 4, 1,
+The line, L, Y, square, have orders 1, 2, 4, 1,
 in the plane or in a flat box, i.e. a box of thickness 1.
 The stair tetrominoe has order 6, in a 3 by 2 by 4 box.
 The twisted tetromino, our first 3 dimensional piece, has order 2,
@@ -60,7 +60,7 @@ This is e080!20 in our notation.
 It has order 18, using this piece in all its rotations and reflections.
 We can place a cube on top of the L tetromino in 3 more ways, giving:
 e080!40 order 4, e080!80 order 18, and e080!0080 order 6.
-Put a cube atop the triangle tetromino, and e040!0040 has order 10, and e040!40 has order <= 216.
+Put a cube atop the Y tetromino, and e040!0040 has order 10, and e040!40 has order <= 216.
 Put a cube atop the stair tetromino, and c060!80 has order 4, and c060!40 has order 28.
 Putting a cube atop a 2 by 2 square gives c0c0!80 with order 4.
 There are only two penominoes left, the two that do not have 4 cubes in a plane.

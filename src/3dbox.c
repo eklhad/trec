@@ -37,6 +37,7 @@ static uchar doNodes; // look by using nodes instead of filling the entire box
 static uchar robin = 1; // round robin on the colors
 static uchar countFlag; // count or generate solutions
 static uchar tubes = 0;
+static uchar hascorner = 0;
 static int countSol = 0;
 static int oc_2, oc_3, oc_4, oc_6; // overcounts
 static int megaNodes = 80; // millions of nodes that can be cached
@@ -280,6 +281,8 @@ for(z=0; z<REPDIAMETER; ++z)
 orib2[x][y][z] =
 (z+j < REPDIAMETER ? orib2[x][y][z+j] : 0);
 }
+
+if(orib2[0][0][0]) hascorner = 1;
 
 rng_x = rng_y = rng_z = 0;
 for(x=0; x<REPDIAMETER; ++x)
@@ -1080,6 +1083,8 @@ bailout("usage: 3dbox [-l] [-dnn] [-c] [-a] [-mnnn] piece_set width depth height
 
 lowEmptySet();
 stringPiece(argv[0]);
+
+if(!hascorner) bailout("piece has no corner, cannot fill a box", 0);
 
 if(nsqMix && (doNodes || argc == 2)) bailout("all polyominoes in the set must have the same number of squares", 0);
 

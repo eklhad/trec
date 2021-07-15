@@ -1,4 +1,7 @@
-	Tiling a Rectangle is Undecidable.
+	Tiling a Rectangle (size undetermined) is Undecidable.
+
+Obviously if the rectangle has a fixed size we can try
+all combinations to find a solution.
 
 Given a turing machine (tm), and an input, one can construct a finite set
 of polyominoes, such that tiling a rectangle with those polyominoes runs that tm
@@ -49,3 +52,6 @@ That completes the rectangle, and in so doing,
 simulates the tm on its input, all the way to a final state.
 Therefore, the question of tiling a rectangle with a finite set
 of polyominoes is undecidable.
+
+This does not prove that tiling a rectangle with a single
+polyomino is undecidable.

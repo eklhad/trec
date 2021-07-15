@@ -18,7 +18,7 @@ Thus it's order is 1 (not very interesting).
 A triomino, three squares pasted together, can assume only two distinct shapes.
 The straight line has order 1 and the L shape has order 2.
 Two L's join together to make a 2×3 rectangle.
-The five tetrominoes are the line, the L, the triangle
+The five tetrominoes are the line, the L, the Y
 (three squares in a row with one above the middle), the square, and the stairs.
 These have orders 1, 2, 4, 1, and 0, respectively.
 The troublesome tetromino, that looks like a set of stairs,
@@ -621,13 +621,13 @@ in the lower left corner of the cube.
 
 3dbox -a 80c080=1_c080!80=1_c08080=1_c060=1_c080=1_c080!40=1=1 3 3 3
 
-This line starts with the triangle tetromino.
-Every solution has the triangle at the origin, and 3dbox puts it in a preferred
+This line starts with the Y tetromino.
+Every solution has the Y at the origin, and 3dbox puts it in a preferred
 orientation, with its length running along the edge y = z = 0.
-You can place the triangle here too, if you have the puzzle in your hand; and
+You can place the Y here too, if you have the puzzle in your hand; and
 you know you are on your way to a solution, and you won't miss any solutions.
 This piece is symmetric, so each solution is printed twice,
-courtesy of its reflection through the triangle.
+courtesy of its reflection through the Y tetromino.
 I flag them with the phrase duplicate 2, and adjust the count,
 so at the end of the page, it still says 240 solutions.
 Yes, the output has duplicates, but hey, if you don't want them,

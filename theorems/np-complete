@@ -1,4 +1,5 @@
-	Tiling a rectangle using a finite set of polyominoes is np-complete.
+	Tiling a rectangle of a given size using a finite set of polyominoes
+	is np-complete.
 
 Start with an instance of 3-sat.
 We will create blocks, as we did when proving undecidability.
@@ -12,7 +13,9 @@ If there are 50 clauses there will be 51 rows going down.
 The top row selects one of two blocks for each variable.
 This is a or z, true or false.
 This is the solution.
-The last block on the upper right is a clause 0 block.
+Sequence numbers on the edges of the blocks ensure we have assigned
+truth values to each of the 26 boolean variables.
+The final block, on the upper right, is a clause 0 block.
 It is just something to get us started.
 
 Clauses are numbered, and sequence numbers will be encoded in binary notches
@@ -28,7 +31,7 @@ Because d is in a clause, there is a block that carries the value of d to
 the row below, and also indicates the value of d on its right edge.
 Four blocks carry e true or false below, while carrying d true or false to the right.
 This continues through f, then there are blocks that carry g below,
-d to the right, and also bring in the value of g to the right.
+d to the right, and also bring in the value of g on the right.
 Another block puts the value of h on its right edge.
 From here we travel all the way to z, whence the right edge sports the boolean
 values of d, g, and h.
@@ -48,3 +51,6 @@ Thus the last clause completes the rectangle.
 
 If we could tile a rectangle in polynomial time then we could solve 3sat,
 and that completes the proof.
+
+This does not prove that tiling a given rectangle with a single
+polyomino is np-complete.
