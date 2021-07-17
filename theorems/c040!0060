@@ -8,7 +8,8 @@ front to back, or standing up, as per its long dimension.
 Without loss of generality, put A in the back lower left corner,
 left two right, with 3 cubes against the back wall.
 As we travel along the edge formed by the floor and the back wall,
-left to right pieces can't continue forever.
+left to right pieces, on the floor or against the back wall,
+can't continue forever.
 Let B be the last such, i.e., the rightmost.
 Reflect if need be, so B has the orientation that A had before,
 i.e. 3 cubes against the back wall.

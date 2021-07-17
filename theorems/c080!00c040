@@ -1,0 +1,65 @@
+	Specific Shape, c080!00c040
+
+Start with the pentomino c080!00c0, which has order 108,
+but put a knob on one of its legs.
+The knob is proximal to the cube that connects the two legs.
+
+Put A in the lower left back corner.
+If the knob of A is in the corner, let A run to the right.
+This presents a notch, whence another piece must slide beneath and head to the right.
+A is said to force another piece along the wall.
+
+A could also run left to right with its knob pointing right.
+If A is in the corner, then its knob is not along the edge.
+A represents another force; B has to slide in along the edge next to A.
+
+Without loss of generality, we can assume A in the corner runs left to right,
+whence it forces another piece next to it along the edge.
+Now, skip ahead along the edge of the floor and the back wall,
+and let B be the rightmost piece that runs left to right,
+and has its knob on the left and in the edge,
+or its knob on the right and its leftmost end touching the edge,
+whence its knob on the right can't touch the edge.
+Since A exists, there must be such a B.
+
+Let the knob of B be on the left and in the edge.
+There is a gap of height 2 between B and the back wall.
+Put C in this gap.
+Naturally C must not collide with B.
+C could be a translate of B, but that contradicts B as rightmost.
+C could stand up on its knob and wrap around B on the right,
+but that presents another gap of width 2 on the floor, just as we saw with B.
+These gaps of width or height 2 can't continue forever.
+C could tuck one leg in behind B,
+but then it runs left to right with its knob on the right.
+Each orientation of C contradicts B as rightmost.
+
+Keep B left to right, but put its knob on the right.
+The knob is not along the edge,
+since that would not put the left end of B against the edge.
+So roll B up 90 degrees.
+Its knob is against the back wall, so that there are two empty spaces below B.
+C can only fill this with its knob.
+This is geometrically possible, but it creates a gap of width 2 on the floor below C,
+which leads to a contradiction.
+
+Roll B again, so that its knob points right but doesn not touch
+the floor or the back wall.
+Put C against the edge next to B.
+C can't wrap around the knob of B, else the knob of C crashes
+into the back wall or the floor.
+Slide the leg of C behind B, and the knob of C juts out to the right.
+The same happens if we slide the leg of C under the knob of B.
+Put the knob of C against the back wall.
+C can't run left to right, that looks like B.
+If C runs back to front, it wraps around B on the right,
+and the same happens if C stands up on its knob.
+It creates a space of height 2, or width 2.
+We've seen this before, it leads to a contradiction.
+Those are all the orientations for C.
+
+Roll B again, so that it's knob is on the floor.
+Now the leftmost end of B doesn't touch the edge,
+which contradicts the definition of B.
+
+Those are all the orientations for B, and that completes the proof.

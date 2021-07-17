@@ -32,7 +32,7 @@ Sincerely,
 
 Karl Dahlke
 
-============================================================
+------------------------------------------------------------
 
 Hi Karl,
 
@@ -48,6 +48,17 @@ or variations thereof -- but probably no better than that.
 Best,
 Scott
 
-============================================================
+------------------------------------------------------------
 
 That's ok; with sqrt speedup, a calculation might take weeks, instead of centuries.
+
+============================================================
+
+Back to my own voice...
+
+Here's the thing about my quantum question for Scott; I didn't really need to ask it, if I just sat down and thought.
+If I had proved tiling a rectangle was np complete first,
+then it would follow that a fast quantum solution to this problem would also solve all the other exponentially hard problems as well,
+and it is universally believed that a quantum computer can't do that.
+So ok, Scott's answer makes sense.
+If you pull down an exponential algorithm by square root, it is still exponential.

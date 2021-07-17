@@ -31,7 +31,6 @@ Pieces all stand up against each other and that doesn't work.
 8 implies 2 by 4 by 5. Verify this doesn't work, so 10 it is.
 
 C has order 6.
-
 Cross has order 0; it still can't fit into a corner.
 
 When a piece lives in a 3 by 3 square, like the T or faucet or chair,
@@ -67,7 +66,7 @@ There are only two penominoes left, the two that do not have 4 cubes in a plane.
 These are c080!00c0, with order 108,
 and c040!0060, which cannot tile a box.
 
-We obviously aren't going to evaluate all the hexominoes, however, the one that
+We aren't going to evaluate all the hexominoes, however, the one that
 started it all for me in 1987, the Y hexomino, f840, has order 92 in the plane,
 and it has order 28 in 3 dimensions, filling a box that is 2 by 7 by 12.
 
