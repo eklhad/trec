@@ -1,0 +1,32 @@
+	Specific Shape, c080!00c0!40
+
+Start with the pentomino c080!00c0, which has order 108,
+but put a knob on one of its legs.
+The knob is distal to the cube that connects the two legs.
+This is in contrast to c080!00c040.
+
+Put A in the lower left back corner.
+Without loss of generality, assume A in the corner runs left to right.
+If the knob of A is in the corner, A presents a hole against the floor and the back wall.
+This is filled by the knob of B, which presents another hole,
+whence the pieces travel along the edge forever.
+
+Let the knob of A point right.
+The blunt end of A establishes a hole with the left wall.
+This hole cannot be trapped against the corner of the box.
+Roll A 90 degrees, and the hole is on the floor.
+B puts its knob into this hole, and C puts its knob into the hole of B,
+and pieces travel along the floor toward us forever.
+Roll A the other way and the hole is against the back wall.
+Pieces climb up the back wall forever.
+Therefore A lies on its back, with the hole away from the floor and the back wall.
+There is a gap of height 2 between A and the back wall,
+and the knob of A protrudes to the right.
+Put B immediately to the right of A on the floor.
+There is only one way to do this.
+The knob of B slides in behind A,
+then B wraps around the knob of A.
+Fine, but B presents a hole with the back wall.
+The knob of C fills this hole, and pieces travel along the back wall forever.
+
+That completes the proof.

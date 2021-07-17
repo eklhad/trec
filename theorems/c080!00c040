@@ -3,18 +3,17 @@
 Start with the pentomino c080!00c0, which has order 108,
 but put a knob on one of its legs.
 The knob is proximal to the cube that connects the two legs.
+This is in contrast to c080!00c0!40.
 
 Put A in the lower left back corner.
 If the knob of A is in the corner, let A run to the right.
 This presents a notch, whence another piece must slide beneath and head to the right.
-A is said to force another piece along the wall.
+A forces another piece along the wall.
 
 A could also run left to right with its knob pointing right.
 If A is in the corner, then its knob is not along the edge.
-A represents another force; B has to slide in along the edge next to A.
 
-Without loss of generality, we can assume A in the corner runs left to right,
-whence it forces another piece next to it along the edge.
+Without loss of generality, assume A in the corner runs left to right.
 Now, skip ahead along the edge of the floor and the back wall,
 and let B be the rightmost piece that runs left to right,
 and has its knob on the left and in the edge,
@@ -54,7 +53,7 @@ Put the knob of C against the back wall.
 C can't run left to right, that looks like B.
 If C runs back to front, it wraps around B on the right,
 and the same happens if C stands up on its knob.
-It creates a space of height 2, or width 2.
+C creates a space of height 2, or width 2.
 We've seen this before, it leads to a contradiction.
 Those are all the orientations for C.
 
