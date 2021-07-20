@@ -1,0 +1,69 @@
+# monomino
+80:1
+# domino
+c0:1
+# triominoes
+e0:1
+c8:2
+# tetrominoes
+f0:1
+e080:2
+e040:4
+c0c0:1
+c060:0
+# penominoes
+f8:1
+f080:2
+f040:10
+e0c0:2
+40e040:0
+e0a0:0
+c06020:0
+e08080:0
+e030:0
+c06040:0
+e04040:0
+80e020:0
+# 6 in a row
+fc:1
+# 5 in a row
+f880:2
+f840:92
+f820:0
+# 4 in a row
+f0c0:2
+f0a0:2
+f060:4
+f090:0
+10f080:0
+20f080:0
+40f080:0
+80f080:0
+40f040:0
+40f020:0
+f08080:0
+f04040:0
+f018:0
+# square tetromino + 2
+e0e0:1
+c0e080:18
+e0c080:2
+40c0c080:0
+c0e040:0
+c0c060:0
+# chair pentomino + 1
+e080c0:2
+20e08080:0
+40e08080:0
+#  C pentomino + 1
+c080c040:0
+c040e0:0
+c060c0:0
+# stair pentomino + 1
+c06030:0
+c0602020:0
+c07020:0
+# lightning pentomino + 1
+e038:0
+20e030:0
+80e030:0

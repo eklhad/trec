@@ -1,0 +1,41 @@
+	Specific Shape, c04040!0060
+
+This is an L tetromino with a tab hanging off the middle cube.
+
+Without loss of generality, put the foot of A in the lower left corner,
+with A pointing right and the tab heading up.
+This forces another piece along the edge.
+
+Skip ahead, and let B be the last piece that protrudes beyond the rightmost
+cube of B along the edge.
+In other words, B forces another piece, it can't be up against the right wall,
+but B is the last piece to do so.
+
+Let B look like A, so that there is a gap of 2 along the edge
+under the leg of B.
+Let C fill both these ssquares with its foot.
+If C faces right then its tab collides with the tab of B.
+If C faces left, its tab protrudes, which contradicts the definition of B.
+
+Every piece beyond B has only two possible orientations:
+the one we ruled out for C, with its foot against the edge and facing right,
+or its tow pointing at the wall and the piece heading left.
+This is the orientation for C, as it interlocks with B.
+However, D, next to C, can have neither of these orientations.
+
+Put the tab of B against the back wall, as the L component floats above at level 1.
+C, next to B, can have neither of the approved orientations.
+
+Put the foot of B against the back wall, with B facing left,
+so that its tab floats right.
+C, next to B, can have neither of the approved orientations.
+
+Let B lie on the floor and point into the back wall, with B facing left,
+so that its tab floats right.
+This is the same situation as the previous paragraph.
+
+Finally let B lie on the floor and point into the back wall, with B facing right,
+so that its tab floats left.
+C, next to B, can have neither of the approved orientations.
+
+That completes the proof.
