@@ -607,59 +607,10 @@ bcjjmnnp
 bddddnll
 --------
 
-Start with a 2 by 2 square, attach 2 more cubes, and find some trivial shapes
-of order 1 2 or 4, and three shapes of order 0 (when the cubes are on
-opposite sides of the square), and some shapes of modest order,
+Start with a 2 by 2 square and attach 2 more cubes, and find several shapes
+of order <= 10, a shape of order 28,
+three shapes of order 0 (when the cubes are on opposite sides of the square),
 and c0e040, no packing found yet.
-
-c0c060: order 10[3x4x5]
------
-aabgg
-aaeej
-caafj
-cddii
------
-bbbgg
-ceeej
-cfffj
-ddiii
------
-bbggj
-cehhj
-cffhh
-ddihh
------
-
-c0e080: order 10[3x4x5]
------
-acfff
-aaagg
-aaggg
-dddjg
------
-bccff
-bbbhh
-bbhhh
-ddjjh
------
-cccfi
-eeiii
-eeeii
-edjjj
------
-
-c0c0!008080: order 8[2x4x6]
-------
-accffh
-abccgh
-bbeegg
-bddeeg
-------
-accffh
-aaffhh
-baddhg
-bddeeg
-------
 
 40c0c080: order 28[4x6x7]
 -------
@@ -693,7 +644,54 @@ gmmmuzy
 -------
 
 Attach a cube to the chair pentomino and find shapes of order <= 16,
-except for 40e08080, whose order is undetermined.
+except for the barber chair hexomino, witha cube below the chair.
+
+40e08080: order <= 120[4x10x18]
+------------------
+cwwwaaalaaayfffzzz
+ciiibbbllkyyeeecio
+cysiilllkkkyyyscio
+eysicccpppkagsscio
+eysccysnnnkagksssm
+ekkkcyscfffagkkagm
+gaukkyschhhkkkqagm
+gaukqqqcccsssqqagk
+gauwwwqqcssjjjqqqk
+rrrxxxqiiisiiieeek
+------------------
+wwqaauoaaruffpzzfo
+dysbbvoobuueeowwwo
+cyslooobbbuuuwwdjp
+cztllysbdpplllwcim
+fllldysbgnnbhllcim
+eauddztffojagltttn
+eauodddhhljagttbhk
+hbvoommmjjjwwwtagk
+gooogwwmmjwwdjjagl
+gxrrhxxmjiiwciiyee
+------------------
+dwqqauularrzfppzff
+djjjbvvllqzzeoodjo
+cysjjlllqqqzzzudjp
+fztjeeeddpqbhuucip
+fzteeysggnqbhmuuum
+emmmeztifooagmmbhn
+haummztihllmmmrbhn
+hbvmrrriiitttrragk
+gbvggwrrittddjrrrl
+xxrhhxrjjitcciyyel
+------------------
+qqquuuprrrvpppfffp
+dztvvvppevvoooxxxp
+dztnpppeeevvvxxdjp
+dztnnztedddnnnxdjn
+fnnnfztegggbhnndjn
+fbvffztooombhnvvvn
+fbvpffflllmbhvvbhl
+hbvppnnnmmmxxxvbhl
+hpppgggnnmxxdddbhl
+hxxxhhhnjjjxcccyyy
+------------------
 
 Attach a cube to the C pentomino and see what happens.
 The first is the fork hexomino, referenced in theorems/order-3d.
@@ -868,6 +866,8 @@ c07020: order ? still looking
 
 A bar of 3 with another bar of 3.
 808080!e0 has order 8. You can do this one in your head.
+The cross, 404040!00e0, has order 0.
+Lightning hexomino, e038, is undetermined.
 
 808080!00e0: order 56[6x7x8]
 --------

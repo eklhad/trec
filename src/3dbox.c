@@ -38,6 +38,7 @@ static uchar robin = 1; // round robin on the colors
 static uchar countFlag; // count or generate solutions
 static uchar tubes = 0;
 static uchar hascorner = 0;
+static uchar flat3 = 0;
 static int countSol = 0;
 static int oc_2, oc_3, oc_4, oc_6; // overcounts
 static int megaNodes = 80; // millions of nodes that can be cached
@@ -343,6 +344,7 @@ o->rng_x = rng_x + 1, o->rng_y = rng_y + 1, o->rng_z = rng_z + 1;
 if(o->rng_z > setMaxDimension) setMaxDimension = o->rng_z;
 if(setMaxDimension > 9) r_shorts = 1;
 if(o->rng_z < setMinDimension) setMinDimension = o->rng_z;
+if(o->rng_z == 1 && o->rng_x >= 3 && o->rng_y >= 3) flat3 = 1;
 o->ambig = 0;
 o->zflip = r1; // remember the spin
 o->zflip |= (r2<<2); // remember point reflection
@@ -1230,6 +1232,7 @@ boxVolume = boxOrder * nsq;
 // We're not considering flat boxes here, even if the piece is flat.
 // Nor any box narrower than the piece itself.
 for(dim_y = setMinDimension > 2 ? setMinDimension : 2; dim_y*dim_y*dim_y <= boxVolume; ++dim_y) {
+if(dim_y == 2 && flat3) continue;
 if(boxVolume % dim_y) continue;
 for(dim_x = dim_y; dim_y*dim_x*dim_x <= boxVolume; ++dim_x) {
 if((boxVolume/dim_y) % dim_x) continue;
