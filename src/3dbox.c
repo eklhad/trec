@@ -56,7 +56,7 @@ static int reachup; /* greatest reach of node so far */
 static int setMaxDimension, setMinDimension;
 static int stopgap, forgetgap;
 static uchar r_shorts; // nodes must use shorts, rather than bytes
-static int restart = 0; // depth when resuming the analysis
+static int restart = -1; // depth when resuming the analysis
 static int restartParent;
 static int cbflag; // checkerboard flag
 static int csflag; // checkerstripe flag
@@ -1187,7 +1187,7 @@ return 0;
 if(qtySpec) bailout("cannot combine node search with quantity specifiers", 0);
 
 u = strchr(argv[3], '@');
-if(u) restart = atoi(u+1);
+if(u && isdigit(u[1])) restart = atoi(u+1);
 
 // At this point dim_z doesn't mean anything - until we find a solution.
 // Search up through the levels, with dim_x and dim_y as footprint,
@@ -1202,12 +1202,12 @@ expandNode(0, floor.pattern.b);
 while(nodesPending) {
 int j;
 printf(" @");
-if(!restart) markOldNodes();
+if(restart < 0) markOldNodes();
 printf("%d", curDepth);
 j = nodesCache / (maxNodes/10);
 if(j != hwm) { hwm = j; printf(" %%%d0", j); }
 expandNodes();
-restart = 0;
+restart = -1;
 restartParent = 0;
 ++curDepth;
 setBestZ(); /* also resets minDepth */
@@ -1839,7 +1839,7 @@ maxNodes = megaNodes * 0x100000;
 slopNodes = maxNodes / 8 * 9;
 reachup = 0;
 
-if(restart) { /* resume program */
+if(restart >= 0) { /* resume program */
 long l;
 struct NODE buf;
 int cutoff = restart + forgetgap;
