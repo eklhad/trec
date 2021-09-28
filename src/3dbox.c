@@ -1,5 +1,7 @@
 /*********************************************************************
 3dbox.c: fill a box with 3d polyominoes.
+Use the -O option, or a lot of my coding tricks won't speed things up,
+and could even slow things down.
 *********************************************************************/
 
 #include <stdio.h>

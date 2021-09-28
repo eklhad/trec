@@ -1855,6 +1855,8 @@ uafffeeedddcccbbbzzz
 aaaafffeeedddcccbbbz
 --------------------
 
+In this tiling the stairs can never be on the edge.
+And the order is a multiple of 3.
 f08080_c06030: order <= 315[35x54] < 318[36x53] < 324[36x54] < 363[33x66]
 -----------------------------------
 uuuuvvvwwwxxxyyyzzzaaabbbcccddddeee

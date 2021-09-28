@@ -252,3 +252,8 @@ aabb
 abbb
 aabb
 
+e0a0e0!e00040 is not simply connected, i.e. it has a hole,
+and it too has order 2, but the pieces don't link like rings.
+Instead, each piece puts its knob into the hole of the other.
+Is this the smallest piece that is not simply connected and still has an order?
+

@@ -1,5 +1,5 @@
-This project is devoted to the science of tiling a rectangle
-with one or more polyominoes.
+This project is devoted to the science of tiling a rectangle,
+or a box, with one or more polyominoes.
 
 What is a polyomino?
 
@@ -75,7 +75,7 @@ analysis, use the m2p perl script. (matrix to pieces)
 src/m2p <matrix-file >pieces-file
 
 So which pentominoes, on their own, tile a rectangle?
-The line, the L, the Utah, and the Y, with orders 1, 2, 2, and 10.
+The line, the L, the Utah, and the Y, with orders 1, 2, 2, and 10, respectively.
 
 When I was in junior high I built the 35 distinct hexominoes out of lego
 and tried to fit them into a 14×15 frame.
@@ -185,7 +185,7 @@ So keep an eye on your disk and your ram, and put a UPS
 behind your computer, so you can shut down gracefully upon power failure.
 I wrote some code to stop if you run out of disk space, and wait for you to hit
 return, assuming you can find a way to free up some space.
-This is the only way to continue and recover, if you run into that wall.
+This is the only way to continue and recover if you run into that wall.
 
 The letter a means allcheck, so 54a will look for solutions
 even if the rectangle is wider than it is tall.
@@ -243,12 +243,12 @@ so much access to the disk and the cache that the threads
 often have to wait for each other.
 The third thread brings only a modest improvement, and the fourth thread
 actually slows things down, even though I have 4 CPUs. 🤔
-Also, after 2 threads my pi gets noticeably hot.
-(It has no fans or active cooling.)
+Also, after 2 threads my pi gets noticeably hotter.
 So I can't go past 2 threads, and at that point I may as well stay with 1.
 I was thinking about scrapping it altogether, but there is
 probably another machine where thread support really makes a difference.
 Maybe a core with 64 CPUs, and 8 gig of ram, and a high performance disk - could really go to town.
+Give it a try, if you have such a machine, and let me know how it goes.
 In any case - it was fun to write.
 
 The sixth line tells the program how many rows to look ahead.
@@ -309,7 +309,7 @@ f840  # Y hexomino
 2 # checkerboard argument implies an even order
 1  # no constraints on dimension
 -
-Any comments here about the piece.
+Comments here about the piece.
 
 You can run trek without a config file like this.
 trec ^f0e020
@@ -535,7 +535,7 @@ I rather wish I had the pieces in my hands to explore this real world puzzle.
 More on this later.
 
 My tiling software, in trec.c,
-would have to be restructured to find the order of a 3 dimensional polyomino,
+must be restructured to find the order of a 3 dimensional polyomino,
 that is, the smallest box that could be filled with this polyomino.
 This has been done, in 3dbox.c.
 This program is simpler: no interactive features (^c kills the program),
