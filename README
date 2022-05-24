@@ -664,3 +664,10 @@ no solution
 Other examples are a 2 by 2 square with a cube on either side.
 80!c0c0!80   80!c0c0!40    80!c0c0!0040
 
+My software contains a lot of optimizations, but is, at the end of the day, brute force.
+Marcus Garvie (mgarvie@uoguelph.ca) and others are developing a new technique that overlays color patterns,
+and then partitions the board into pieces.
+This allows each piece to be tiled in turn.
+Read his paper here.
+https://www.mdpi.com/1999-4893/15/5/164
+
