@@ -70,6 +70,8 @@ browser, if you wish to put images on your web site.
 The picture that goes with the above matrix is in pictures/hex610.png.
 Take a moment and look at it, and compare with the above matrix.
 
+letterart foo is shorthand for letterart foo png48:foo.png
+
 If you want to extract the individual pieces from the matrix, for machine
 analysis, use the m2p perl script. (matrix to pieces)
 src/m2p <matrix-file >pieces-file

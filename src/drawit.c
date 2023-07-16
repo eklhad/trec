@@ -3,6 +3,7 @@ Use the image magic library to paint a picture from a file of lines
 and fill colors.
 CFLAGS = -I/usr/include/ImageMagick-6 -DMAGICKCORE_QUANTUM_DEPTH=16 -DMAGICKCORE_HDRI_ENABLE=0
 LDLIBS = /lib/libMagickWand-6.Q16.so /lib/libMagickCore-6.Q16.so
+You may need to use png48:outfile.png
 *********************************************************************/
 
 #include <stdio.h>
@@ -35,6 +36,7 @@ printf("draw %d %d - %d %d\n", x1, y1, x2, y2);
 int main(int argc, char **argv)
 {
 FILE *f;
+char *out2;
 int w_pixel, h_pixel;
 int x, y, last_x, last_y;
 char action;
@@ -44,7 +46,7 @@ const char *color;
 int radius, rad2;
 char *q;
 
-if(argc != 3) {
+if(argc > 3 || argc < 2) {
 fprintf(stderr, "usage:  drawit inputfile outputfile\n");
 exit(1);
 }
@@ -128,12 +130,14 @@ printf("fill %s %d,%d\n", color, x, y);
 }
 
 // and write the file.
-if (MagickWriteImage(m_wand, argv[2]) == MagickFalse) {
+if(argc == 3) out2 = argv[2];
+else asprintf(&out2, "png48:%s.png", argv[1]);
+if (MagickWriteImage(m_wand, out2) == MagickFalse) {
 ExceptionType severity;
 const char *msg;
 msg = MagickGetException(m_wand, &severity);
 printf("%d %s\n", severity, msg);
-fprintf(stderr,"drawit cannot create the output file %s\n", argv[2]);
+fprintf(stderr,"drawit cannot create the output file %s\n", out2);
 exit(1);
 }
 
