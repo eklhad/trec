@@ -90,7 +90,7 @@ last_x = last_y = 0;
 radius = atoi(strchr(line, 'r') + 1);
 q = strchr(line, 's');
 if(!q) { // circle
-DrawCircle(dw, x, y, x, x+radius);
+DrawCircle(dw, x, y, x, y+radius);
 } else { // ellipse
 ++q;
 rad2 = atoi(q);
