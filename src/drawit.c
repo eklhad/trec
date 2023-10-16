@@ -13,6 +13,17 @@ You may need to use png48:outfile.png
 #include <ImageMagick-6/wand/magick_wand.h>
 #include <ImageMagick-6/magick/MagickCore.h>
 
+// color codes and words
+static const char ccodes[] = "brgypokw";
+static const char *cwords[] = {
+"blue","red","green","yellow","pink","orange","black","white"
+};
+static const char *colorWord(char c)
+{
+const char *s = strchr(ccodes, c);
+if(!s) return 0; // bad code
+return cwords[s - ccodes];
+}
 
 static MagickWand *m_wand;
 // background and foreground.
@@ -99,13 +110,9 @@ DrawEllipse(dw, x, y, radius, rad2, 0, 0);
 break;
 
 // everything else is flood fill
-case 'b': color = "blue"; goto fill;
-case 'r': color = "red"; goto fill;
-case 'g': color = "green"; goto fill;
-case 'y': color = "yellow"; goto fill;
-case 'p': color = "pink"; goto fill;
-case 'o': color = "orange"; goto fill;
 default:
+color = colorWord(action);
+if(color) goto fill;
 fprintf(stderr, "line %d: invalid action %c\n", lineno, action);
 exit(1);
 fill:
@@ -121,7 +128,7 @@ dodraw = 1;
 	// the target color
 	MagickFloodfillPaintImage(m_wand, channel, fc_wand, 20, bc_wand, x, y,
 				  MagickFalse);
-#if 0
+#if 1
 // for debugging
 printf("fill %s %d,%d\n", color, x, y);
 #endif
