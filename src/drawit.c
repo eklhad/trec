@@ -4,11 +4,15 @@ and fill colors.
 CFLAGS = -I/usr/include/ImageMagick-6 -DMAGICKCORE_QUANTUM_DEPTH=16 -DMAGICKCORE_HDRI_ENABLE=0
 LDLIBS = /lib/libMagickWand-6.Q16.so /lib/libMagickCore-6.Q16.so
 You may need to use png48:outfile.png
+_GNU_SOURCE is needed to prototype asprintf.
 *********************************************************************/
+
+#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include <ImageMagick-6/wand/magick_wand.h>
 #include <ImageMagick-6/magick/MagickCore.h>
@@ -100,11 +104,29 @@ break;
 
 case 'c': // circle
 last_x = last_y = 0;
-radius = atoi(strchr(line, 'r') + 1);
-q = strchr(line, 's');
-if(!q) { // circle
+q = strchr(line, 'r');
+radius = strtol(q + 1, &q, 10);
+if(*q != 's') { // circle
+color = 0;
+if(*q && !isspace(*q)) {
+color = colorWord(*q);
+if(!color) {
+fprintf(stderr, "line %d: bad circle color %c\n", lineno, *q);
+exit(1);
+}
+}
+if(color) {
+	PixelSetColor(fc_wand, color);
+DrawSetStrokeColor(dw, fc_wand);
+}
 DrawCircle(dw, x, y, x, y+radius);
+// and put it "back in black"
+if(color) {
+	PixelSetColor(fc_wand, "black");
+DrawSetStrokeColor(dw, fc_wand);
+}
 } else { // ellipse
+// this doesn't work we don't understand it
 ++q;
 rad2 = atoi(q);
 DrawEllipse(dw, x, y, radius, rad2, 0, 0);

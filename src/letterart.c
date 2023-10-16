@@ -3,7 +3,10 @@ Use the image magic library to paint a polyomino tiling from its letter matrix.
 CFLAGS = -I/usr/include/ImageMagick-6 -DMAGICKCORE_QUANTUM_DEPTH=16 -DMAGICKCORE_HDRI_ENABLE=0
 LDLIBS = /lib/libMagickWand-6.Q16.so /lib/libMagickCore-6.Q16.so
 You may need to use png48:outfile.png
+_GNU_SOURCE is needed to prototype asprintf.
 *********************************************************************/
+
+#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
