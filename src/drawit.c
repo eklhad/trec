@@ -126,10 +126,26 @@ if(color) {
 DrawSetStrokeColor(dw, fc_wand);
 }
 } else { // ellipse
+rad2 = strtol(q + 1, &q, 10);
+color = 0;
+if(*q && !isspace(*q)) {
+color = colorWord(*q);
+if(!color) {
+fprintf(stderr, "line %d: bad ellipse color %c\n", lineno, *q);
+exit(1);
+}
+}
+if(color) {
+	PixelSetColor(fc_wand, color);
+DrawSetStrokeColor(dw, fc_wand);
+}
 // this doesn't work we don't understand it
-++q;
-rad2 = atoi(q);
 DrawEllipse(dw, x, y, radius, rad2, 0, 0);
+// and put it "back in black"
+if(color) {
+	PixelSetColor(fc_wand, "black");
+DrawSetStrokeColor(dw, fc_wand);
+}
 }
 break;
 
