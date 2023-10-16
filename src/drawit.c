@@ -71,6 +71,8 @@ exit(1);
 lineno = 0;
 while(fgets(line, sizeof(line), f)) {
 ++lineno;
+// skip blank lines
+if(line[0] == '\n' || line[0] == '\r') continue;
 sscanf(line, "%c%d,%d", &action, &x, &y);
 switch(action) {
 case 'f':
@@ -128,7 +130,7 @@ dodraw = 1;
 	// the target color
 	MagickFloodfillPaintImage(m_wand, channel, fc_wand, 20, bc_wand, x, y,
 				  MagickFalse);
-#if 1
+#if 0
 // for debugging
 printf("fill %s %d,%d\n", color, x, y);
 #endif
