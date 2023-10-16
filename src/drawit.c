@@ -130,6 +130,7 @@ printf("fill %s %d,%d\n", color, x, y);
 }
 
 // and write the file.
+if(!dodraw) MagickDrawImage(m_wand, dw);
 if(argc == 3) out2 = argv[2];
 else asprintf(&out2, "png48:%s.png", argv[1]);
 if (MagickWriteImage(m_wand, out2) == MagickFalse) {
