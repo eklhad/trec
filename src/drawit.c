@@ -106,7 +106,7 @@ case 'c': // circle
 last_x = last_y = 0;
 q = strchr(line, 'r');
 radius = strtol(q + 1, &q, 10);
-if(*q != 's') { // circle
+if(*q != 's' && *q != 'u') { // circle
 color = 0;
 if(*q && !isspace(*q)) {
 color = colorWord(*q);
@@ -126,6 +126,9 @@ if(color) {
 DrawSetStrokeColor(dw, fc_wand);
 }
 } else { // ellipse
+char portion = 0;
+if(*q == 'u') portion = 1;
+if(*q == 'l') portion = 2;
 rad2 = strtol(q + 1, &q, 10);
 color = 0;
 if(*q && !isspace(*q)) {
@@ -139,8 +142,7 @@ if(color) {
 	PixelSetColor(fc_wand, color);
 DrawSetStrokeColor(dw, fc_wand);
 }
-// this doesn't work we don't understand it
-DrawEllipse(dw, x, y, radius, rad2, 0, 360);
+DrawEllipse(dw, x, y, radius, rad2, 0, (portion == 1 ? 180 : 360));
 // and put it "back in black"
 if(color) {
 	PixelSetColor(fc_wand, "black");
