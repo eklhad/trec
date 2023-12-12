@@ -65,7 +65,7 @@ int w_pixel, h_pixel;
 int x, y, last_x, last_y;
 char action;
 char dodraw = 0;
-char line[60];
+char line[400];
 const char *color;
 int radius, rad2;
 char *q;
@@ -86,6 +86,7 @@ while(fgets(line, sizeof(line), f)) {
 ++lineno;
 // skip blank lines and comments
 if(line[0] == '\n' || line[0] == '\r' || line[0] == '#') continue;
+
 sscanf(line, "%c%d,%d", &action, &x, &y);
 switch(action) {
 case 'f':
@@ -96,8 +97,8 @@ bc_wand = NewPixelWand();
 	PixelSetColor(bc_wand, "white");
 MagickNewImage(m_wand, x, y, bc_wand);
 fc_wand = NewPixelWand();
-dw = NewDrawingWand();
 	channel = ParseChannelOption("rgba");
+dw = NewDrawingWand();
 setColor("black");
 break;
 

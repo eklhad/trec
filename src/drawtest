@@ -1,0 +1,49 @@
+# This is a test file of various shapes, to see how drawit performs.
+
+# Let's give us room to play
+f500,400
+
+# Start by drawing lines, a grid of squares.
+# Lines have width 3, should they have width 2?
+# Sometimes lines are everything, sometimes they are just borders for colors.  idk
+s10,10
+d130,10
+d130,90
+d10,90
+d10,10
+s10,50
+d130,50
+s50,10
+d50,90
+s90,10
+d90,90
+# unfortunately FloodFill has to be at the end, so we'll fill the 4 left boxes with red blue yellow green later
+# right boxes should remain white
+
+# now three circles, default, black, orange
+c200,50r50
+c270,50r50k
+c340,50r50o
+# and a green circle within an orange circle
+c410,50r50o
+c410,50r40g
+
+# ellipses default black and pink
+c100,200r70s30
+c260,200r70s30k
+c420,200r30s70p
+
+# some half ellipses
+c50,350r40l20
+c150,350r40u20g
+# blue within default and blue within red
+c250,350r40l20
+c250,350r36l17b
+c350,350r40u20r
+c350,350r36u17b
+
+# color the boxes
+r20,20
+b60,20
+y20,60
+g60,60
