@@ -145,9 +145,9 @@ DrawSetStrokeColor(dw, fc_wand);
 if(portion == 0)
 DrawEllipse(dw, x, y, radius, rad2, 0, 360);
 if(portion == 1)
-DrawEllipse(dw, x, y, radius, rad2, 0, 180);
-if(portion == 2)
 DrawEllipse(dw, x, y, radius, rad2, 180, 360);
+if(portion == 2)
+DrawEllipse(dw, x, y, radius, rad2, 0, 180);
 // and put it "back in black"
 if(color) {
 	PixelSetColor(fc_wand, "black");
