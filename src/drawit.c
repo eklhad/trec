@@ -17,6 +17,8 @@ _GNU_SOURCE is needed to prototype asprintf.
 #include <ImageMagick-6/wand/magick_wand.h>
 #include <ImageMagick-6/magick/MagickCore.h>
 
+#define LINEWIDTH 3.0
+
 // color codes and words
 static const char ccodes[] = "brgypokw";
 static const char *cwords[] = {
@@ -91,7 +93,7 @@ fc_wand = NewPixelWand();
 	channel = ParseChannelOption("rgba");
 dw = NewDrawingWand();
 DrawSetStrokeColor(dw, fc_wand);
-DrawSetStrokeWidth(dw, 2.0);
+DrawSetStrokeWidth(dw, LINEWIDTH);
 DrawSetStrokeOpacity(dw, 1.0);
 break;
 
@@ -118,12 +120,16 @@ exit(1);
 if(color) {
 	PixelSetColor(fc_wand, color);
 DrawSetStrokeColor(dw, fc_wand);
+DrawSetStrokeWidth(dw, LINEWIDTH);
+DrawSetStrokeOpacity(dw, 1.0);
 }
 DrawCircle(dw, x, y, x, y+radius);
 // and put it "back in black"
 if(color) {
 	PixelSetColor(fc_wand, "black");
 DrawSetStrokeColor(dw, fc_wand);
+DrawSetStrokeWidth(dw, LINEWIDTH);
+DrawSetStrokeOpacity(dw, 1.0);
 }
 } else { // ellipse
 char portion = 0;
@@ -141,6 +147,8 @@ exit(1);
 if(color) {
 	PixelSetColor(fc_wand, color);
 DrawSetStrokeColor(dw, fc_wand);
+DrawSetStrokeWidth(dw, LINEWIDTH);
+DrawSetStrokeOpacity(dw, 1.0);
 }
 if(portion == 0)
 DrawEllipse(dw, x, y, radius, rad2, 0, 360);
@@ -152,6 +160,8 @@ DrawEllipse(dw, x, y, radius, rad2, 0, 180);
 if(color) {
 	PixelSetColor(fc_wand, "black");
 DrawSetStrokeColor(dw, fc_wand);
+DrawSetStrokeWidth(dw, LINEWIDTH);
+DrawSetStrokeOpacity(dw, 1.0);
 }
 }
 break;
