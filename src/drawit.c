@@ -17,8 +17,6 @@ _GNU_SOURCE is needed to prototype asprintf.
 #include <ImageMagick-6/wand/magick_wand.h>
 #include <ImageMagick-6/magick/MagickCore.h>
 
-#define LINEWIDTH 3.0
-
 // color codes and words
 static const char ccodes[] = "brgypokw";
 static const char *cwords[] = {
@@ -37,6 +35,15 @@ static PixelWand *bc_wand;
 static PixelWand *fc_wand;
 static DrawingWand *dw;
 static ChannelType channel;
+
+static void setColor(const char *color)
+{
+	PixelSetColor(fc_wand, color);
+DrawSetStrokeColor(dw, fc_wand);
+DrawSetFillColor(dw, fc_wand);
+DrawSetStrokeWidth(dw, 3.0);
+DrawSetStrokeOpacity(dw, 1.0);
+}
 
 static int lineno; /* line number */
 
@@ -89,12 +96,9 @@ bc_wand = NewPixelWand();
 	PixelSetColor(bc_wand, "white");
 MagickNewImage(m_wand, x, y, bc_wand);
 fc_wand = NewPixelWand();
-	PixelSetColor(fc_wand, "black");
-	channel = ParseChannelOption("rgba");
 dw = NewDrawingWand();
-DrawSetStrokeColor(dw, fc_wand);
-DrawSetStrokeWidth(dw, LINEWIDTH);
-DrawSetStrokeOpacity(dw, 1.0);
+	channel = ParseChannelOption("rgba");
+setColor("black");
 break;
 
 case 'd': // draw
@@ -117,20 +121,10 @@ fprintf(stderr, "line %d: bad circle color %c\n", lineno, *q);
 exit(1);
 }
 }
-if(color) {
-	PixelSetColor(fc_wand, color);
-DrawSetStrokeColor(dw, fc_wand);
-DrawSetStrokeWidth(dw, LINEWIDTH);
-DrawSetStrokeOpacity(dw, 1.0);
-}
+if(color) setColor(color);
 DrawCircle(dw, x, y, x, y+radius);
 // and put it "back in black"
-if(color) {
-	PixelSetColor(fc_wand, "black");
-DrawSetStrokeColor(dw, fc_wand);
-DrawSetStrokeWidth(dw, LINEWIDTH);
-DrawSetStrokeOpacity(dw, 1.0);
-}
+if(color) setColor("black");
 } else { // ellipse
 char portion = 0;
 if(*q == 'u') portion = 1;
@@ -144,12 +138,7 @@ fprintf(stderr, "line %d: bad ellipse color %c\n", lineno, *q);
 exit(1);
 }
 }
-if(color) {
-	PixelSetColor(fc_wand, color);
-DrawSetStrokeColor(dw, fc_wand);
-DrawSetStrokeWidth(dw, LINEWIDTH);
-DrawSetStrokeOpacity(dw, 1.0);
-}
+if(color) setColor(color);
 if(portion == 0)
 DrawEllipse(dw, x, y, radius, rad2, 0, 360);
 if(portion == 1)
@@ -157,12 +146,7 @@ DrawEllipse(dw, x, y, radius, rad2, 180, 360);
 if(portion == 2)
 DrawEllipse(dw, x, y, radius, rad2, 0, 180);
 // and put it "back in black"
-if(color) {
-	PixelSetColor(fc_wand, "black");
-DrawSetStrokeColor(dw, fc_wand);
-DrawSetStrokeWidth(dw, LINEWIDTH);
-DrawSetStrokeOpacity(dw, 1.0);
-}
+if(color) setColor("black");
 }
 break;
 
