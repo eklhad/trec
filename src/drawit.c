@@ -75,8 +75,8 @@ exit(1);
 lineno = 0;
 while(fgets(line, sizeof(line), f)) {
 ++lineno;
-// skip blank lines
-if(line[0] == '\n' || line[0] == '\r') continue;
+// skip blank lines and comments
+if(line[0] == '\n' || line[0] == '\r' || line[0] == '#') continue;
 sscanf(line, "%c%d,%d", &action, &x, &y);
 switch(action) {
 case 'f':
