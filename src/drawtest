@@ -1,7 +1,7 @@
 # This is a test file of various shapes, to see how drawit performs.
 
 # Let's give us room to play
-f500,400
+f600,400
 
 # Start by drawing lines, a grid of squares.
 # Lines have width 3, should they have width 2?
@@ -22,11 +22,11 @@ d90,90
 
 # now three circles, default, black, orange
 c200,50r50
-c270,50r50k
-c340,50r50o
+c310,50r50k
+c420,50r50o
 # and a green circle within an orange circle
-c410,50r50o
-c410,50r40g
+c540,50r50o
+c540,50r40g
 
 # ellipses default black and pink
 c100,200r70s30
