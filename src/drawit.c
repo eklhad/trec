@@ -42,7 +42,8 @@ static void setColor(const char *color, int hollow)
 DrawSetStrokeColor(dw, fc_wand);
 if(hollow) 	PixelSetColor(fc_wand, "white");
 DrawSetFillColor(dw, fc_wand);
-DrawSetStrokeWidth(dw, 3.0);
+// less that 4 and FloodFill doesn't work properly
+DrawSetStrokeWidth(dw, 4.0);
 DrawSetStrokeOpacity(dw, 1.0);
 }
 
