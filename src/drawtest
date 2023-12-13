@@ -36,11 +36,11 @@ c420,200r30s70p
 # some half ellipses
 c50,350r40l20
 c150,350r40u20g
-# blue within default and blue within red
+# blue within default and white within red
 c250,350r40l20
 c250,350r36l17b
 c350,350r40u20r
-c350,350r36u17b
+c350,350r36u17w
 
 # color the boxes
 r20,20

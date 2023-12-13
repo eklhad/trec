@@ -36,10 +36,11 @@ static PixelWand *fc_wand;
 static DrawingWand *dw;
 static ChannelType channel;
 
-static void setColor(const char *color)
+static void setColor(const char *color, int hollow)
 {
 	PixelSetColor(fc_wand, color);
 DrawSetStrokeColor(dw, fc_wand);
+if(hollow) 	PixelSetColor(fc_wand, "white");
 DrawSetFillColor(dw, fc_wand);
 DrawSetStrokeWidth(dw, 3.0);
 DrawSetStrokeOpacity(dw, 1.0);
@@ -99,7 +100,7 @@ MagickNewImage(m_wand, x, y, bc_wand);
 fc_wand = NewPixelWand();
 	channel = ParseChannelOption("rgba");
 dw = NewDrawingWand();
-setColor("black");
+setColor("black", 0);
 break;
 
 case 'd': // draw
@@ -122,10 +123,10 @@ fprintf(stderr, "line %d: bad circle color %c\n", lineno, *q);
 exit(1);
 }
 }
-if(color) setColor(color);
+if(color) setColor(color, 0);
 DrawCircle(dw, x, y, x, y+radius);
 // and put it "back in black"
-if(color) setColor("black");
+if(color) setColor("black", 0);
 } else { // ellipse
 char portion = 0;
 if(*q == 'u') portion = 1;
@@ -139,7 +140,7 @@ fprintf(stderr, "line %d: bad ellipse color %c\n", lineno, *q);
 exit(1);
 }
 }
-if(color) setColor(color);
+if(color) setColor(color, 0);
 if(portion == 0)
 DrawEllipse(dw, x, y, radius, rad2, 0, 360);
 if(portion == 1)
@@ -147,7 +148,7 @@ DrawEllipse(dw, x, y, radius, rad2, 180, 360);
 if(portion == 2)
 DrawEllipse(dw, x, y, radius, rad2, 0, 180);
 // and put it "back in black"
-if(color) setColor("black");
+if(color) setColor("black", 0);
 }
 break;
 
