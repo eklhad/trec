@@ -21,9 +21,9 @@ A pixel at 71,5 is 71 over and 5 down.  Ugh!
 #include <ImageMagick-6/magick/MagickCore.h>
 
 // color codes and words
-static const char ccodes[] = "brgypokw";
+static const char ccodes[] = "brgypokwu";
 static const char *cwords[] = {
-"blue","red","green","yellow","pink","orange","black","white"
+"blue","red","green","yellow","pink","orange","black","white","purple"
 };
 static const char *colorWord(char c)
 {
