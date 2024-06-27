@@ -5,6 +5,9 @@ CFLAGS = -I/usr/include/ImageMagick-6 -DMAGICKCORE_QUANTUM_DEPTH=16 -DMAGICKCORE
 LDLIBS = /lib/libMagickWand-6.Q16.so /lib/libMagickCore-6.Q16.so
 You may need to use png48:outfile.png
 _GNU_SOURCE is needed to prototype asprintf.
+Coordinates don't match the conventions of mathematics, x and y,
+nor do they match matrix convention.
+A pixel at 71,5 is 71 over and 5 down.  Ugh!
 *********************************************************************/
 
 #define _GNU_SOURCE
