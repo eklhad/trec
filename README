@@ -57,7 +57,8 @@ matrix. Thus a solution to the Hex puzzle might look like this.
 
 This is not very satisfying, so I wrote a program to convert the matrix
 into an image, using ImageMagick.
-The program is letterart.c, included in this project.
+The program is letterart.c, available from https://github.com/edbrowse/drawit.
+Please see that project for more information on these drawing programs.
 If the above matrix is in a file calld hex610.mat, invoke the program this way.
 
 letterart hex610.mat png48:hex610.png
@@ -69,12 +70,6 @@ png48: forces 16 bit RGB, which can be read by every program, and by every
 browser, if you wish to put images on your web site.
 The picture that goes with the above matrix is in pictures/hex610.png.
 Take a moment and look at it, and compare with the above matrix.
-
-letterart foo is shorthand for letterart foo png48:foo.png
-
-If you want to extract the individual pieces from the matrix, for machine
-analysis, use the m2p perl script. (matrix to pieces)
-src/m2p <matrix-file >pieces-file
 
 So which pentominoes, on their own, tile a rectangle?
 The line, the L, the Utah, and the Y, with orders 1, 2, 2, and 10, respectively.
@@ -402,25 +397,6 @@ Do this before you run letterart to create your image.
 So how do you build all this software?
 Go into src and type make. That's it.
 Each program is a stand alone c file.
-
-Type make install (as root) to install. This installs
-trec, chiral, and letterart; the other programs are not commonly used.
-
-letterart can be challenging to build.
-ImageMagick headers and libraries are all over the place,
-depending on your distribution.
-This makefile works on Raspbian.
-You may have to tweak the makefile to build letterart and drawit.
-Again, patches are welcome to properly build these programs on various systems.
-
-Wait a minute - why isn't the code indented‽
-
-I am totally blind, and indenting doesn't help me at all;
-in fact it is rather an inconvenience.
-But when I am part of a group, as I have been throughout my professional career,
-we can all agree to run code through indent before commit, and that works fine.
-So let me know if you want me to start doing that.
-So far, I have been the only programmer on this project.
 
 A solution-2d file at top level holds tilings in matrix format
 for most of the nontrivial polyominoes and pairs of polyominoes.
