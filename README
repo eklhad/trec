@@ -40,6 +40,8 @@ ever since. I wrote a C program, hexsol.c, to find all solutions,
 not just for the 6×10 board, but also the
 5×12, 4×15, and 3×20 rectangles.
 The latter has only two solutions.
+hexsol 8 fills an 8 by 8 board, with the center 2 by 2 square removed, rather like a doughnut.
+This has 65 solutions.
 The original puzzle, on a 6 by 10 board, has 2339 solutions.
 
 hexsol -c
