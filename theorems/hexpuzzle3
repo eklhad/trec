@@ -1,0 +1,256 @@
+The hex puzzle, on a 3 by 20 board, can be analyzed manually;
+you don't need to run hexsol -d 3, although that is confirmation.
+This proof is almost as long as hexsol.c, but it's fun.
+
+The cross cuts the board in two, a section to the left and a section to the right.
+Each side has area divisible by 5.
+The center of the cross has to be in column 3, 8, 13, or 18.
+If the cross is centered at 3, it forces C to its left.
+
+The zigzag cuts the board in two, a section to the left and a section to the right.
+Like the cross, the zigzag borders 2 empty squares on its left and 2 on its right.
+Like the cross, the center of the zigzag is in column 3, 8, 13, or 18.
+If it is at 3, it forces chair or Utah to its left.
+
+If T or faucet is vertical, its midline is in column 3, 8, 13, or 18.
+T at 3 forces Utah to its left.
+Faucet at 3 forces Utah or C to its left.
+
+If stairs face the cross, their centers are 8 apart.
+If stairs face away from the cross, their centers are 7 apart.
+They could be 13 or 12 apart if you have the room.
+You don't have the room if the cross is in one of the middle positions.
+Stairs is always in the larger section of the rectangle, as cut by the cross.
+
+Assume stairs and zigzag are proximal.
+Example: stairs are at 10 or 11, and zigzag is at 13.
+If zigzag is horizontal, stairs are at 10, leaving a gap shaped like Y.
+If zigzag is vertical, stairs nestle into the zigzag, or abut the zigzag, leaving a gap shaped like Utah.
+
+Suppose the chair faces right, with its back in column 11,
+neatly cutting the rectangle into two smaller rectangles.
+It is not possible to arrange the cross and stairs as above.
+
+Let's try to build a 3 by 5 rectangle.
+It can't contain stairs, zigzag, cross, or long.
+If it has faucet it consumes C and Utah, valuable pieces.
+Lightning also consumes C and Utah, or L and chair.
+Y consumes C and Utah, or L and T.
+Chair could consume C and Utah, or L and Utah.
+Those are the only cases.
+
+Suppose the back of the chair is in column 6, facing right, and demarks a 3 by 5 rectangle on its left.
+Cross has to be at the far right, in column 18,
+whence stairs are centered at column 10 or 11.
+C is against the right wall.
+That leaves only L Y and T to fill the left subrectangle.
+Put zigzag at column 8, wrapping around the chair.
+With stairs next to zigzag, we need Y, and Y is consumed.
+Thus zigzag is at column 13, the other side of stairs.
+Again, zigzag can't be horizontal, because Y is consumed.
+zigzag is vertical.
+Put stairs at 11.
+Verify that we cannot fill the gap between chair and stairs with the pieces we have left.
+Put stairs at 10,
+whence Utah fills the gap.
+Yet we need another Utah between chair and stairs.
+Therefore, chair is not at column 6.
+
+Suppose the back of the chair is in column 16, facing right, and begins a 3 by 5 rectangle.
+That rectangle is completed by L and lightning or L and Utah or C and Utah.
+Invoking symmetry, put the cross at column 3, and the stairs at 10 or 11.
+C is at column 1, and not over on the right.
+Zigzag is proximal to the stairs.
+Suppose zigzag is horizontal, consuming Y.
+If zigzag is at 13 we need another chair.
+Zigzag is at 8, stairs are at 11, and the only way to fill the gap between stairs and chair is with T and Utah or L and Utah.
+Use T and Utah,
+which puts L and lightning on the right edge,
+and leaves faucet and long still available.
+But we need Utah and long to fill the gap next to cross, so this doesn't work.
+Thus zigzag is vertical.
+Put it on the right of the stairs and fill the gap between zigzag and chair with Utah.
+Again, L and lightning are at the right edge.
+With Utah gone, stairs nestle against zigzag.
+We have long, Y, T, and faucet left over.
+T horizontal doesn't work.
+T vertical is at column 8, and there's no place to put long.
+So put zigzag left of stairs.
+Put stairs at 11, which puts Utah between zigzag and stairs.
+That leaves L and lightning on the right edge.
+We can't fill the gap between stairs and chair with what we have left.
+So stairs nestle against zigzag.
+If T is horizontal, it is against chair, and is surrounded by lightning and long.
+L and Utah are at the right edge.
+We can't fill the gap between cross and zigzag with what we have left.
+T has to be vertical, and is in column 13, and has Utah on its right.
+To the left of T we need Utah, or stairs, and that doesn't work.
+That completes chair at column 16.
+
+The only place left for chair is against one of the edges.
+That rules out one of the four locations for cross.
+
+Suppose T is horizontal, and put it at column 11, neatly cutting the rectangle in half.
+It is not possible to arrange the cross and stairs.
+
+Suppose the top of T is in column 6, pointing right, and demarks a 3 by 5 rectangle on its left.
+Cross has to be at the far right, in column 18,
+and stairs are centered at column 10 or 11.
+C is against the right wall.
+Chair has to be at the left edge.
+This fills in with L and lightning or L and Utah.
+Stairs at 10 doesn't work.
+Stairs at 11 requires long and lightning between T and stairs.
+To the right of stairs is zigzag vertical.
+Right of zigzag has to fill in with Y and faucet, but it can't.
+
+Suppose the top of T is in column 16, facing right, and begins a 3 by 5 rectangle.
+This fills in with Y and L.
+Chair is at the left edge, cross is at 13, C is at 15,
+stairs is at 5 or 6.
+Zigzag is proximal to stairs, and can't be horizontal because Y is consumed.
+Zigzag can't be at 3, so is at 8.
+Suppose stairs are nestled next to it.
+Fill in between chair and stairs, but we can't do that without Y.
+Let stairs abut zigzag, with utah between.
+Now we need another Utah between chair and stairs.
+
+If T is horizontal it has to be up against an edge.
+Put it on the left, with chair on the right.
+Put cross at 8.
+Between T and cross we have to have Y L and C.
+Stairs an zigzag are proximal, and Y is consumed, so zigzag is vertical, at 13.
+We have to fill in between stairs and chair.
+We've seen this pattern before.
+It requires two Utahs, or Y and long, and Y is consumed.
+Therefore cross is at 13, and stairs is at 5 or 6.
+5 doesn't work with T next to it.
+Put stairs at 6 and fill in with lightning and long.
+Zigzag is at 8 vertical.
+Between zigzag and cross is Utah and L or Utah and C.
+It is not possible to fill in the last gap with the 3 pieces we have left.
+Therefore, T is vertical, and at column 3, 8, 13, or 18.
+
+Suppose cross is at 8.
+Further suppose T is at 3.
+Utah is on the left edge, and the gap between T and cross fills in with Y and lightning.
+Stairs and zigzag are proximal, and Y is gone, so zigzag is vertical.
+Utah is gone, so stairs nestles against zigzag.
+Chair is at the far right, so zigzag has to be at 13.
+This puts stairs centered at 15.
+Between stairs and chair is a gap we've seen before, requires Y, so cannot be filled.
+Therefore vertical T is not at 3.
+
+Put T at column 18, which puts Utah on the right and chair on the left.
+If zigzag is at 3, we can't fill in the rest of the gap without Utah, thus zigzag is at 13.
+Suppose zigzag is vertical.
+We need stairs and Utah to fill the gap between zigzag and T, and Utah is gone.
+Therefore zigzag is horizontal,
+and Y and stairs fill the gap between zigzag and T.
+Between cross and zigzag we need either Utah or chair, so that ends that pathway.
+
+T is at column 13.
+Suppose zigzag is vertical.
+It joins Utah at one of the edges.
+With Utah gone, stairs is up against T on the right.
+If Zigzag and Utah are at the right edge, we need another Utah or stairs to fill the gap.
+If chair is at the right edge, we must fill with Y and long.
+The gap between cross and T requires Utah or Y, so that is a dead end.
+Zigzag must be horizontal.
+It wraps around chair at one of the ends.
+Put zigzag on the right, which puts stairs up against T, and fills the gap with Y.
+The gap between cross and T fills with Utah and L or Utah and C.
+If faucet is vertical it is at 3, and there's no room for long.
+By counting squares, horizontal faucet has to be centered at 5, and that doesn't work.
+Therefore zigzag and chair are on the left.
+The gap between zigzag and cross is filled with long and Utah.
+With Utah gone, the gap between T and cross fills in with Y and lightning.
+With Utah gone, stairs nestles against T.
+We can't fill the last gap with L faucet and C.
+We have exhausted the positions for vertical T, and that is the end of cross at 8.
+
+We've come so far, and still no solutions.
+Let's put cross at 3 and hope something comes of it.
+C is at the left, and chair is at the right.
+Put zigzag at 18, thus wrapped around the chair.
+Stairs can't work at 16.
+Put stairs at 15 and fill in with Y.
+Put T at 8, and we are rather restricted in where we can put long between T and stairs.
+The only workable configuration is long faucet and Utah.
+That leaves lightning and L to fill the gap between cross and T, and that doesn't work.
+So put T at 13, up against stairs.
+If faucet is vertical it is at 8, but then there is no room for long.
+By square count, the first workable horizontal faucet pointing right is at 10,
+but that creates tiny gaps with T.
+The first workable horizontal faucet pointing left is at 11, up against T.
+We must fill in using long lightning L and Utah.
+Assume T points up, and the longer span of width 8 is on the top row.
+Put long on the bottom row, and lightning has to tuck in next to it.
+That doesn't leave room for L and Utah.
+Put long on top and over against faucet.
+We still can't fill in the gap.
+Finally put long on top and against cross.
+The other three pieces fill in and we have our first solution!
+
+EEABBBBBKKKLDFJJJJGC
+EAAAIIHKKLLLDFFJGGGC
+EEAIIIHHHHLDDDFFGCCC
+
+Put stairs at 10 or 11.
+T is proximal to stairs.
+Either T nestles against stairs, or it abuts stairs with Utah in between.
+By square count, horizontal faucet doesn't work, anywhere.
+Faucet is vertical, and stands where T is not.
+Thus faucet and T bracket stairs and Utah.
+If faucet is at 8, the gap between cross and faucet requires two C's or two Y's.
+Faucet at 13, and Utah gone, and we can't fill the gap between faucet and zigzag.
+That takes care of zigzag at 18.
+
+At this point T and zigzag are at 8 and 13.
+Put the stairs all the way over to 16.
+Utah fits between the stairs and chair.
+With Utah gone, we have to put zigzag at 13, horizontal,
+with Y between zigzag and stairs.
+That puts T at 8.
+With Utah and Y gone, we can't fill the gap between cross and T.
+
+Put the stairs at 15.
+Fill the gap between stairs and chair with Y and long.
+T and zigzag bracket a gap of ten squares, two pieces.
+Suppose zigzag is vertical.
+T could have its tab on the same level as the tab of zigzag, or not.
+The former admits Utah and L.
+The latter admits two C's or two Utahs or two lightnings or two stairs, unworkable.
+Now we have the gap between cross and T, or cross and Zigzag.
+Without Y and without Utah, we can't fill this gap.
+Let zigzag be horizontal, whence it is at 8.
+Fill the gap between zigzag and T, with Y gone.
+One orientation mandates C and L, the other mandates long and Utah.
+C and long are gone, so this doesn't work.
+
+Stairs are at 10 or 11.
+Suppose zigzag is horizontal.
+Y fits between stairs and zigzag, and T is on the other side of the stairs.
+Put zigzag at 8.
+The gap between cross and zigzag has long and Utah.
+The gap between T and chair has 15 squares, 3 pieces.
+Let the tab of T and the base of the chair be at the same level, on the floor.
+This can't be filled with the pieces we have left, faucet lightning and L.
+Let T stand up.
+This gap can be filled.
+This is our second solution!
+
+EEABBBBBGFFDDDLHHHHC
+EAAAIIGGGJFFDLLLKKHC
+EEAIIIGJJJJFDLKKKCCC
+
+Put zigzag at 13, still horizontal.
+The gap between cross and T fills with L and Utah.
+We can't fill the gap between zigzag and chair.
+
+Let zigzag be vertical.
+zigzag and T bracket stairs and Utah.
+The gap between cross and T or zigzag is lightning and Y.
+We can't fill the gap between T or zigzag and chair with long faucet and L.
+
+That completes the proof.
