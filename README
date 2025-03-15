@@ -44,11 +44,33 @@ See theorems/hexpuzzle3 for a by-hand analysis of that long skinny board.
 hexsol 8 fills an 8 by 8 board, with the center 2 by 2 square removed, rather like a doughnut.
 This has 65 solutions.
 The original puzzle, on a 6 by 10 board, has 2339 solutions.
+The -c option gives the count.
 
 hexsol -c
 2339 solutions
 
-This program, and all others in this project, generate solutions as an ascii
+The -d solution is for display, it prints each solution as a matrix.
+Otherwise each solution is on one line, for easier manipulation.
+
+If you are a whizz at text processing, you can extract
+the solutions that are half and half rectangles, like this.
+
+hexsol 6 >sol
+ed sol <<!
+,s/........../@&/g
+g/@....\(.\)\1/d
+,s/@/\
+/g
+1m$
+w halfboard
+q
+!
+
+This looks like 16 solutions, but these rotate or reflect
+the half rectangles and then paste them together,
+so there is really only one half-board solution.
+
+This program, (with the -d option), and others in this project, generate solutions as an ascii
 matrix. Thus a solution to the Hex puzzle might look like this.
 
 	EEEIIIDDDJ
