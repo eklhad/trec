@@ -92,6 +92,9 @@ CALKKBDFGH
 CLLLKBDFFH
 CCCLKDDDFF
 
+There are no halfboard solutions cut lengthwise.
+The two 3 by 20 solutions cannot be cut in half.
+
 these matrices are not very satisfying, so I wrote a program to convert the matrix
 into an image, using ImageMagick.
 The program is letterart.c, available from https://github.com/edbrowse/drawit.
