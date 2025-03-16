@@ -78,19 +78,19 @@ This looks like 16 solutions, but these rotate or reflect
 the half rectangles and then paste them together,
 so there are really only two halfboard solutions up to isomorphism.
 
-EEEIIBJJJJ
-EAEIIBGJHH
-AAALIBGGGH
-CALLLBDFGH
-CKKKLBDFFH
-CCCKKDDDFF
+EEEII BJJJJ
+EAEII BGJHH
+AAALI BGGGH
+CALLL BDFGH
+CKKKL BDFFH
+CCCKK DDDFF
 
-EEEIIBJJJJ
-EAEIIBGJHH
-AAAKIBGGGH
-CALKKBDFGH
-CLLLKBDFFH
-CCCLKDDDFF
+EEEII BJJJJ
+EAEII BGJHH
+AAAKI BGGGH
+CALKK BDFGH
+CLLLK BDFFH
+CCCLK DDDFF
 
 There are no halfboard solutions cut lengthwise.
 The two 3 by 20 solutions cannot be cut in half.
