@@ -95,8 +95,11 @@ CCCLK DDDFF
 There are no halfboard solutions cut lengthwise.
 The two 3 by 20 solutions cannot be cut in half.
 
-these matrices are not very satisfying, so I wrote a program to convert the matrix
-into an image, using ImageMagick.
+If you want to cut the 5 by 12 board in half, to find halfboard solutions,
+you get two 5 by 6 rectangles, which is really the same as above.
+
+these display matrices are not very satisfying, so I wrote a program
+to convert the matrix into an image, using ImageMagick.
 The program is letterart.c, available from https://github.com/edbrowse/drawit.
 Please see that project for more information on these drawing programs.
 If the earlier matrix is in a file calld hex610.mat, invoke the program this way.
