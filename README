@@ -35,6 +35,10 @@ They are, in my nomenclature: the line, the L, the Y
 (you have to tilt it a little to look like a Y), the C, the stairs, the faucet,
 the Utah, the lightning bolt, the zigzag, the T, the cross, and the chair.
 The Hex puzzle asks you to tile a 6×10 rectangle with these 12 pieces.
+It is called the Hex puzzle because it puts a hex on you, I suppose,
+but the name is unfortunate, because it makes you think of hexominoes,
+even though the puzzle consists of penominoes.
+
 I encountered this puzzle at age 8, and have been fascinated by tiling problems
 ever since. I wrote a C program, hexsol.c, to find all solutions,
 not just for the 6×10 board, but also the

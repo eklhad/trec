@@ -98,12 +98,12 @@ shapes[i][j] = k;
 /* valid positions for the cross */
 /* prevents reflections and rotations */
 /* But extra code is needed if the width or height is odd */
-int cross_all[6][10] = {
+int cross_all[6][12] = {
 {12, 37, 0},
 {14, 20, 26, 32, 38, 44, 0},
 {10, 16, 17, 23, 24, 30, 31, 37, 38, 0},
 {11, 18, 19, 26, 27, 34, 35 , 0},
-{0},
+{21,22,29,30,31,38,39,40,0},
 {13,14,23,0}
 };
 int *cross_pos;
@@ -196,13 +196,14 @@ if(isdigit(argv[1][0]) && argv[1][1] == 0)
 btype = argv[1][0] - '3';
 else btype = -1;
 }
-if(argc > 2 || btype < 0 || btype > 5 || btype == 4) {
+if(argc > 2 || btype < 0 || btype > 5) {
 fprintf(stderr, "usage: hexsol [-c|-d] width\n");
 exit(1);
 }
 
 w = btype + 3;
 l = 60 / w;
+if(w == 7) l = 10;
 if(w == 8) l = 8;
 l1 = l + 1, w1 = w + 1;
 l2 = l + 2, w2 = w + 2;
@@ -213,6 +214,18 @@ board[w2*l1+i] = -1;
 for(i=0; i<l2; ++i) {
 board[w2*i] = -1;
 board[w2*i+w1] = -1;
+}
+if(w == 7) {
+board[9*1+2] = 26;
+board[9*1+3] = 26;
+board[9*1+4] = 26;
+board[9*1+5] = 26;
+board[9*1+6] = 26;
+board[9*10+2] = 26;
+board[9*10+3] = 26;
+board[9*10+4] = 26;
+board[9*10+5] = 26;
+board[9*10+6] = 26;
 }
 if(w == 8) {
 board[10*5+5] = 26;
@@ -233,6 +246,7 @@ for(i=0; cross_pos[i]; ++i) {
 lcenter = wcenter = ocenter = 0;
 if(w == 4 && i == 5) lcenter = 1;
 if(w == 5 && !(i&1)) wcenter = 1;
+if(w == 7 && i%3 == 1) wcenter = 1;
 if(w == 8 && i == 2) ocenter = 1;
 cross(cross_pos[i]);
 }
