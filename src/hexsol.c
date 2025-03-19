@@ -119,7 +119,7 @@ if(!d) continue;
 return (d > 0);
 }
 }
-fprintf(stderr, "board is mirror\n");
+fprintf(stderr, "board is w mirror\n");
 exit(2);
 }
 
@@ -127,12 +127,14 @@ static int lflip(void)
 {
 int i, j;
 for(i=1; i<w2; ++i) {
-for(j=1; j<=7; ++j) {
+for(j=1; j<=l/2; ++j) {
 int d = board[j*w2+i] - board[(l1-j)*w2+i];
 if(!d) continue;
 return (d > 0);
 }
 }
+fprintf(stderr, "board is l mirror\n");
+exit(2);
 }
 
 /*********************************************************************
