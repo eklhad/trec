@@ -113,12 +113,14 @@ static int wflip(void)
 {
 int i, j;
 for(i=1; i<l2; ++i) {
-for(j=1; j<=2; ++j) {
+for(j=1; j<=w/2; ++j) {
 int d = board[i*w2+j] - board[i*w2+w1-j];
 if(!d) continue;
 return (d > 0);
 }
 }
+fprintf(stderr, "board is mirror\n");
+exit(2);
 }
 
 static int lflip(void)
