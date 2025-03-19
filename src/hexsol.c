@@ -9,21 +9,8 @@ int w1, l1;
 int w2, l2;
 char wcenter, lcenter, ocenter;
 int btype = 3; /* board type, 3 is standard */
+// board holds the transpose of what you see with the -d option
 char board[5*22];
-
-/*********************************************************************
-Only 2 solutions of width 3, btype 0, as follows.
-hexsol -d 3
-
-	EEABBBBBGFFDDDLHHHHC
-	EAAAIIGGGJFFDLLLKKHC
-	EEAIIIGJJJJFDLKKKCCC
-
-	EEABBBBBKKKLDFJJJJGC
-	EAAAIIHKKLLLDFFJGGGC
-	EEAIIIHHHHLDDDFFGCCC
-
-*********************************************************************/
 
 char shapes[][5] = {
 {1, 7,8,9,16},
@@ -112,7 +99,7 @@ shapes[i][j] = k;
 /* prevents reflections and rotations */
 /* But extra code is needed if the width or height is odd */
 int cross_all[6][10] = {
-{12, 17, 22, 27, 32, 	37, 42, 47, 0},
+{12, 37, 0},
 {14, 20, 26, 32, 38, 44, 0},
 {10, 16, 17, 23, 24, 30, 31, 37, 38, 0},
 {11, 18, 19, 26, 27, 34, 35 , 0},
@@ -288,7 +275,8 @@ if(!loc) return; /* square that no piece fits into */
 for(i=1; shapes[i][0]; ++i) {
 if(!test(loc, i)) continue;
 
-/* some checks for symmetry for odd dimensions */
+// When width is 3, we know what the solutions are.
+// Keep Utah on the right and that fixes symmetry.
 if(loc == 21 && w == 3 && shapes[i][0] == 9) continue;
 
 /* place the piece */
