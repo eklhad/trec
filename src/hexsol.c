@@ -8,7 +8,7 @@ int w, l; /* width and lefgth */
 int w1, l1;
 int w2, l2;
 char wcenter, lcenter, ocenter;
-int btype = 3; /* board type, 3 is standard */
+int btype = -1;
 // board holds the transpose of what you see with the -d option
 char board[5*22];
 
@@ -98,13 +98,14 @@ shapes[i][j] = k;
 /* valid positions for the cross */
 /* prevents reflections and rotations */
 /* But extra code is needed if the width or height is odd */
-int cross_all[6][12] = {
+int cross_all[7][12] = {
 {12, 37, 0},
 {14, 20, 26, 32, 38, 44, 0},
 {10, 16, 17, 23, 24, 30, 31, 37, 38, 0},
 {11, 18, 19, 26, 27, 34, 35 , 0},
 {21,22,29,30,31,38,39,40,0},
-{13,14,23,0}
+{13,14,23,0},
+{14,24,35,0},
 };
 int *cross_pos;
 
@@ -206,9 +207,8 @@ if(argv[1][1] == 'd') dispflag = 1;
 if(argc > 1) {
 if(isdigit(argv[1][0]) && argv[1][1] == 0)
 btype = argv[1][0] - '3';
-else btype = -1;
 }
-if(argc > 2 || btype < 0 || btype > 5) {
+if(argc > 2 || btype < 0 || btype > 6) {
 fprintf(stderr, "usage: hexsol [-c|-d] width\n");
 exit(1);
 }
@@ -217,6 +217,7 @@ w = btype + 3;
 l = 60 / w;
 if(w == 7) l = 10;
 if(w == 8) l = 8;
+if(w == 9) l = 8;
 l1 = l + 1, w1 = w + 1;
 l2 = l + 2, w2 = w + 2;
 for(i=0; i<w2; ++i) {
@@ -244,6 +245,10 @@ board[10*5+5] = 26;
 board[10*4+5] = 26;
 board[10*4+4] = 26;
 board[10*5+4] = 26;
+}
+if(w == 9) {
+for(i=3; i<=6; ++i)
+board[w2*i+4] = board[w2*i+5] = board[w2*i+6] = 26;
 }
 
 rebuildShapes();
