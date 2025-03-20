@@ -111,6 +111,7 @@ int *cross_pos;
 /* flipp through width and look for asymmetry */
 static int wflip(void)
 {
+#if 0
 int i, j;
 for(i=1; i<l2; ++i) {
 for(j=1; j<=w/2; ++j) {
@@ -121,10 +122,14 @@ return (d > 0);
 }
 fprintf(stderr, "board is w mirror\n");
 exit(2);
+#else
+return (board[w2*2+1] < board[w2*2+w]);
+#endif
 }
 
 static int lflip(void)
 {
+#if 0
 int i, j;
 for(i=1; i<w2; ++i) {
 for(j=1; j<=l/2; ++j) {
@@ -135,6 +140,9 @@ return (d > 0);
 }
 fprintf(stderr, "board is l mirror\n");
 exit(2);
+#else
+return (board[w2+1] < board[w2*l+1]);
+#endif
 }
 
 /*********************************************************************
