@@ -47,10 +47,12 @@ The latter has only two solutions.
 See theorems/hexpuzzle3 for a by-hand analysis of that long skinny board.
 hexsol 8 fills an 8 by 8 board, with the center 2 by 2 square removed, rather like a doughnut.
 This has 65 solutions.
+hexsol 9 fills a 9 by 8 board, with a 3 by 4 rectangle removed.
+This has 9 solutions.
 The original puzzle, on a 6 by 10 board, has 2339 solutions.
 The -c option gives the count.
 
-hexsol -c
+hexsol -c 6
 2339 solutions
 
 The -d option is for display; it prints each solution as a matrix.
@@ -101,6 +103,10 @@ The two 3 by 20 solutions cannot be cut in half.
 
 If you want to cut the 5 by 12 board in half, to find halfboard solutions,
 you get two 5 by 6 rectangles, which is really the same as above.
+
+Try to cut the 5 by 12 board into thirds; but there is no 5 by 4
+rectangle that contains the cross.
+Nor can we cut the 4 by 15 rectangle into thirds, for the same reason.
 
 these display matrices are not very satisfying, so I wrote a program
 to convert the matrix into an image, using ImageMagick.
