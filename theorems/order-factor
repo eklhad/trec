@@ -38,6 +38,9 @@ in the rectangle is even. The order is even.
 trec checks for this, and asserts an even order,
 if you haven't already done so in your config file.
 
+This works in higher dimensions - any shape with an even number of cubes,
+that always introduces an excess or deficiency of white cubes.
+
 	Alternating Stripes
 
 The shape fcf030 evades the checkerboard argument,
@@ -51,7 +54,22 @@ These must sum to 0, hence there are an even number of vertical pieces.
 By overlaying horizontal stripes, there are an even number of horizontal pieces
 as well. That implies an even order.
 Therefore, if the order is odd, one of the dimensions is odd, and the other
-is 4 mod 8. The same argument holds for other shapes such as fffc3c30.
+is 4 mod 8.
+Let the width be 4 mod 8.
+Vertical stripes implies an even number of vertical pieces.
+Now place 4 by 1 rectangles along the bottom row, black white black white ...
+Put more rectangles on the second row but shiftet over by 4.
+Do the same for all the rows.
+There are now 4 more black squares than white; but they are equal mod 4.
+Vertical pieces are undetermined.
+Horizontal pieces whose midline is on the blakc white boundaries have an excess or deficiency of 2.
+Same for pieces whose midline is in the middle of the rectangles.
+The other horizontal pieces contribute equally, mod 4.
+Half the horizontal are even, and if we shift the rectangles one square to the right, the other half of the horizontal are even.
+That gies an even order.
+
+The same argument holds for fffc3c30.
+In the last step, the row of 8 drops out, equal white and black, and we're back to fc3c30.
 
 	Sparse Checkerboard
 
