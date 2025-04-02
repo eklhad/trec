@@ -54,19 +54,17 @@ These must sum to 0, hence there are an even number of vertical pieces.
 By overlaying horizontal stripes, there are an even number of horizontal pieces
 as well. That implies an even order.
 Therefore, if the order is odd, one of the dimensions is odd, and the other
-is 4 mod 8.
-Let the width be 4 mod 8.
-Vertical stripes implies an even number of vertical pieces.
-Now place 4 by 1 rectangles along the bottom row, black white black white ...
-Put more rectangles on the second row but shiftet over by 4.
-Do the same for all the rows.
-There are now 4 more black squares than white; but they are equal mod 4.
-Vertical pieces are undetermined.
-Horizontal pieces whose midline is on the blakc white boundaries have an excess or deficiency of 2.
-Same for pieces whose midline is in the middle of the rectangles.
-The other horizontal pieces contribute equally, mod 4.
-Half the horizontal are even, and if we shift the rectangles one square to the right, the other half of the horizontal are even.
-That gies an even order.
+is 4 mod 8. Let the width be 4 mod 8.
+Color the bottom row red blue yellow green repeat.
+Do the same for the second row but shifted over by 1.
+Continue this pattern, making a 4 color checkerboard.
+A piece anywhere on the board includes a 2 by 4 rectangle,
+which contributes equally.
+What remains consumes 2 of 2 adjacent squares, such as 2 red and 2 blue.
+Put the pieces into 4 groups, rb by yg and gr, for the extra squares they consume.
+Since red squares equals yellow squares mod 4, we have 2gr + 2rb = 2by + 2yg.
+gr + rb has the same parity as by + yg.
+That gives an even order.
 
 The same argument holds for fffc3c30.
 In the last step, the row of 8 drops out, equal white and black, and we're back to fc3c30.
