@@ -37,7 +37,7 @@ the Utah, the lightning bolt, the zigzag, the T, the cross, and the chair.
 The Hex puzzle asks you to tile a 6×10 rectangle with these 12 pieces.
 It is called the Hex puzzle because it puts a hex on you, I suppose,
 but the name is unfortunate, because it makes you think of hexominoes,
-even though the puzzle consists of penominoes.
+even though the puzzle consists of pentominoes.
 
 I encountered this puzzle at age 8, and have been fascinated by tiling problems
 ever since. I wrote a C program, hexsol.c, to find all solutions,
@@ -112,7 +112,7 @@ these display matrices are not very satisfying, so I wrote a program
 to convert the matrix into an image, using ImageMagick.
 The program is letterart.c, available from https://github.com/edbrowse/drawit.
 Please see that project for more information on these drawing programs.
-If the earlier matrix is in a file calld hex610.mat, invoke the program this way.
+If the earlier matrix is in a file called hex610.mat, invoke the program this way.
 
 letterart hex610.mat png48:hex610.png
 
@@ -127,7 +127,7 @@ Take a moment and look at these files and compare.
 So which pentominoes, on their own, tile a rectangle?
 The line, the L, the Utah, and the Y, with orders 1, 2, 2, and 10, respectively.
 
-When I was in junior high I built the 35 distinct hexominoes out of lego
+When I was in junior high I built the 35 distinct hexominoes out of Lego
 and tried to fit them into a 14×15 frame.
 I even thought about marketing the puzzle,
 since the Hex puzzle (based on the 12 pentominoes) attained commercial success.
@@ -138,7 +138,7 @@ Most pieces cover 3 white squares and 3 black,
 but an odd number of hexominoes cover 4 white squares and 2 black,
 or 2 white squares and 4 black.
 These pieces introduce an excess or deficiency of two white squares.
-Clearly white and blacks squares must come out eequal.
+Clearly white and black squares must come out equal.
 This is a contradiction, hence there is no solution.
 (Wikipedia hexomino also gives this checkerboard proof.)
 Of course I could always toss out one of these offending pieces and try
@@ -165,7 +165,7 @@ See src/hp4.c and pictures/hexbelow.png.
 There are 108 heptominoes, but one has a hole in it, like a snake wrapping
 around to kiss its tail, and cannot participate in a solid packing.
 If you want a rectangle with a hole in the middle, allowing for all 108 pieces,
-that's 108*7 + 1 = 757, which is prime, so no dice there.
+that's 108×7 + 1 = 757, which is prime, so no dice there.
 All this is in wikipedia heptomino.
 However, I found that the 107 simply connected pieces
 can make a rather long rectangle 107 by 7.
@@ -205,11 +205,11 @@ You don't have to do that of course, but it's hard to keep track otherwise.
 I also allow a + to set the ninth bit.
 Thus ff+fcfc is a long version of Oklahoma,
 with a row of 9 squares and two rows of 6 squares.
-Use braces for a longer row, as in ffff{e0} for a row of 11,
-although shapes with a diameter greaterer than 9 consume almost twice as much
+Use braces for a longer row, as in ff{e0} for a row of 11,
+although shapes with a diameter greater than 9 consume almost twice as much
 disk space, and are not well tested.
 
-You can specify a set of polyominoes on the first line, using _ as delimiter.
+You can specify a set of polyominoes on the first line, using _ as the delimiter.
 Thus f820_e070 describes a pair of hexominoes
 that have order 94[12x47], as a set,
 even though neither tiles a rectangle on its own.
@@ -320,7 +320,7 @@ Sometimes we know the order is divisible by something.
 See theorems/order-factor for more information.
 
 The eighth line is a factor on the dimension.
-Boundary conditions often force both diminsions to be divisible by something.
+Boundary conditions often force both dimensions to be divisible by something.
 
 The ninth line is optional. It presents a series of bad spans.
 A span consists of 3 numbers, the height of the wall, the length of the span,
@@ -379,7 +379,7 @@ whereupon it can be restarted again.
 r prints the restart parameters.
 n prints the nodes pending and in cache.
 l gives the lookahead value, and l followed by a digit will change it.
-a toggles the lookback feature, to check for solutions of lesser witdh.
+a toggles the lookback feature, to check for solutions of lesser width.
 d toggles printing of progress dots.
 p is performance, printing something every thousand nodes.
 b prints or changes the best order.
@@ -517,10 +517,10 @@ Indeed, polyomino tilings aren't very interesting if you don't do this.
 In contrast, we 3-dimensional beings can't just reflect pieces through a mirror.
 Sometimes we need these reflections, and sometimes we don't.
 If reflections are necessary, as part of a physical puzzle, then chiral
-instances of the piece must be manufactured, in the proper quantitiesw,
+instances of the piece must be manufactured, in the proper quantities,
 which in turn gives a hint as to the solution.
 
-The thre smallest spacial tetrominoes are formed by placing a cube on top of an L triomino.
+The three smallest spacial tetrominoes are formed by placing a cube on top of an L triomino.
 These all have order 2.
 Two of these are chiral, i.e. reflections of each other.
 You might consider them the same piece or you might not.
@@ -528,7 +528,7 @@ Interestingly, the flat stair tetromino,
 which could not tile a rectangle in the plane, has order 6 in 3 dimensions
 (Left as an exercise for the reader).
 The flat pentomino that looks like the letter C also has order 6.
-The spatial pentomino formed by placing a cube ontop of a 2×2 block has order 4.
+The spatial pentomino formed by placing a cube on top of a 2×2 block has order 4.
 
 Recall the hex puzzle, which attained commercial success.
 The 12 distinct pentominoes tile a 6 by 10 board.
@@ -583,7 +583,7 @@ The solution is a sequence of matrices, one matrix per layer in the box.
 I don't have an easy way to turn this into an image,
 but John has programs to present the packing in a 3 dimensional animation.
 Some basic results are in theorems/order-3d,
-and some matrix solutionss are in solution-3d.
+and some matrix solutions are in solution-3d.
 
 If you want to search by nodes, the way trec.c does,
 rather than brute force, use the -m option.
@@ -608,8 +608,8 @@ It fills a box 3 by 3 by 7.
 This suggests, to me anyways, that the conjecture might be false in the plane,
 we just haven't found a counterexample.
 
-Returning to the 30 penominoes, including the mirror versions when chiral,
-and omiting the line, let's try to fill a 5 by 5 by 6 box.
+Returning to the 30 pentominoes, including the mirror versions when chiral,
+and omitting the line, let's try to fill a 5 by 5 by 6 box.
 My program can search for a solution, though it hasn't found one yet.
 I include the command line here, because it is far from obvious,
 and it illustrates how to specify the number of left and right handed versions.
@@ -639,7 +639,7 @@ The 2 by 3 by 10 box holds 12 solutions, and the 2 by 5 by 6 box holds 264 solut
 
 The well known Soma puzzle has 240 solutions.
 My software can generate them, without duplicates, but the order of the
-pieces in the set is critical. Chiral has to be at the end.
+pieces in the set is critical. The chiral pieces have to be at the end.
 3dbox can't handle a solution with a chiral piece at the origin.
 
 3dbox -a c08080=1_80c080=1_c060=1_c080=1_c080!80=1_c080!40=1=1 3 3 3
