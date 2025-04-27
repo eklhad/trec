@@ -45,6 +45,10 @@ const char *last = strrchr(argv[i], '1');
 if (last != NULL) {
 len = last - argv[i] + 1;
 }
+if(!len) {
+printf("00");
+continue;
+}
 size_t value = 0;
 size_t factor = 128;
 size_t j = 0;
