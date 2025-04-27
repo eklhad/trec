@@ -196,6 +196,10 @@ Each of the first eight lines must be present, and syntactically correct.
 The first line gives the polyomino in hexadecimal format.
 A byte indicates the squares that are present on the first row of the shape,
 then the next byte describes the second row, and so on.
+Ones correspond to squares, zeros correspond to gaps.
+The program piece-encode can help you encode a polyomino:
+enter squares and gaps, and get the hex notation for that polyomino.
+
 Our Y hexomino, the only hexomino with a nontrivial order, is f840,
 five squares on the bottom row and one square on the second row.
 I find it convenient to use a file of the same name,
