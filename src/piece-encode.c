@@ -13,29 +13,33 @@ puts("Use an argument for each row of the polyomino.");
 puts("In such an argument, use 0 for a gap and 1 for a part of the polyomino.");
 puts("Any trailing 0 is optional.");
 puts("In a three-dimensional polyomino,");
-puts("use an argument of \"-\" to separate the layers.");
+puts("use one or more - as an argument to separate the layers.");
+puts("Use -q as an argument to not show the size of the polyomino.");
 } else {
-bool valid = true;
+bool invalid = false;
 bool quiet = false;
 for (int i = 1; i < argc; i++) {
-if (strcmp(argv[i], "-") == 0) {
+if (argv[i][0] == '-' && strspn(argv[i], "-") == strlen(argv[i])) {
 } else if (strcmp(argv[i], "-q") == 0) {
 quiet = true;
 } else {
 const size_t len = strspn(argv[i], "01");
 if (argv[i][len] != '\0') {
-valid = false;
+invalid = true;
 fprintf(stderr, "argument %d: character %zu is invalid: %s\n", i, len + 1, argv[i]);
 return_value = EXIT_FAILURE;
 }
 }
 }
-if (valid) {
-size_t parts = 0;
+if (invalid == false) {
+unsigned int rows = 0;
+unsigned int size = 0;
 for (int i = 1; i < argc; i++) {
-if (strcmp(argv[i], "-") == 0) {
-if (i == 1) {
+if (argv[i][0] == '-' && strspn(argv[i], "-") == strlen(argv[i])) {
+if (rows == 0) {
 printf("00");
+} else {
+rows = 0;
 }
 putchar('!');
 } else if (strcmp(argv[i], "-q") == 0) {
@@ -45,17 +49,18 @@ const char *last = strrchr(argv[i], '1');
 if (last != NULL) {
 len = last - argv[i] + 1;
 }
-if(!len) {
+rows++;
+if(len == 0) {
 printf("00");
 continue;
 }
-size_t value = 0;
-size_t factor = 128;
+unsigned int value = 0;
+unsigned int factor = 128;
 size_t j = 0;
 while (j < len) {
 const char c = argv[i][j++];
 if (c == '1') {
-parts++;
+size++;
 value += factor;
 }
 if (j == len || (j % 8) == 0) {
@@ -79,9 +84,12 @@ factor /= 2;
 }
 }
 }
+if (rows == 0) {
+printf("00");
+}
 putchar('\n');
 if (quiet == false) {
-printf("Total: %zu\n", parts);
+printf("size: %u\n", size);
 }
 }
 }

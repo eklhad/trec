@@ -1,4 +1,4 @@
-all : hexsol hp1 hp2 hp3 hp4 hept chiral trec 3dbox piece-encode
+all : hexsol hp1 hp2 hp3 hp4 hept chiral trec 3dbox piece-encode piece-decode
 
 hexsol : hexsol.c
 	cc hexsol.c -o hexsol
