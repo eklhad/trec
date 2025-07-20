@@ -18,13 +18,19 @@ short np, nsq, order;
 
 static void eval(int, int, char);
 
-static void
-bailout(const char *msg, int arg)
+static void bailout(const char *msg, int arg)
 {
 fprintf(stderr, msg, arg);
 fprintf(stderr, "\n");
 exit(1);
-} /* bailout */
+}
+
+static void bailouts(const char *msg, const char *arg)
+{
+fprintf(stderr, msg, arg);
+fprintf(stderr, "\n");
+exit(1);
+}
 
 int main(int argc, char **argv)
 {
@@ -34,7 +40,7 @@ short i, j, l;
 if(argc != 2) bailout("usage:  chiral solution-file", 0);
 
 f = fopen(argv[1], "r");
-if(!f) bailout("cannot open %s", (int)argv[1]);
+if(!f) bailouts("cannot open %s", argv[1]);
 
 while(fgets(board[nrows], NCOLS, f)) {
 l = strlen(board[nrows]);
