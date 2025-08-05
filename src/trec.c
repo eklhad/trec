@@ -656,6 +656,14 @@ fprintf(stderr, "\n");
 exit(1);
 }
 
+static void bailouts(const char *msg, const char *arg)
+{
+if(config) fprintf(stderr, "%s: ", config);
+fprintf(stderr, msg, arg);
+fprintf(stderr, "\n");
+exit(1);
+}
+
 static void *emalloc(unsigned int n)
 {
 void *s = malloc(n);
@@ -3269,7 +3277,7 @@ mergeBoards();
 sprintf(solname, "dotile/%s/sol%dx%d",
 piecename, curWidth, better_h);
 fd = open(solname, O_CREAT|O_TRUNC|O_WRONLY, 0666);
-if(fd < 0) bailout("cannot create solution file %s", (int)solname);
+if(fd < 0) bailouts("cannot create solution file %s", solname);
 for(i=0; i<better_h; ++i) {
 ewrite(fd, leftBoard+i*curWidth, curWidth);
 ewrite(fd, "\n", 1);

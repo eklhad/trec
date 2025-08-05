@@ -131,6 +131,13 @@ fprintf(stderr, "\n");
 exit(1);
 }
 
+static void bailouts(const char *msg, const char *n)
+{
+fprintf(stderr, msg, n);
+fprintf(stderr, "\n");
+exit(1);
+}
+
 static void *emalloc(unsigned int n)
 {
 void *s = malloc(n);
@@ -2596,7 +2603,7 @@ mergeBoards();
 sprintf(solname, "dotile/%s/sol%dx%dx%d",
 piecename, dim_x, dim_y, dim_z);
 sol = fopen(solname, "w");
-if(!sol) bailout("cannot create solution file %s", (int)solname);
+if(!sol) bailouts("cannot create solution file %s", solname);
 
 for(y=0; y<dim_y; ++y) {
 if(y) {
